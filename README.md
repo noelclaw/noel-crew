@@ -32,25 +32,78 @@ open /Applications/Noel\ Crew.app
 
 ---
 
-## Connect to Noelclaw
+## Install Noel Crew MCP
 
+Anyone can install Noel Crew as an MCP skill:
+
+### Claude Code
 ```bash
-claude mcp add noelclaw -- npx @noelclaw/research
+claude mcp add noel-crew -- npx @noelclaw/crew
 ```
 
-Or connect any MCP-capable agent:
+### Hermes
+```bash
+hermes mcp add noel-crew -- npx @noelclaw/crew
+```
 
+### OpenClaw
+```bash
+openclaw mcp add noel-crew -- npx @noelclaw/crew
+```
+
+### Cursor / Windsurf / Any MCP client
+Add to your MCP config:
 ```json
 {
   "mcpServers": {
-    "noelcrew": {
+    "noel-crew": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@noelclaw/mcp"]
+      "args": ["-y", "@noelclaw/crew"]
     }
   }
 }
 ```
+
+Full docs: https://docs.noelclaw.fun
+
+---
+
+## Auto-reactions for Claude Code
+
+Add to `%APPDATA%\Claude\settings.json` (Windows) or `~/.claude/settings.json` (Mac/Linux):
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [{"type": "command", "command": "node --input-type=module --eval \"import{createNoelCrewClient}from'file:///PATH_TO_NOELCREW/packages/client/dist/index.js';createNoelCrewClient().react('working').catch(()=>{})\""}]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{"type": "command", "command": "node --input-type=module --eval \"import{createNoelCrewClient}from'file:///PATH_TO_NOELCREW/packages/client/dist/index.js';createNoelCrewClient().react('editing').catch(()=>{})\""}]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [{"type": "command", "command": "node --input-type=module --eval \"import{createNoelCrewClient}from'file:///PATH_TO_NOELCREW/packages/client/dist/index.js';createNoelCrewClient().react('running').catch(()=>{})\""}]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{"type": "command", "command": "node --input-type=module --eval \"import{createNoelCrewClient}from'file:///PATH_TO_NOELCREW/packages/client/dist/index.js';createNoelCrewClient().react('celebrating').catch(()=>{})\""}]
+      }
+    ]
+  }
+}
+```
+
+Replace `PATH_TO_NOELCREW`:
+- Windows: `C:/Users/YOUR_USERNAME/noelcrew`
+- Mac/Linux: `/home/user/noelcrew`
 
 ---
 
@@ -91,7 +144,7 @@ Or connect any MCP-capable agent:
 ```
 apps/desktop        Electron desktop app
 packages/client     @noelclaw/client — local IPC client
-packages/mcp        @noelclaw/mcp — MCP stdio server
+packages/mcp        @noelclaw/crew   — MCP stdio server
 packages/claude     @noelclaw/claude — Claude hook helpers
 packages/opencode   @noelclaw/opencode — OpenCode plugin
 packages/cli        @noelclaw/cli — CLI entrypoints
