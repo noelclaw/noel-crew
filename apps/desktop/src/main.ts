@@ -2,6 +2,7 @@ import { app } from "electron";
 
 import { initializeAppState, isOnboardingCompleted, releaseStartupInstallLock } from "./app-state.js";
 import { installDefaultPetDisplayHandlers, shouldOpenDefaultPetOnLaunch, showDefaultPet } from "./default-pet-controller.js";
+import { promptAndInstallHooksOnFirstLaunch } from "./first-launch.js";
 import { installAppLifecycle } from "./lifecycle.js";
 import { startLocalIpcServer } from "./local-ipc.js";
 import { createAppTray, refreshTrayMenu } from "./tray.js";
@@ -44,6 +45,11 @@ if (!gotSingleInstanceLock) {
       } catch (error) {
         console.error("Failed to open NoelCrew onboarding; continuing with tray app.", error);
       }
+      setTimeout(() => {
+        void promptAndInstallHooksOnFirstLaunch().catch((err: unknown) => {
+          console.error("First-launch hooks prompt failed.", err);
+        });
+      }, 800);
     }
     refreshTrayMenu();
     void checkForGitHubReleaseUpdate().then(() => refreshTrayMenu());
