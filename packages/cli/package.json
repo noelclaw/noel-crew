@@ -38,7 +38,7 @@
   "dependencies": {
     "@noelclaw/client": "workspace:*",
     "@noelclaw/claude": "workspace:*",
-    "@noelclaw/mcp": "workspace:*",
+    "@noelclaw/crew": "workspace:*",
     "@noelclaw/opencode": "workspace:*"
   }
 }

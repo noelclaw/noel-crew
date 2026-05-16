@@ -22,7 +22,7 @@ assert.match(packageJson.scripts?.["package:dir"] ?? "", /node scripts\/clean-pa
 assert.equal(rootPackageJson.scripts?.["package:desktop:dir"], "pnpm build && pnpm --filter @noelclaw/desktop package:dir");
 assert.equal(packageJson.dependencies?.["@noelclaw/claude"], "workspace:*");
 assert.equal(packageJson.dependencies?.["@noelclaw/cli"], "workspace:*");
-assert.equal(packageJson.dependencies?.["@noelclaw/mcp"], "workspace:*");
+assert.equal(packageJson.dependencies?.["@noelclaw/crew"], "workspace:*");
 assert.equal(packageJson.dependencies?.["@noelclaw/opencode"], "workspace:*");
 assert.equal(packageJson.dependencies?.["@noelclaw/agent-events"], "workspace:*");
 assert.match(builderConfig, /appId:\s*dev\.noelcrew\.app/);
@@ -187,7 +187,7 @@ assert.ok(existsSync(join(appDir, "scripts", "clean-package-output.cjs")), "pack
 assert.ok(existsSync(join(distDir, "main.js")), "desktop main build output must exist before packaging checks run.");
 assert.ok(existsSync(join(repoRoot, "packages", "claude", "dist", "index.js")), "@noelclaw/claude must be built before packaging.");
 assert.ok(existsSync(join(repoRoot, "packages", "client", "dist", "index.js")), "@noelclaw/client must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "mcp", "dist", "index.js")), "@noelclaw/mcp must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "mcp", "dist", "index.js")), "@noelclaw/crew must be built before packaging.");
 assert.ok(existsSync(join(repoRoot, "packages", "cli", "dist", "index.js")), "@noelclaw/cli must be built before packaging.");
 assert.ok(existsSync(join(repoRoot, "packages", "opencode", "dist", "plugin.js")), "@noelclaw/opencode plugin must be built before packaging.");
 assert.ok(existsSync(join(repoRoot, "packages", "agent-events", "dist", "index.js")), "@noelclaw/agent-events must be built before packaging.");
@@ -216,8 +216,8 @@ function checkPackageOutput(): void {
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "claude", "package.json")), "packaged @noelclaw/claude package metadata is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "client", "dist", "index.js")), "packaged @noelclaw/client runtime is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "client", "package.json")), "packaged @noelclaw/client package metadata is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "mcp", "dist", "index.js")), "packaged @noelclaw/mcp runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "mcp", "package.json")), "packaged @noelclaw/mcp package metadata is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noelclaw", "crew", "dist", "index.js")), "packaged @noelclaw/crew runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noelclaw", "crew", "package.json")), "packaged @noelclaw/crew package metadata is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "cli", "dist", "index.js")), "packaged @noelclaw/cli runtime is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "opencode", "dist", "plugin.js")), "packaged @noelclaw/opencode plugin runtime is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "opencode", "package.json")), "packaged @noelclaw/opencode package metadata is missing.");

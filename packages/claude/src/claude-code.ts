@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { lstatSync, realpathSync, statSync } from "node:fs";
 
 export const claudeMcpServerName = "noelcrew";
-export const noelCrewMcpPackageName = "@noelclaw/mcp";
+export const noelCrewMcpPackageName = "@noelclaw/crew";
 export type NoelCrewCommandMode = "published" | "local" | "bundled";
 
 export type ClaudeMcpScope = "user";

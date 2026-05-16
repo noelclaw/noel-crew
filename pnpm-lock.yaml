@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
     devDependencies:
       typescript:
         specifier: ^6.0.3
@@ -23,9 +27,9 @@ importers:
       '@noelclaw/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@noelclaw/mcp':
+      '@noelclaw/crew':
         specifier: workspace:*
-        version: link:../../packages/mcp
+        version: link:../..
       '@noelclaw/opencode':
         specifier: workspace:*
         version: link:../../packages/opencode
@@ -85,9 +89,9 @@ importers:
       '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
-      '@noelclaw/mcp':
+      '@noelclaw/crew':
         specifier: workspace:*
-        version: link:../mcp
+        version: link:../..
       '@noelclaw/opencode':
         specifier: workspace:*
         version: link:../opencode

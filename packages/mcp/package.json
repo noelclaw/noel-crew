@@ -1,7 +1,10 @@
 {
-  "name": "@noelclaw/mcp",
-  "version": "2.0.7",
+  "name": "@noelclaw/crew",
+  "version": "0.1.2",
+  "description": "Noel Crew — tray-first desktop companion MCP for AI coding agents",
   "license": "MIT",
+  "homepage": "https://noelclaw.fun",
+  "keywords": ["mcp", "noelclaw", "desktop-pet", "ai-agent", "claude-code"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/noelclaw/noel-crew.git",
@@ -11,7 +14,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "noel-crew-mcp": "./dist/index.js"
+    "noelclaw-crew": "./dist/index.js"
   },
   "files": [
     "dist"

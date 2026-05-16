@@ -27,10 +27,17 @@
     "typescript": "^6.0.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@google/genai", "koffi", "protobufjs"]
+    "onlyBuiltDependencies": [
+      "@google/genai",
+      "koffi",
+      "protobufjs"
+    ]
   },
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "sharp": "^0.34.5"
+  }
 }

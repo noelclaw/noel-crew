@@ -318,7 +318,7 @@ function runClaudeMcpRemove(projectDir: string): void {
 }
 
 async function runMcp(args: readonly string[]): Promise<void> {
-  const entry = require.resolve("@noelclaw/mcp");
+  const entry = require.resolve("@noelclaw/crew");
   await new Promise<void>((resolvePromise, rejectPromise) => {
     const child = spawn(process.execPath, [entry, ...args], { stdio: "inherit" });
     const forwardSigint = (): void => { child.kill("SIGINT"); };
