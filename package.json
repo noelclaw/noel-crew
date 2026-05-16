@@ -1,0 +1,30 @@
+{
+  "name": "openpets-v2-workspace",
+  "version": "2.0.6",
+  "private": true,
+  "description": "OpenPets 2.0 workspace",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openpetstech/openpets.git"
+  },
+  "type": "module",
+  "packageManager": "pnpm@11.0.8",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:desktop": "pnpm --filter @open-pets/desktop dev",
+    "package:desktop:dir": "pnpm build && pnpm --filter @open-pets/desktop package:dir",
+    "package:desktop": "pnpm build && pnpm --filter @open-pets/desktop package",
+    "release:desktop": "node apps/desktop/scripts/release-local.mjs",
+    "release:npm": "node scripts/release-npm.mjs",
+    "test": "pnpm build && pnpm -r --if-present test",
+    "check": "pnpm -r check",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

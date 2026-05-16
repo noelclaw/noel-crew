@@ -1,0 +1,19 @@
+name: Bug report
+description: Report something broken in the Electron app, CLI, MCP, or integrations.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Keep it short — we only need enough to reproduce it.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. Include your OS/app version if you know it.
+      placeholder: "The desktop pet disappeared after..."
+    validations:
+      required: true
+
