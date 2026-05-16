@@ -1,6 +1,6 @@
 {
   "name": "@noelclaw/crew",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "private": true,
   "description": "Noel Crew — tray-first desktop companion for AI coding agents",
   "author": "noelclaw",
@@ -28,5 +28,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": ["@google/genai", "koffi", "protobufjs"]
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
