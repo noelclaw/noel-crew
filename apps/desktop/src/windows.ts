@@ -380,14 +380,13 @@ function createPlaceholderHtml(definition: TaskWindowDefinition): string {
 }
 
 function createPetManagerHtml(definition: TaskWindowDefinition): string {
-  const logoUrl = createAssetDataUrl("onboarding-logo.webp", "image/webp");
   const defaultThumbnailUrl = createAssetDataUrl("default-pet-thumbnail.png", "image/png");
 
   return `<!doctype html>
     <html lang="en">
       <head>
         <meta charset="utf-8" />
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https://noelclaw.fun noelcrew-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https://openpets.dev https://*.openpets.dev noelcrew-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
         <meta name="referrer" content="no-referrer" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>${escapeHtml(definition.title)}</title>
@@ -396,7 +395,10 @@ function createPetManagerHtml(definition: TaskWindowDefinition): string {
       <body data-noelcrew-view="pet-manager" data-default-pet-thumbnail-src="${escapeHtml(defaultThumbnailUrl)}">
         <main class="pm-shell">
           <section class="pm-gallery-pane" aria-labelledby="pm-title">
-            <img class="pm-logo" src="${escapeHtml(logoUrl)}" alt="NoelCrew" draggable="false" />
+            <svg class="pm-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44" role="img" aria-label="Noel Crew">
+              <rect width="160" height="44" rx="22" fill="#0f1623"/>
+              <text x="80" y="30" text-anchor="middle" fill="#ffffff" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="18" font-weight="700" letter-spacing="-0.3">Noel Crew</text>
+            </svg>
             <header class="pm-header">
               <h1 id="pm-title">Install a Pet</h1>
               <p class="lede">Pick a companion for your terminal.</p>
@@ -1036,7 +1038,7 @@ function createTaskWindowStyles(): string {
     body[data-noelcrew-view="pet-manager"] { overflow: hidden; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #101f3f; }
     body[data-noelcrew-view="pet-manager"] .pm-shell { width: min(1160px, calc(100vw - 36px)); height: calc(100vh - 28px); display: grid; grid-template-columns: minmax(330px, 0.78fr) minmax(510px, 1.22fr); gap: 32px; align-items: stretch; padding: 10px 0 18px; overflow: hidden; }
     body[data-noelcrew-view="pet-manager"] .pm-gallery-pane { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 28px; }
-    body[data-noelcrew-view="pet-manager"] .pm-logo { width: min(218px, 72%); flex: 0 0 auto; display: block; margin: -2px auto 0; filter: drop-shadow(0 10px 14px rgba(42, 80, 138, 0.12)); }
+    body[data-noelcrew-view="pet-manager"] .pm-logo { width: 160px; height: 44px; flex: 0 0 auto; display: block; margin: 6px auto 14px; }
     body[data-noelcrew-view="pet-manager"] .pm-header { flex: 0 0 auto; position: relative; display: grid; align-items: center; row-gap: 0; margin-bottom: 6px; padding-right: 108px; }
     body[data-noelcrew-view="pet-manager"] .pm-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 24px; line-height: 1.08; letter-spacing: -0.03em; color: #102149; text-shadow: 0 1px 0 rgba(255,255,255,0.9); }
     body[data-noelcrew-view="pet-manager"] .pm-header .lede { grid-column: 1 / -1; margin: 0; color: #63708f; line-height: 1.25; }

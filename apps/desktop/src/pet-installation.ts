@@ -132,7 +132,7 @@ async function downloadPetZip(zipUrl: string): Promise<Buffer> {
 function validateZipUrl(value: string): void {
   const url = new URL(value);
   if (url.protocol !== "https:") throw new Error("Zip URL must use https.");
-  if (url.hostname !== "zip.noelclaw.fun") throw new Error("Zip URL host is not allowed.");
+  if (url.hostname !== "zip.openpets.dev") throw new Error("Zip URL host is not allowed.");
   if (!url.pathname.startsWith("/pets/")) throw new Error("Zip URL path is not allowed.");
   if (url.username || url.password) throw new Error("Zip URL cannot include credentials.");
   if (url.port) throw new Error("Zip URL cannot include a custom port.");

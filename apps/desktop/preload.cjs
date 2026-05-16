@@ -1182,7 +1182,7 @@ function isAllowedCatalogPreview(value) {
   try {
     const url = new URL(value);
     return url.protocol === "https:"
-      && url.hostname === "noelclaw.fun"
+      && (url.hostname === "openpets.dev" || url.hostname.endsWith(".openpets.dev"))
       && url.port === ""
       && url.username === ""
       && url.password === ""

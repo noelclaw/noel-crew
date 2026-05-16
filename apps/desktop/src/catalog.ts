@@ -5,8 +5,8 @@ import { app } from "electron";
 
 import { validateCatalogV2, validateCatalogV3Index, validateCatalogV3Page, validateCatalogV3SearchIndex, validateCatalogV3SearchPage, type CatalogPetV2, type CatalogV2, type CatalogV3Index, type CatalogV3SearchPet } from "./catalog-validation.js";
 
-export const catalogUrl = "https://noelclaw.fun/pets/catalog.v2.json";
-export const catalogV3Url = "https://noelclaw.fun/pets/catalog.v3.json";
+export const catalogUrl = "https://openpets.dev/pets/catalog.v2.json";
+export const catalogV3Url = "https://openpets.dev/pets/catalog.v3.json";
 const fixtureRelativePath = "catalog.v2.fixture.json";
 const maxCatalogBytes = 1_000_000;
 const maxCatalogV3PageBytes = 256_000;
@@ -142,7 +142,6 @@ async function getV2OrFixtureCatalogUiState(remoteV3Error: string): Promise<Cata
       source: "fixture",
       pets: fixture.catalog.pets,
       generatedAt: fixture.catalog.generatedAt,
-      error: `Catalog unavailable: ${remoteV3Error}; v2 unavailable: ${remote.error}`,
       version: 2,
       total: fixture.catalog.pets.length,
       supportsCategories: false,

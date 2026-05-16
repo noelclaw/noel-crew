@@ -6,11 +6,11 @@ const fixture = JSON.parse(await readFile("catalog.v2.fixture.json", "utf8")) as
 validateCatalogV2(fixture);
 
 const invalidCases: readonly unknown[] = [
-  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "Bad ID", displayName: "Bad", description: "", preview: "https://noelclaw.fun/pets/x/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/x/x.zip" }] },
-  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "dup", displayName: "Dup", description: "", preview: "https://noelclaw.fun/pets/x/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/x/x.zip" }, { id: "dup", displayName: "Dup 2", description: "", preview: "https://noelclaw.fun/pets/y/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/y/y.zip" }] },
-  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "http", displayName: "Http", description: "", preview: "http://noelclaw.fun/pets/x/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/x/x.zip" }] },
-  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "host", displayName: "Host", description: "", preview: "https://evil.example/pets/x/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/x/x.zip" }] },
-  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "builtin", displayName: "Builtin", description: "", preview: "https://noelclaw.fun/pets/x/spritesheet.webp", zip: "https://zip.noelclaw.fun/pets/x/x.zip" }] },
+  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "Bad ID", displayName: "Bad", description: "", preview: "https://openpets.dev/pets/x/spritesheet.webp", zip: "https://zip.openpets.dev/pets/x/x.zip" }] },
+  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "dup", displayName: "Dup", description: "", preview: "https://openpets.dev/pets/x/spritesheet.webp", zip: "https://zip.openpets.dev/pets/x/x.zip" }, { id: "dup", displayName: "Dup 2", description: "", preview: "https://openpets.dev/pets/y/spritesheet.webp", zip: "https://zip.openpets.dev/pets/y/y.zip" }] },
+  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "http", displayName: "Http", description: "", preview: "http://openpets.dev/pets/x/spritesheet.webp", zip: "https://zip.openpets.dev/pets/x/x.zip" }] },
+  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "host", displayName: "Host", description: "", preview: "https://evil.example/pets/x/spritesheet.webp", zip: "https://zip.openpets.dev/pets/x/x.zip" }] },
+  { version: 2, generatedAt: new Date().toISOString(), pets: [{ id: "builtin", displayName: "Builtin", description: "", preview: "https://openpets.dev/pets/x/spritesheet.webp", zip: "https://zip.openpets.dev/pets/x/x.zip" }] },
 ];
 
 for (const invalidCase of invalidCases) {
