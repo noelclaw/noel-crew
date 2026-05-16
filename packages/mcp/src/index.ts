@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 import { createHelpText, parseMcpArgs } from "./args.js";
+import { ensureDesktopRunning } from "./auto-launch.js";
 import { createNoelCrewMcpServer } from "./server.js";
 import { createToolContext, type LeaseContext } from "./tools.js";
 
@@ -21,6 +22,8 @@ async function main(): Promise<void> {
     process.stdout.write(`${readPackageVersion()}\n`);
     return;
   }
+
+  await ensureDesktopRunning().catch(() => {});
 
   const lease: LeaseContext = {};
   const context = createToolContext(options.petId);
