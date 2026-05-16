@@ -29,10 +29,16 @@ importers:
         version: link:../../packages/cli
       '@noelclawai/crew':
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/mcp
       '@noelclawai/opencode':
         specifier: workspace:*
         version: link:../../packages/opencode
+      buffer-crc32:
+        specifier: 0.2.13
+        version: 0.2.13
+      pend:
+        specifier: 1.2.0
+        version: 1.2.0
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -91,7 +97,7 @@ importers:
         version: link:../client
       '@noelclawai/crew':
         specifier: workspace:*
-        version: link:../..
+        version: link:../mcp
       '@noelclawai/opencode':
         specifier: workspace:*
         version: link:../opencode
