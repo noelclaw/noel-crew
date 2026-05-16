@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Core TypeScript source for the OpenPets desktop application. Organized into: lifecycle management, state persistence, UI windows, pet rendering, IPC server, agent integrations, and pet installation/management.
+Core TypeScript source for the NoelCrew desktop application. Organized into: lifecycle management, state persistence, UI windows, pet rendering, IPC server, agent integrations, and pet installation/management.
 
 ## Design
 
@@ -53,8 +53,8 @@ windows.ts (IPC handlers)
     ├── runAgentSetupAction()
     │   ├── configure/replace/remove (MCP commands)
     │   ├── install-memory (claude-memory.ts)
-    │   └── install-hooks/uninstall-hooks/doctor-hooks (@open-pets/claude)
-    └── OpenCode global config management (@open-pets/opencode)
+    │   └── install-hooks/uninstall-hooks/doctor-hooks (@noelclaw/claude)
+    └── OpenCode global config management (@noelclaw/opencode)
 ```
 
 **Pet Installation Flow**:
@@ -78,13 +78,13 @@ pet-installation.ts
   - `pet-installation.ts` ↔ `app-state.ts`, `catalog.ts`, `zip-safety.ts`
 
 - **To packages/**:
-  - `@open-pets/claude`: `buildClaudeMcpPreview`, `installClaudeHooks`, `doctorClaudeHooks`, etc.
-  - `@open-pets/opencode`: `prepareOpenCodeGlobalSetup`, `doctorOpenCodeGlobalSetup`
-  - `@open-pets/cli`: Version lookup for bundled mode
+  - `@noelclaw/claude`: `buildClaudeMcpPreview`, `installClaudeHooks`, `doctorClaudeHooks`, etc.
+  - `@noelclaw/opencode`: `prepareOpenCodeGlobalSetup`, `doctorOpenCodeGlobalSetup`
+  - `@noelclaw/cli`: Version lookup for bundled mode
 
 - **To System**:
   - File system: `app.getPath("userData")`, `~/.codex/pets/`, `~/.claude/`, `~/.opencode/`
-  - Network: `fetch()` to openpets.dev, GitHub API
+  - Network: `fetch()` to noelclaw.fun, GitHub API
   - Processes: `spawn()` for `claude`, `opencode`, `node`
 
 ## Key Modules
@@ -126,7 +126,7 @@ pet-installation.ts
 
 **Agent Integration**:
 - `agent-setup.ts`: Claude/OpenCode detection, MCP configuration, hooks management, action journaling
-- `claude-memory.ts`: Claude instructions file management (`~/.claude/openpets.md`)
+- `claude-memory.ts`: Claude instructions file management (`~/.claude/noelcrew.md`)
 - `update-checker.ts`: GitHub release polling, update status
 - `update-version.ts`: Version parsing and comparison
 
@@ -139,7 +139,7 @@ pet-installation.ts
 |--------|-------------|------|
 | Catalog API | `catalog.ts` | `CatalogV2` JSON |
 | ZIP Download | `pet-installation.ts` | Extracted to `userData/pets/{id}/` |
-| `app-state.ts` | `userData/openpets-state.json` | Atomic JSON writes |
+| `app-state.ts` | `userData/noelcrew-state.json` | Atomic JSON writes |
 | CLI via IPC | `local-ipc.ts` | `pet.react`, `pet.say`, `lease.*` |
 | `lease-manager.ts` | `agent-pet-controller.ts` | Show/close agent pets |
 | `windows.ts` | Renderer | State snapshots via IPC invoke |

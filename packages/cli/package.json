@@ -1,17 +1,17 @@
 {
-  "name": "@open-pets/cli",
+  "name": "@noelclaw/cli",
   "version": "2.0.6",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openpetstech/openpets.git",
+    "url": "git+https://github.com/noelclaw/noel-crew.git",
     "directory": "packages/cli"
   },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "openpets": "dist/index.js"
+    "noelcrew": "dist/index.js"
   },
   "files": [
     "dist"
@@ -36,9 +36,9 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@open-pets/client": "workspace:*",
-    "@open-pets/claude": "workspace:*",
-    "@open-pets/mcp": "workspace:*",
-    "@open-pets/opencode": "workspace:*"
+    "@noelclaw/client": "workspace:*",
+    "@noelclaw/claude": "workspace:*",
+    "@noelclaw/mcp": "workspace:*",
+    "@noelclaw/opencode": "workspace:*"
   }
 }

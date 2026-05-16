@@ -5,11 +5,11 @@ import { dirname, join } from "node:path";
 
 import { app } from "electron";
 
-import { openPetsIpcProtocol, openPetsIpcVersion } from "./local-ipc-protocol.js";
+import { noelCrewIpcProtocol, noelCrewIpcVersion } from "./local-ipc-protocol.js";
 
-export interface OpenPetsDiscoveryFile {
+export interface NoelCrewDiscoveryFile {
   readonly protocolVersion: 1;
-  readonly protocol: "openpets-ipc";
+  readonly protocol: "noelcrew-ipc";
   readonly endpoint: string;
   readonly token: string;
   readonly appVersion: string;
@@ -22,68 +22,68 @@ export type IpcEndpoint =
   | { readonly kind: "path"; readonly path: string };
 
 export function getDiscoveryFilePath(): string {
-  if (process.env.OPENPETS_DISCOVERY_FILE) {
-    return process.env.OPENPETS_DISCOVERY_FILE;
+  if (process.env.NOELCREW_DISCOVERY_FILE) {
+    return process.env.NOELCREW_DISCOVERY_FILE;
   }
 
   if (process.platform === "darwin") {
-    return join(homedir(), "Library", "Application Support", "OpenPets", "runtime", "ipc.json");
+    return join(homedir(), "Library", "Application Support", "NoelCrew", "runtime", "ipc.json");
   }
 
   if (process.platform === "win32") {
-    return join(process.env.APPDATA ?? join(homedir(), "AppData", "Roaming"), "OpenPets", "runtime", "ipc.json");
+    return join(process.env.APPDATA ?? join(homedir(), "AppData", "Roaming"), "NoelCrew", "runtime", "ipc.json");
   }
 
   const xdg = getSecureXdgRuntimeDir();
   if (xdg) {
-    return join(xdg, "openpets", "ipc.json");
+    return join(xdg, "noelcrew", "ipc.json");
   }
 
-  return join(process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config"), "OpenPets", "runtime", "ipc.json");
+  return join(process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config"), "NoelCrew", "runtime", "ipc.json");
 }
 
 export function createIpcEndpoint(): string {
-  if (process.env.OPENPETS_IPC_ENDPOINT) {
-    const endpoint = parseIpcEndpoint(process.env.OPENPETS_IPC_ENDPOINT, { allowPortZero: true });
+  if (process.env.NOELCREW_IPC_ENDPOINT) {
+    const endpoint = parseIpcEndpoint(process.env.NOELCREW_IPC_ENDPOINT, { allowPortZero: true });
     if (endpoint.kind !== "tcp") {
-      throw new Error("OPENPETS_IPC_ENDPOINT only supports loopback TCP endpoints, for example tcp://127.0.0.1:37645.");
+      throw new Error("NOELCREW_IPC_ENDPOINT only supports loopback TCP endpoints, for example tcp://127.0.0.1:37645.");
     }
-    return process.env.OPENPETS_IPC_ENDPOINT;
+    return process.env.NOELCREW_IPC_ENDPOINT;
   }
 
   if (process.platform === "win32") {
-    return `\\\\.\\pipe\\openpets-${randomEndpointPart()}-${process.pid}`;
+    return `\\\\.\\pipe\\noelcrew-${randomEndpointPart()}-${process.pid}`;
   }
 
   const runtimeDir = getSocketRuntimeDir();
   mkdirSync(runtimeDir, { recursive: true, mode: 0o700 });
   ensurePrivateRuntimeDir(runtimeDir);
-  return join(runtimeDir, `openpets-${process.pid}.sock`);
+  return join(runtimeDir, `noelcrew-${process.pid}.sock`);
 }
 
 export function parseIpcEndpoint(endpoint: string, options: { readonly allowPortZero?: boolean } = {}): IpcEndpoint {
-  if (endpoint.length < 1 || endpoint.length > 240) throw new Error("OpenPets IPC endpoint length is invalid.");
-  if (endpoint.includes("\0")) throw new Error("OpenPets IPC endpoint contains NUL.");
+  if (endpoint.length < 1 || endpoint.length > 240) throw new Error("NoelCrew IPC endpoint length is invalid.");
+  if (endpoint.includes("\0")) throw new Error("NoelCrew IPC endpoint contains NUL.");
 
   if (endpoint.startsWith("tcp://")) {
     let url: URL;
     try {
       url = new URL(endpoint);
     } catch {
-      throw new Error("OpenPets TCP IPC endpoint is invalid.");
+      throw new Error("NoelCrew TCP IPC endpoint is invalid.");
     }
 
     if (url.protocol !== "tcp:" || url.username || url.password || (url.pathname !== "" && url.pathname !== "/") || url.search || url.hash) {
-      throw new Error("OpenPets TCP IPC endpoint must be tcp://127.0.0.1:<port>.");
+      throw new Error("NoelCrew TCP IPC endpoint must be tcp://127.0.0.1:<port>.");
     }
     if (url.hostname !== "127.0.0.1") {
-      throw new Error("OpenPets TCP IPC endpoint must bind to loopback host 127.0.0.1.");
+      throw new Error("NoelCrew TCP IPC endpoint must bind to loopback host 127.0.0.1.");
     }
 
     const port = Number(url.port);
     const minPort = options.allowPortZero ? 0 : 1;
     if (!Number.isInteger(port) || port < minPort || port > 65_535 || String(port) !== url.port) {
-      throw new Error("OpenPets TCP IPC endpoint port is invalid.");
+      throw new Error("NoelCrew TCP IPC endpoint port is invalid.");
     }
 
     return { kind: "tcp", host: "127.0.0.1", port };
@@ -92,10 +92,10 @@ export function parseIpcEndpoint(endpoint: string, options: { readonly allowPort
   return { kind: "path", path: endpoint };
 }
 
-export function writeDiscoveryFile(endpoint: string, token: string): OpenPetsDiscoveryFile {
-  const discovery: OpenPetsDiscoveryFile = {
-    protocolVersion: openPetsIpcVersion,
-    protocol: openPetsIpcProtocol,
+export function writeDiscoveryFile(endpoint: string, token: string): NoelCrewDiscoveryFile {
+  const discovery: NoelCrewDiscoveryFile = {
+    protocolVersion: noelCrewIpcVersion,
+    protocol: noelCrewIpcProtocol,
     endpoint,
     token,
     appVersion: app.getVersion(),
@@ -114,11 +114,11 @@ export function writeDiscoveryFile(endpoint: string, token: string): OpenPetsDis
   return discovery;
 }
 
-export function removeDiscoveryFile(discovery: OpenPetsDiscoveryFile | null): void {
+export function removeDiscoveryFile(discovery: NoelCrewDiscoveryFile | null): void {
   if (!discovery) return;
   const path = getDiscoveryFilePath();
   try {
-    const current = JSON.parse(readFileSync(path, "utf8")) as Partial<OpenPetsDiscoveryFile>;
+    const current = JSON.parse(readFileSync(path, "utf8")) as Partial<NoelCrewDiscoveryFile>;
     if (current.pid !== discovery.pid || current.token !== discovery.token || current.endpoint !== discovery.endpoint) {
       return;
     }
@@ -147,10 +147,10 @@ export function protectUnixSocket(endpoint: string): void {
 function getSocketRuntimeDir(): string {
   const xdg = process.platform === "linux" ? getSecureXdgRuntimeDir() : null;
   if (xdg) {
-    return join(xdg, "openpets");
+    return join(xdg, "noelcrew");
   }
 
-  return join("/tmp", `openpets-${getUserIdForPath()}`);
+  return join("/tmp", `noelcrew-${getUserIdForPath()}`);
 }
 
 function getSecureXdgRuntimeDir(): string | null {
@@ -171,17 +171,17 @@ function getSecureXdgRuntimeDir(): string | null {
 function ensurePrivateRuntimeDir(dir: string): void {
   const stat = lstatSync(dir);
   if (!stat.isDirectory() || stat.isSymbolicLink()) {
-    throw new Error(`OpenPets IPC runtime path is not a safe directory: ${dir}`);
+    throw new Error(`NoelCrew IPC runtime path is not a safe directory: ${dir}`);
   }
 
   if (typeof process.getuid === "function" && stat.uid !== process.getuid()) {
-    throw new Error(`OpenPets IPC runtime directory is not owned by the current user: ${dir}`);
+    throw new Error(`NoelCrew IPC runtime directory is not owned by the current user: ${dir}`);
   }
 
   try { chmodSync(dir, 0o700); } catch { /* best effort */ }
   const updated = lstatSync(dir);
   if ((updated.mode & 0o777) !== 0o700) {
-    throw new Error(`OpenPets IPC runtime directory is not private: ${dir}`);
+    throw new Error(`NoelCrew IPC runtime directory is not private: ${dir}`);
   }
 }
 

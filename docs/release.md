@@ -1,10 +1,10 @@
-# OpenPets Desktop Release Guide
+# NoelCrew Desktop Release Guide
 
-This guide is for an AI agent creating a new OpenPets desktop release from a local macOS machine. The release flow builds Electron artifacts locally, creates a draft GitHub Release, and uploads the assets.
+This guide is for an AI agent creating a new NoelCrew desktop release from a local macOS machine. The release flow builds Electron artifacts locally, creates a draft GitHub Release, and uploads the assets.
 
 ## Repository and app
 
-- GitHub repo: `alvinunreal/openpets`
+- GitHub repo: `alvinunreal/noelcrew`
 - Desktop app: `apps/desktop`
 - Release script: `apps/desktop/scripts/release-local.mjs`
 - Root command: `pnpm release:desktop`
@@ -17,7 +17,7 @@ This guide is for an AI agent creating a new OpenPets desktop release from a loc
 1. Requires macOS.
 2. Requires `pnpm` and `gh`.
 3. Requires GitHub CLI auth for `github.com`.
-4. Requires `origin` to point to `alvinunreal/openpets`.
+4. Requires `origin` to point to `alvinunreal/noelcrew`.
 5. Requires a clean git working tree.
 6. Requires the current branch to have an upstream.
 7. Requires local `HEAD` to match the upstream branch.
@@ -48,10 +48,10 @@ Default build matrix:
 Expected main artifacts look like:
 
 ```txt
-OpenPets-<version>-mac-x64.dmg
-OpenPets-<version>-mac-arm64.dmg
-OpenPets-<version>-win-x64-setup.exe
-OpenPets-<version>-linux-x86_64.AppImage
+NoelCrew-<version>-mac-x64.dmg
+NoelCrew-<version>-mac-arm64.dmg
+NoelCrew-<version>-win-x64-setup.exe
+NoelCrew-<version>-linux-x86_64.AppImage
 SHA256SUMS
 ```
 
@@ -89,7 +89,7 @@ Do not use `0.0.0` or prerelease tags unless the release script is intentionally
 
 Update all workspace package versions together so bundled packages and npm packages report the same release version.
 
-Use a new version for every release. npm package versions are immutable, so any change to a published package requires a new version across all public OpenPets npm packages.
+Use a new version for every release. npm package versions are immutable, so any change to a published package requires a new version across all public NoelCrew npm packages.
 
 Files to update:
 
@@ -128,7 +128,7 @@ Run:
 
 ```bash
 pnpm build
-pnpm --filter @open-pets/desktop check
+pnpm --filter @noelclaw/desktop check
 ```
 
 Fix any failures before continuing.
@@ -258,7 +258,7 @@ If the script creates the draft release but upload fails:
 2. Upload missing artifacts manually with:
 
 ```bash
-gh release upload v<version> --repo alvinunreal/openpets <artifact-path>
+gh release upload v<version> --repo alvinunreal/noelcrew <artifact-path>
 ```
 
 3. Or delete the draft release/tag and rerun after fixing the issue.
@@ -268,7 +268,7 @@ gh release upload v<version> --repo alvinunreal/openpets <artifact-path>
 These do not create a GitHub Release:
 
 ```bash
-pnpm --filter @open-pets/desktop build
+pnpm --filter @noelclaw/desktop build
 node apps/desktop/scripts/clean-package-output.cjs
 pnpm --dir apps/desktop exec electron-builder --mac dmg --x64 --publish never
 pnpm --dir apps/desktop exec electron-builder --mac dmg --arm64 --publish never
@@ -284,20 +284,20 @@ apps/desktop/dist-electron/
 
 ## NPM package release
 
-OpenPets publishes these public npm packages, in dependency order:
+NoelCrew publishes these public npm packages, in dependency order:
 
 ```txt
-@open-pets/client
-@open-pets/agent-events
-@open-pets/mcp
-@open-pets/claude
-@open-pets/opencode
-@open-pets/cli
+@noelclaw/client
+@noelclaw/agent-events
+@noelclaw/mcp
+@noelclaw/claude
+@noelclaw/opencode
+@noelclaw/cli
 ```
 
-Do not publish the private workspace root, `@open-pets/desktop`, or `@open-pets/pet-format`.
+Do not publish the private workspace root, `@noelclaw/desktop`, or `@noelclaw/pet-format`.
 
-Publish all public packages together at the same version whenever any public package changes. The CLI depends on the other `@open-pets/*` packages by exact published version, so partial/mixed-version npm releases can break `npx -y @open-pets/cli ...`.
+Publish all public packages together at the same version whenever any public package changes. The CLI depends on the other `@noelclaw/*` packages by exact published version, so partial/mixed-version npm releases can break `npx -y @noelclaw/cli ...`.
 
 Dry-run npm publishing first:
 
@@ -322,13 +322,13 @@ Publishing with the npm helper requires `npm whoami` to succeed, a clean working
 After publishing, verify the npm dependency set resolves:
 
 ```bash
-npm view @open-pets/client@<version> version
-npm view @open-pets/agent-events@<version> version
-npm view @open-pets/mcp@<version> version
-npm view @open-pets/claude@<version> version
-npm view @open-pets/opencode@<version> version
-npm view @open-pets/cli@<version> version
-npx -y @open-pets/cli@<version> --help
+npm view @noelclaw/client@<version> version
+npm view @noelclaw/agent-events@<version> version
+npm view @noelclaw/mcp@<version> version
+npm view @noelclaw/claude@<version> version
+npm view @noelclaw/opencode@<version> version
+npm view @noelclaw/cli@<version> version
+npx -y @noelclaw/cli@<version> --help
 ```
 
 ## Important notes for future agents

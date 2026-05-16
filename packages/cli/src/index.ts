@@ -7,11 +7,11 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
 
-import { allowedReactions, createOpenPetsClient, OpenPetsClientError, type OpenPetsPetListItem, type OpenPetsReaction } from "@open-pets/client";
-import { claudeHookEvents, openPetsHookMarker, removeOpenPetsHooks, runClaudeHookFromStdin, validateOpenPetsPetArg } from "@open-pets/claude";
-import { prepareOpenCodeProjectSetup, writePreparedOpenCodeProjectSetup } from "@open-pets/opencode";
+import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewPetListItem, type NoelCrewReaction } from "@noelclaw/client";
+import { claudeHookEvents, noelCrewHookMarker, removeNoelCrewHooks, runClaudeHookFromStdin, validateNoelCrewPetArg } from "@noelclaw/claude";
+import { prepareOpenCodeProjectSetup, writePreparedOpenCodeProjectSetup } from "@noelclaw/opencode";
 
-export const cliPackageName = "@open-pets/cli";
+export const cliPackageName = "@noelclaw/cli";
 
 interface ConfigureOptions {
   readonly agent: "claude" | "opencode";
@@ -27,12 +27,12 @@ interface InstallOptions {
 }
 
 interface ReactOptions {
-  readonly reaction: OpenPetsReaction;
+  readonly reaction: NoelCrewReaction;
 }
 
 interface SayOptions {
   readonly message: string;
-  readonly reaction?: OpenPetsReaction;
+  readonly reaction?: NoelCrewReaction;
 }
 
 interface CommandSpec {
@@ -119,7 +119,7 @@ async function main(): Promise<void> {
       printHookUsage();
       return;
     }
-    const code = await runClaudeHookFromStdin(process.stdin, { configuredPetId: readPetArg(args), projectLocal: hasProjectLocalArg(args), debug: process.env.OPENPETS_DEBUG === "1" });
+    const code = await runClaudeHookFromStdin(process.stdin, { configuredPetId: readPetArg(args), projectLocal: hasProjectLocalArg(args), debug: process.env.NOELCREW_DEBUG === "1" });
     process.exitCode = code;
     return;
   }
@@ -127,21 +127,21 @@ async function main(): Promise<void> {
 }
 
 async function installPetFromCatalog(options: InstallOptions): Promise<void> {
-  const client = createOpenPetsClient({ responseTimeoutMs: 60_000 });
+  const client = createNoelCrewClient({ responseTimeoutMs: 60_000 });
   const result = await client.installPet(options.petId);
-  process.stdout.write(`Installed OpenPets pet: ${sanitizeTerminalText(result.displayName)} (${result.petId})\n`);
+  process.stdout.write(`Installed NoelCrew pet: ${sanitizeTerminalText(result.displayName)} (${result.petId})\n`);
 }
 
 async function showStatus(args: readonly string[]): Promise<void> {
   if (args.length !== 0) throw new CliError(`Unknown status option: ${args[0]}`);
-  const result = await createOpenPetsClient().status();
+  const result = await createNoelCrewClient().status();
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.ok || !result.appRunning) process.exitCode = 1;
 }
 
 async function showPets(args: readonly string[]): Promise<void> {
   if (args.length !== 0) throw new CliError(`Unknown pets option: ${args[0]}`);
-  const result = await createOpenPetsClient().listPets();
+  const result = await createNoelCrewClient().listPets();
   for (const pet of result.pets) {
     const flags = [pet.id === result.defaultPetId ? "default" : undefined, pet.broken ? "broken" : undefined].filter(Boolean).join(", ");
     process.stdout.write(`${sanitizeTerminalText(pet.displayName)} (${pet.id})${flags ? ` [${flags}]` : ""}\n`);
@@ -149,13 +149,13 @@ async function showPets(args: readonly string[]): Promise<void> {
 }
 
 async function sendReaction(options: ReactOptions): Promise<void> {
-  await createOpenPetsClient().react(options.reaction);
-  process.stdout.write(`OpenPets reaction sent: ${options.reaction}\n`);
+  await createNoelCrewClient().react(options.reaction);
+  process.stdout.write(`NoelCrew reaction sent: ${options.reaction}\n`);
 }
 
 async function sendMessage(options: SayOptions): Promise<void> {
-  await createOpenPetsClient().say(options.message, options.reaction ? { reaction: options.reaction } : undefined);
-  process.stdout.write("OpenPets message sent.\n");
+  await createNoelCrewClient().say(options.message, options.reaction ? { reaction: options.reaction } : undefined);
+  process.stdout.write("NoelCrew message sent.\n");
 }
 
 export async function configureProject(options: ConfigureOptions): Promise<void> {
@@ -166,36 +166,36 @@ export async function configureProject(options: ConfigureOptions): Promise<void>
   }
   assertClaudeAvailable();
   assertSafeProjectHookPath(projectDir);
-  const client = createOpenPetsClient();
+  const client = createNoelCrewClient();
   const selectedPet = await resolveConfiguredPet(client, options.petId);
   const petId = selectedPet.id;
   const packageVersion = getPackageVersion();
   const mcpCommand = options.localDev ? createLocalDevCliCommand(["mcp", "--pet", petId]) : createVersionPinnedCliCommand(packageVersion, ["mcp", "--pet", petId]);
-  const hookCommand = formatShellCommand(options.localDev ? createLocalDevCliCommand(["hook", openPetsHookMarker, "--project-local", "--pet", petId]) : createVersionPinnedCliCommand(packageVersion, ["hook", openPetsHookMarker, "--project-local", "--pet", petId]));
+  const hookCommand = formatShellCommand(options.localDev ? createLocalDevCliCommand(["hook", noelCrewHookMarker, "--project-local", "--pet", petId]) : createVersionPinnedCliCommand(packageVersion, ["hook", noelCrewHookMarker, "--project-local", "--pet", petId]));
   const mcpConfig = { type: "stdio", command: mcpCommand.command, args: mcpCommand.args, env: {} };
   const preparedHooks = prepareProjectLocalHooks(projectDir, hookCommand);
   runClaudeMcpAddJson(projectDir, mcpConfig, options.force);
   writePreparedHooks(preparedHooks);
-  process.stdout.write(`OpenPets configured for Claude in ${projectDir}.\nPet: ${sanitizeTerminalText(selectedPet.displayName)} (${selectedPet.id})\n`);
+  process.stdout.write(`NoelCrew configured for Claude in ${projectDir}.\nPet: ${sanitizeTerminalText(selectedPet.displayName)} (${selectedPet.id})\n`);
 }
 
 async function configureOpenCodeProject(options: ConfigureOptions, projectDir: string): Promise<void> {
-  const client = createOpenPetsClient();
+  const client = createNoelCrewClient();
   const selectedPet = await resolveConfiguredPet(client, options.petId);
   const packageVersion = getPackageVersion();
   const prepared = prepareOpenCodeProjectSetup({ projectDir, petId: selectedPet.id, cliVersion: packageVersion, commandMode: options.localDev ? "local" : "published", cliEntryPath: options.localDev ? fileURLToPath(import.meta.url) : undefined });
   writePreparedOpenCodeProjectSetup(prepared);
-  process.stdout.write(`OpenPets configured for OpenCode in ${projectDir}.\nPet: ${sanitizeTerminalText(selectedPet.displayName)} (${selectedPet.id})\nConfig: ${prepared.configPath}\nInstructions: ${prepared.instructionPath}\nWarning: .opencode config/instructions can be committed and include the selected pet id.\nRestart OpenCode in this project to load OpenPets.\n`);
+  process.stdout.write(`NoelCrew configured for OpenCode in ${projectDir}.\nPet: ${sanitizeTerminalText(selectedPet.displayName)} (${selectedPet.id})\nConfig: ${prepared.configPath}\nInstructions: ${prepared.instructionPath}\nWarning: .opencode config/instructions can be committed and include the selected pet id.\nRestart OpenCode in this project to load NoelCrew.\n`);
 }
 
-export async function resolveConfiguredPet(client: Pick<ReturnType<typeof createOpenPetsClient>, "listPets">, petId?: string): Promise<ConfiguredPet> {
+export async function resolveConfiguredPet(client: Pick<ReturnType<typeof createNoelCrewClient>, "listPets">, petId?: string): Promise<ConfiguredPet> {
   if (petId) {
-    const id = validateOpenPetsPetArg(petId);
+    const id = validateNoelCrewPetArg(petId);
     return { id, displayName: id };
   }
 
   const petList = await getInstalledPets(client);
-  const id = validateOpenPetsPetArg(await pickPet(petList.pets));
+  const id = validateNoelCrewPetArg(await pickPet(petList.pets));
   const selectedPet = petList.pets.find((pet) => pet.id === id);
   if (!selectedPet || selectedPet.broken) throw new CliError(`Pet is not installed or usable: ${id}`);
   return { id: selectedPet.id, displayName: selectedPet.displayName };
@@ -215,8 +215,8 @@ export function parseConfigureArgs(args: readonly string[]): ConfigureOptions {
     else if (arg === "--local-dev") localDev = true;
     else if (arg === "--agent") { agent = readRequiredArg(args, index, "--agent"); index += 1; }
     else if (arg.startsWith("--agent=")) agent = arg.slice("--agent=".length);
-    else if (arg === "--pet") { petId = validateOpenPetsPetArg(readRequiredArg(args, index, "--pet")); index += 1; }
-    else if (arg.startsWith("--pet=")) petId = validateOpenPetsPetArg(arg.slice("--pet=".length));
+    else if (arg === "--pet") { petId = validateNoelCrewPetArg(readRequiredArg(args, index, "--pet")); index += 1; }
+    else if (arg.startsWith("--pet=")) petId = validateNoelCrewPetArg(arg.slice("--pet=".length));
     else if (arg === "--cwd") { cwd = readRequiredArg(args, index, "--cwd"); index += 1; }
     else if (arg.startsWith("--cwd=")) cwd = arg.slice("--cwd=".length);
     else throw new CliError(`Unknown configure option: ${arg}`);
@@ -226,17 +226,17 @@ export function parseConfigureArgs(args: readonly string[]): ConfigureOptions {
 }
 
 export function parseInstallArgs(args: readonly string[]): InstallOptions {
-  if (args.length !== 1) throw new CliError("Usage: openpets install <pet-id>");
-  return { petId: validateOpenPetsPetArg(args[0] ?? "") };
+  if (args.length !== 1) throw new CliError("Usage: noelcrew install <pet-id>");
+  return { petId: validateNoelCrewPetArg(args[0] ?? "") };
 }
 
 export function parseReactArgs(args: readonly string[]): ReactOptions {
-  if (args.length !== 1) throw new CliError("Usage: openpets react <reaction>");
+  if (args.length !== 1) throw new CliError("Usage: noelcrew react <reaction>");
   return { reaction: parseReaction(args[0] ?? "") };
 }
 
 export function parseSayArgs(args: readonly string[]): SayOptions {
-  let reaction: OpenPetsReaction | undefined;
+  let reaction: NoelCrewReaction | undefined;
   const messageParts: string[] = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -252,15 +252,15 @@ export function parseSayArgs(args: readonly string[]): SayOptions {
     }
   }
   const message = messageParts.join(" ").trim();
-  if (!message) throw new CliError("Usage: openpets say <message> [--reaction <reaction>]");
+  if (!message) throw new CliError("Usage: noelcrew say <message> [--reaction <reaction>]");
   return { message, reaction };
 }
 
-function parseReaction(value: string): OpenPetsReaction {
-  if (!allowedReactions.includes(value as OpenPetsReaction)) {
-    throw new CliError(`Invalid OpenPets reaction: ${value}. Allowed reactions: ${allowedReactions.join(", ")}.`);
+function parseReaction(value: string): NoelCrewReaction {
+  if (!allowedReactions.includes(value as NoelCrewReaction)) {
+    throw new CliError(`Invalid NoelCrew reaction: ${value}. Allowed reactions: ${allowedReactions.join(", ")}.`);
   }
-  return value as OpenPetsReaction;
+  return value as NoelCrewReaction;
 }
 
 export function createVersionPinnedCliCommand(version: string, args: readonly string[]): CommandSpec {
@@ -272,7 +272,7 @@ export function createLocalDevCliCommand(args: readonly string[]): CommandSpec {
 }
 
 export function createClaudeMcpAddJsonArgs(config: unknown): readonly string[] {
-  return ["mcp", "add-json", "openpets", JSON.stringify(config), "--scope", "local"];
+  return ["mcp", "add-json", "noelcrew", JSON.stringify(config), "--scope", "local"];
 }
 
 export function installProjectLocalHooks(projectDir: string, hookCommand: string): void {
@@ -283,7 +283,7 @@ export function prepareProjectLocalHooks(projectDir: string, hookCommand: string
   assertSafeProjectHookPath(projectDir);
   const settingsPath = getProjectLocalSettingsPath(realpathSync(projectDir));
   const current = readJsonObject(settingsPath);
-  const cleaned = removeOpenPetsHooks(current);
+  const cleaned = removeNoelCrewHooks(current);
   const hooks = isRecord(cleaned.hooks) ? { ...cleaned.hooks } : {};
   for (const event of claudeHookEvents) {
     if (hooks[event] !== undefined && !Array.isArray(hooks[event])) throw new CliError(`Claude local settings hooks.${event} must be an array.`);
@@ -309,7 +309,7 @@ export function runClaudeMcpAddJson(projectDir: string, config: unknown, force =
 }
 
 function runClaudeMcpRemove(projectDir: string): void {
-  const result = spawnSync("claude", ["mcp", "remove", "openpets", "--scope", "local"], { cwd: projectDir, encoding: "utf8", shell: false, stdio: ["ignore", "pipe", "pipe"], timeout: 10_000 });
+  const result = spawnSync("claude", ["mcp", "remove", "noelcrew", "--scope", "local"], { cwd: projectDir, encoding: "utf8", shell: false, stdio: ["ignore", "pipe", "pipe"], timeout: 10_000 });
   if (result.error) throw new CliError(`Claude Code is unavailable on PATH: ${result.error.message}`);
   const output = `${result.stderr || ""}\n${result.stdout || ""}`;
   if (result.status !== 0 && !/not found|does not exist|no server|unknown/i.test(output)) {
@@ -318,7 +318,7 @@ function runClaudeMcpRemove(projectDir: string): void {
 }
 
 async function runMcp(args: readonly string[]): Promise<void> {
-  const entry = require.resolve("@open-pets/mcp");
+  const entry = require.resolve("@noelclaw/mcp");
   await new Promise<void>((resolvePromise, rejectPromise) => {
     const child = spawn(process.execPath, [entry, ...args], { stdio: "inherit" });
     const forwardSigint = (): void => { child.kill("SIGINT"); };
@@ -336,18 +336,18 @@ async function runMcp(args: readonly string[]): Promise<void> {
   });
 }
 
-async function getInstalledPets(client: Pick<ReturnType<typeof createOpenPetsClient>, "listPets">) {
+async function getInstalledPets(client: Pick<ReturnType<typeof createNoelCrewClient>, "listPets">) {
   try {
     return await client.listPets();
   } catch (error) {
-    if (error instanceof OpenPetsClientError && error.code === "unknown_method") throw new CliError("OpenPets desktop app is too old for project setup. Update/restart OpenPets and try again.");
-    throw new CliError("OpenPets desktop app is not running. Open OpenPets, then run this command again.");
+    if (error instanceof NoelCrewClientError && error.code === "unknown_method") throw new CliError("NoelCrew desktop app is too old for project setup. Update/restart NoelCrew and try again.");
+    throw new CliError("NoelCrew desktop app is not running. Open NoelCrew, then run this command again.");
   }
 }
 
-async function pickPet(pets: readonly OpenPetsPetListItem[]): Promise<string> {
+async function pickPet(pets: readonly NoelCrewPetListItem[]): Promise<string> {
   const usable = pets.filter((pet) => !pet.broken);
-  if (usable.length === 0) throw new CliError("No usable installed pets found. Open OpenPets and install a pet first.");
+  if (usable.length === 0) throw new CliError("No usable installed pets found. Open NoelCrew and install a pet first.");
   if (!process.stdin.isTTY) throw new CliError("Missing --pet <id>. Non-interactive shells must pass --pet.");
   process.stdout.write("Pick pet for this project:\n");
   usable.forEach((pet, index) => process.stdout.write(`  ${index + 1}. ${sanitizeTerminalText(pet.displayName)} (${pet.id})\n`));
@@ -423,11 +423,11 @@ function writeJsonFile(path: string, value: Record<string, unknown>): void {
 
 function readPetArg(args: readonly string[]): string | undefined {
   const equals = args.find((arg) => arg.startsWith("--pet="));
-  if (equals) return validateOpenPetsPetArg(equals.slice("--pet=".length));
+  if (equals) return validateNoelCrewPetArg(equals.slice("--pet=".length));
   const index = args.indexOf("--pet");
   const value = index >= 0 ? args[index + 1] : undefined;
   if (index >= 0 && (!value || value.startsWith("--"))) throw new CliError("Missing value for --pet.");
-  return value && value.length > 0 ? validateOpenPetsPetArg(value) : undefined;
+  return value && value.length > 0 ? validateNoelCrewPetArg(value) : undefined;
 }
 
 function hasProjectLocalArg(args: readonly string[]): boolean {
@@ -452,44 +452,44 @@ function shellQuote(value: string): string {
 
 function getPackageVersion(): string {
   const parsed = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as unknown;
-  if (!isRecord(parsed) || typeof parsed.version !== "string") throw new CliError("Cannot read OpenPets CLI package version.");
+  if (!isRecord(parsed) || typeof parsed.version !== "string") throw new CliError("Cannot read NoelCrew CLI package version.");
   return parsed.version;
 }
 
 function printUsage(): void {
-  process.stdout.write("Usage:\n  openpets status\n  openpets pets\n  openpets react <reaction>\n  openpets say <message> [--reaction <reaction>]\n  openpets install <pet-id>\n  openpets configure [--agent claude|opencode] [--pet <id>] [--cwd <path>] [--yes] [--force]\n  openpets mcp [--pet <id>]\n  openpets hook --openpets-managed [--pet <id>]\n\nRun `openpets <command> --help` for command options.\n");
+  process.stdout.write("Usage:\n  noelcrew status\n  noelcrew pets\n  noelcrew react <reaction>\n  noelcrew say <message> [--reaction <reaction>]\n  noelcrew install <pet-id>\n  noelcrew configure [--agent claude|opencode] [--pet <id>] [--cwd <path>] [--yes] [--force]\n  noelcrew mcp [--pet <id>]\n  noelcrew hook --noelcrew-managed [--pet <id>]\n\nRun `noelcrew <command> --help` for command options.\n");
 }
 
 function printInstallUsage(): void {
-  process.stdout.write("Usage:\n  openpets install <pet-id>\n\nDownloads a gallery pet through the running OpenPets desktop app and installs it locally.\n");
+  process.stdout.write("Usage:\n  noelcrew install <pet-id>\n\nDownloads a gallery pet through the running NoelCrew desktop app and installs it locally.\n");
 }
 
 function printStatusUsage(): void {
-  process.stdout.write("Usage:\n  openpets status\n\nChecks whether the OpenPets desktop app is reachable and prints the status response as JSON.\n");
+  process.stdout.write("Usage:\n  noelcrew status\n\nChecks whether the NoelCrew desktop app is reachable and prints the status response as JSON.\n");
 }
 
 function printPetsUsage(): void {
-  process.stdout.write("Usage:\n  openpets pets\n\nLists pets installed in the running OpenPets desktop app.\n");
+  process.stdout.write("Usage:\n  noelcrew pets\n\nLists pets installed in the running NoelCrew desktop app.\n");
 }
 
 function printReactUsage(): void {
-  process.stdout.write(`Usage:\n  openpets react <reaction>\n\nSends a reaction to the running OpenPets desktop app.\nAllowed reactions: ${allowedReactions.join(", ")}.\n`);
+  process.stdout.write(`Usage:\n  noelcrew react <reaction>\n\nSends a reaction to the running NoelCrew desktop app.\nAllowed reactions: ${allowedReactions.join(", ")}.\n`);
 }
 
 function printSayUsage(): void {
-  process.stdout.write(`Usage:\n  openpets say <message> [--reaction <reaction>]\n\nShows a short message in the running OpenPets desktop app. Optionally sends a reaction with the message.\nAllowed reactions: ${allowedReactions.join(", ")}.\n`);
+  process.stdout.write(`Usage:\n  noelcrew say <message> [--reaction <reaction>]\n\nShows a short message in the running NoelCrew desktop app. Optionally sends a reaction with the message.\nAllowed reactions: ${allowedReactions.join(", ")}.\n`);
 }
 
 function printConfigureUsage(): void {
-  process.stdout.write("Usage:\n  openpets configure [--agent claude|opencode] [--pet <id>] [--cwd <path>] [--yes] [--force]\n\nOptions:\n  --pet <id>           Pet id to use for this project. If omitted, prompts with installed pets.\n  --agent <agent>      Agent to configure: claude or opencode. Defaults to claude.\n  --cwd <path>         Project directory to configure. Defaults to current directory.\n  --yes, -y            Accepted for scripts; no confirmation prompt is shown.\n  --force              Replace supported managed entries where applicable.\n  --replace            Alias for --force.\n  --local-dev          Use local development command paths where supported.\n  -h, --help           Show this help.\n");
+  process.stdout.write("Usage:\n  noelcrew configure [--agent claude|opencode] [--pet <id>] [--cwd <path>] [--yes] [--force]\n\nOptions:\n  --pet <id>           Pet id to use for this project. If omitted, prompts with installed pets.\n  --agent <agent>      Agent to configure: claude or opencode. Defaults to claude.\n  --cwd <path>         Project directory to configure. Defaults to current directory.\n  --yes, -y            Accepted for scripts; no confirmation prompt is shown.\n  --force              Replace supported managed entries where applicable.\n  --replace            Alias for --force.\n  --local-dev          Use local development command paths where supported.\n  -h, --help           Show this help.\n");
 }
 
 function printMcpUsage(): void {
-  process.stdout.write("Usage:\n  openpets mcp [--pet <id>]\n\nStarts the OpenPets MCP server wrapper. This command is written into Claude MCP config by `openpets configure`.\n");
+  process.stdout.write("Usage:\n  noelcrew mcp [--pet <id>]\n\nStarts the NoelCrew MCP server wrapper. This command is written into Claude MCP config by `noelcrew configure`.\n");
 }
 
 function printHookUsage(): void {
-  process.stdout.write("Usage:\n  openpets hook --openpets-managed [--pet <id>]\n\nRuns one Claude hook event from stdin. This command is written into Claude project hooks by `openpets configure`.\n");
+  process.stdout.write("Usage:\n  noelcrew hook --noelcrew-managed [--pet <id>]\n\nRuns one Claude hook event from stdin. This command is written into Claude project hooks by `noelcrew configure`.\n");
 }
 
 function hasHelp(args: readonly string[]): boolean {

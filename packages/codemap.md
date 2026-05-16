@@ -1,13 +1,13 @@
 # packages/
 
-Monorepo workspace containing all OpenPets npm packages. Each package is independently publishable with its own versioning.
+Monorepo workspace containing all NoelCrew npm packages. Each package is independently publishable with its own versioning.
 
 ## Responsibility
 
-Provides modular, reusable components for the OpenPets ecosystem:
+Provides modular, reusable components for the NoelCrew ecosystem:
 - **pet-format**: Package marker interface for type identification
 - **agent-events**: Speech pools and validation for agent feedback messages
-- **client**: Core IPC client for communicating with OpenPets desktop app
+- **client**: Core IPC client for communicating with NoelCrew desktop app
 - **cli**: Main CLI tool for configuring agents and managing pets
 - **mcp**: MCP server implementation for agent integration
 - **opencode**: OpenCode editor integration (plugin, config management)
@@ -33,23 +33,23 @@ Provides modular, reusable components for the OpenPets ecosystem:
 
 ```
 CLI Entry (packages/cli/src/index.ts)
-    ├── Configures Claude → @open-pets/claude
-    ├── Configures OpenCode → @open-pets/opencode
-    ├── Spawns MCP server → @open-pets/mcp
-    └── Uses IPC client → @open-pets/client
+    ├── Configures Claude → @noelclaw/claude
+    ├── Configures OpenCode → @noelclaw/opencode
+    ├── Spawns MCP server → @noelclaw/mcp
+    └── Uses IPC client → @noelclaw/client
 
 MCP Server (packages/mcp/src/index.ts)
     ├── Registers tools (status, react, say)
-    └── Communicates via @open-pets/client
+    └── Communicates via @noelclaw/client
 
 OpenCode Plugin (packages/opencode/src/plugin.ts)
-    └── Hooks into editor events → @open-pets/client
+    └── Hooks into editor events → @noelclaw/client
 
 Pi Extension (packages/pi/src/extension.ts)
-    └── Hooks into Pi extension events → @open-pets/client
+    └── Hooks into Pi extension events → @noelclaw/client
 
 Claude Hooks (packages/claude/src/hooks.ts)
-    └── Processes hook events → @open-pets/client
+    └── Processes hook events → @noelclaw/client
 ```
 
 ## Integration Points
@@ -69,4 +69,4 @@ Claude Hooks (packages/claude/src/hooks.ts)
 - `zod` - Schema validation in MCP tools
 
 **Desktop App Communication**:
-All packages ultimately communicate with the OpenPets desktop app via the IPC protocol defined in `client/src/protocol.ts`.
+All packages ultimately communicate with the NoelCrew desktop app via the IPC protocol defined in `client/src/protocol.ts`.

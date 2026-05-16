@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows
+            runs-on: windows-latest
+            artifact-pattern: "dist-electron/*.exe"
+          - os: mac
+            runs-on: macos-latest
+            artifact-pattern: "dist-electron/*.dmg"
+          - os: linux
+            runs-on: ubuntu-latest
+            artifact-pattern: "dist-electron/*.AppImage"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Package desktop (${{ matrix.os }})
+        working-directory: apps/desktop
+        run: pnpm package
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: noel-crew-${{ matrix.os }}
+          path: apps/desktop/${{ matrix.artifact-pattern }}
+          retention-days: 7
+
+  release:
+    name: Create Release
+    needs: build-and-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p "require('./apps/desktop/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Noel Crew v${{ steps.version.outputs.version }}
+          body: |
+            ## Noel Crew v${{ steps.version.outputs.version }}
+
+            Tray-first desktop companion for AI coding agents.
+
+            ### Downloads
+
+            | Platform | File |
+            | --- | --- |
+            | Windows | `NoelCrew-*-win-x64-setup.exe` |
+            | macOS (Apple Silicon) | `NoelCrew-*-mac-arm64.dmg` |
+            | macOS (Intel) | `NoelCrew-*-mac-x64.dmg` |
+            | Linux | `NoelCrew-*-linux-x86_64.AppImage` |
+
+            > Builds are currently unsigned. macOS/Windows may show a security warning on first launch.
+          draft: false
+          prerelease: false
+          files: release-artifacts/**
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

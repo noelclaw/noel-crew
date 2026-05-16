@@ -1,5 +1,5 @@
-import { createOpenPetsPiExtension, type OpenPetsPiOptions } from "./runtime.js";
+import { createNoelCrewPiExtension, type NoelCrewPiOptions } from "./runtime.js";
 
-export default function openPetsPiExtension(pi: unknown, options: OpenPetsPiOptions = {}): void {
-  createOpenPetsPiExtension(pi, options);
+export default function noelCrewPiExtension(pi: unknown, options: NoelCrewPiOptions = {}): void {
+  createNoelCrewPiExtension(pi, options);
 }

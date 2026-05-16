@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptsDir, "..");
-const repository = "alvinunreal/openpets";
+const repository = "alvinunreal/noelcrew";
 
 const publishOrder = [
   "packages/client",
@@ -166,15 +166,15 @@ function run(command, args, options) {
 function printHelp() {
   console.log(`Usage: pnpm release:npm -- --yes
 
-Publishes the public OpenPets npm packages in dependency order.
+Publishes the public NoelCrew npm packages in dependency order.
 
 Packages:
-  1. @open-pets/client
-  2. @open-pets/agent-events
-  3. @open-pets/mcp
-  4. @open-pets/claude
-  5. @open-pets/opencode
-  6. @open-pets/cli
+  1. @noelclaw/client
+  2. @noelclaw/agent-events
+  3. @noelclaw/mcp
+  4. @noelclaw/claude
+  5. @noelclaw/opencode
+  6. @noelclaw/cli
   7. install-pet
 
 Options:

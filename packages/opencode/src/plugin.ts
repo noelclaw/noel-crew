@@ -1,10 +1,10 @@
-import { createOpenPetsOpenCodeHooks, type OpenCodePluginOptions } from "./opencode-plugin-runtime.js";
+import { createNoelCrewOpenCodeHooks, type OpenCodePluginOptions } from "./opencode-plugin-runtime.js";
 
-export const openPetsOpenCodePluginId = "open-pets-opencode";
+export const noelCrewOpenCodePluginId = "noel-crew-opencode";
 
 const plugin = {
-  id: openPetsOpenCodePluginId,
-  server: async (_input: unknown, options?: OpenCodePluginOptions) => createOpenPetsOpenCodeHooks(options ?? {}),
+  id: noelCrewOpenCodePluginId,
+  server: async (_input: unknown, options?: OpenCodePluginOptions) => createNoelCrewOpenCodeHooks(options ?? {}),
 };
 
 export default plugin;

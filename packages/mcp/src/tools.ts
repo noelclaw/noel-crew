@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { allowedReactions, createOpenPetsClient, OpenPetsClientError, type OpenPetsClient, type OpenPetsLeaseResult, type OpenPetsReaction, type OpenPetsStatusResult } from "@open-pets/client";
+import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewClient, type NoelCrewLeaseResult, type NoelCrewReaction, type NoelCrewStatusResult } from "@noelclaw/client";
 import { z } from "zod";
 
 export const reactionSchema = z.enum(allowedReactions);
@@ -15,7 +15,7 @@ export const saySchema = z.object({
 
 export const reactSchema = z.object({ reaction: reactionSchema });
 
-export interface OpenPetsMcpStatus {
+export interface NoelCrewMcpStatus {
   readonly [key: string]: unknown;
   ok: boolean;
   appRunning: boolean;
@@ -29,28 +29,28 @@ export interface OpenPetsMcpStatus {
 }
 
 export interface LeaseContext {
-  lease?: OpenPetsLeaseResult;
+  lease?: NoelCrewLeaseResult;
   staleLeaseId?: string;
   degradedReason?: string;
 }
 
 export interface ToolContext {
   readonly configuredPetId?: string;
-  readonly client?: OpenPetsClient;
+  readonly client?: NoelCrewClient;
   readonly lease?: LeaseContext;
   readonly leaseReady?: Promise<void>;
 }
 
-export function createToolContext(configuredPetId?: string): ToolContext & { readonly client: OpenPetsClient } {
+export function createToolContext(configuredPetId?: string): ToolContext & { readonly client: NoelCrewClient } {
   return {
     configuredPetId,
-    client: createOpenPetsClient(),
+    client: createNoelCrewClient(),
   };
 }
 
 export async function handleStatus(context: ToolContext): Promise<CallToolResult> {
   await context.leaseReady;
-  const client = context.client ?? createOpenPetsClient();
+  const client = context.client ?? createNoelCrewClient();
   const leaseId = context.lease?.lease?.leaseId ?? context.lease?.staleLeaseId;
   const status = await client.status({ leaseId });
   const structured = createMcpStatus(status, context.configuredPetId, context.lease?.lease, context.lease?.degradedReason, context.lease?.staleLeaseId);
@@ -60,13 +60,13 @@ export async function handleStatus(context: ToolContext): Promise<CallToolResult
 
   if (!structured.appRunning) {
     return {
-      content: [{ type: "text", text: `OpenPets is unavailable. ${configuredText} ${structured.unavailableReason ?? "Open the OpenPets desktop app and try again."}` }],
+      content: [{ type: "text", text: `NoelCrew is unavailable. ${configuredText} ${structured.unavailableReason ?? "Open the NoelCrew desktop app and try again."}` }],
       structuredContent: structured,
     };
   }
 
   return {
-    content: [{ type: "text", text: `OpenPets is running. ${configuredText}` }],
+    content: [{ type: "text", text: `NoelCrew is running. ${configuredText}` }],
     structuredContent: structured,
   };
 }
@@ -75,17 +75,17 @@ export async function handleReact(input: unknown, context: ToolContext): Promise
   await context.leaseReady;
   const parsed = reactSchema.safeParse(input);
   if (!parsed.success) return toolError("Invalid reaction. Use one of: " + allowedReactions.join(", "));
-  if (!context.lease?.lease) return toolError(`OpenPets lease is unavailable. ${sanitizeUnavailableReason(context.lease?.degradedReason) ?? "Open OpenPets and try again."}`);
+  if (!context.lease?.lease) return toolError(`NoelCrew lease is unavailable. ${sanitizeUnavailableReason(context.lease?.degradedReason) ?? "Open NoelCrew and try again."}`);
 
   try {
-    const client = context.client ?? createOpenPetsClient();
+    const client = context.client ?? createNoelCrewClient();
     const result = await client.react(parsed.data.reaction, { leaseId: context.lease.lease.leaseId });
     return {
-      content: [{ type: "text", text: `OpenPets reaction sent: ${parsed.data.reaction}` }],
+      content: [{ type: "text", text: `NoelCrew reaction sent: ${parsed.data.reaction}` }],
       structuredContent: { ok: true, reaction: parsed.data.reaction, result },
     };
   } catch (error) {
-    return toolError(`OpenPets desktop app is not running or local IPC is unavailable. ${sanitizeError(error)}`);
+    return toolError(`NoelCrew desktop app is not running or local IPC is unavailable. ${sanitizeError(error)}`);
   }
 }
 
@@ -93,21 +93,21 @@ export async function handleSay(input: unknown, context: ToolContext): Promise<C
   await context.leaseReady;
   const parsed = saySchema.safeParse(input);
   if (!parsed.success) return toolError("Invalid message. Keep it short, single-line, and avoid code, secrets, URLs, and file paths.");
-  if (!context.lease?.lease) return toolError(`OpenPets lease is unavailable. ${sanitizeUnavailableReason(context.lease?.degradedReason) ?? "Open OpenPets and try again."}`);
+  if (!context.lease?.lease) return toolError(`NoelCrew lease is unavailable. ${sanitizeUnavailableReason(context.lease?.degradedReason) ?? "Open NoelCrew and try again."}`);
 
   try {
-    const client = context.client ?? createOpenPetsClient();
+    const client = context.client ?? createNoelCrewClient();
     const result = await client.say(parsed.data.message, { reaction: parsed.data.reaction, leaseId: context.lease.lease.leaseId });
     return {
-      content: [{ type: "text", text: "OpenPets message sent." }],
+      content: [{ type: "text", text: "NoelCrew message sent." }],
       structuredContent: { ok: true, result },
     };
   } catch (error) {
-    return toolError(`OpenPets desktop app is not running or local IPC is unavailable. ${sanitizeError(error)}`);
+    return toolError(`NoelCrew desktop app is not running or local IPC is unavailable. ${sanitizeError(error)}`);
   }
 }
 
-export function createMcpStatus(status: OpenPetsStatusResult, configuredPetId?: string, lease?: OpenPetsLeaseResult, degradedReason?: string, staleLeaseId?: string): OpenPetsMcpStatus {
+export function createMcpStatus(status: NoelCrewStatusResult, configuredPetId?: string, lease?: NoelCrewLeaseResult, degradedReason?: string, staleLeaseId?: string): NoelCrewMcpStatus {
   if (status.leaseActive === false || staleLeaseId) {
     return {
       ok: false,
@@ -119,7 +119,7 @@ export function createMcpStatus(status: OpenPetsStatusResult, configuredPetId?: 
       leaseId: typeof status.leaseId === "string" ? status.leaseId : staleLeaseId,
       leaseActive: false,
       staleReason: typeof status.staleReason === "string" ? status.staleReason : "unknown_lease",
-    } as OpenPetsMcpStatus;
+    } as NoelCrewMcpStatus;
   }
   if (lease) {
     const statusTargetPetId = typeof status.actualTargetPetId === "string" ? status.actualTargetPetId : undefined;
@@ -162,20 +162,20 @@ export function toolError(message: string): CallToolResult {
 }
 
 export function sanitizeUnavailableReason(value: unknown): string | undefined {
-  if (typeof value !== "string" || value.length === 0) return "OpenPets desktop app is unavailable.";
+  if (typeof value !== "string" || value.length === 0) return "NoelCrew desktop app is unavailable.";
   if (/\/|\\|\.sock|pipe|token|ipc\.json|ENOENT|ECONNREFUSED|EACCES/i.test(value)) {
-    return "OpenPets desktop app or local IPC is unavailable.";
+    return "NoelCrew desktop app or local IPC is unavailable.";
   }
   return value.slice(0, 160);
 }
 
 function sanitizeError(error: unknown): string {
-  if (error instanceof OpenPetsClientError) return sanitizeUnavailableReason(error.message) ?? "OpenPets is unavailable.";
-  return "Open OpenPets and try again.";
+  if (error instanceof NoelCrewClientError) return sanitizeUnavailableReason(error.message) ?? "NoelCrew is unavailable.";
+  return "Open NoelCrew and try again.";
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-export type { OpenPetsReaction };
+export type { NoelCrewReaction };

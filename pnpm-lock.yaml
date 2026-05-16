@@ -14,19 +14,19 @@ importers:
 
   apps/desktop:
     dependencies:
-      '@open-pets/agent-events':
+      '@noelclaw/agent-events':
         specifier: workspace:*
         version: link:../../packages/agent-events
-      '@open-pets/claude':
+      '@noelclaw/claude':
         specifier: workspace:*
         version: link:../../packages/claude
-      '@open-pets/cli':
+      '@noelclaw/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@open-pets/mcp':
+      '@noelclaw/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
-      '@open-pets/opencode':
+      '@noelclaw/opencode':
         specifier: workspace:*
         version: link:../../packages/opencode
       sharp:
@@ -63,10 +63,10 @@ importers:
 
   packages/claude:
     dependencies:
-      '@open-pets/agent-events':
+      '@noelclaw/agent-events':
         specifier: workspace:*
         version: link:../agent-events
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
     devDependencies:
@@ -79,16 +79,16 @@ importers:
 
   packages/cli:
     dependencies:
-      '@open-pets/claude':
+      '@noelclaw/claude':
         specifier: workspace:*
         version: link:../claude
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
-      '@open-pets/mcp':
+      '@noelclaw/mcp':
         specifier: workspace:*
         version: link:../mcp
-      '@open-pets/opencode':
+      '@noelclaw/opencode':
         specifier: workspace:*
         version: link:../opencode
     devDependencies:
@@ -110,7 +110,7 @@ importers:
 
   packages/install-pet:
     dependencies:
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
       yauzl:
@@ -132,7 +132,7 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
       zod:
@@ -148,10 +148,10 @@ importers:
 
   packages/opencode:
     dependencies:
-      '@open-pets/agent-events':
+      '@noelclaw/agent-events':
         specifier: workspace:*
         version: link:../agent-events
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
       jsonc-parser:
@@ -176,10 +176,10 @@ importers:
       '@earendil-works/pi-coding-agent':
         specifier: '*'
         version: 0.74.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.20.1)(zod@4.4.3)
-      '@open-pets/agent-events':
+      '@noelclaw/agent-events':
         specifier: workspace:*
         version: link:../agent-events
-      '@open-pets/client':
+      '@noelclaw/client':
         specifier: workspace:*
         version: link:../client
     devDependencies:

@@ -1,22 +1,21 @@
 {
-  "name": "openpets-v2-workspace",
+  "name": "@noelclaw/crew",
   "version": "2.0.6",
   "private": true,
-  "description": "OpenPets 2.0 workspace",
+  "description": "Noel Crew — tray-first desktop companion for AI coding agents",
+  "author": "noelclaw",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/openpetstech/openpets.git"
-  },
+  "repository": "https://github.com/noelclaw/noel-crew",
+  "homepage": "https://noelclaw.fun",
   "type": "module",
   "packageManager": "pnpm@11.0.8",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev:desktop": "pnpm --filter @open-pets/desktop dev",
-    "package:desktop:dir": "pnpm build && pnpm --filter @open-pets/desktop package:dir",
-    "package:desktop": "pnpm build && pnpm --filter @open-pets/desktop package",
+    "dev:desktop": "pnpm --filter @noelclaw/desktop dev",
+    "package:desktop:dir": "pnpm build && pnpm --filter @noelclaw/desktop package:dir",
+    "package:desktop": "pnpm build && pnpm --filter @noelclaw/desktop package",
     "release:desktop": "node apps/desktop/scripts/release-local.mjs",
     "release:npm": "node scripts/release-npm.mjs",
     "test": "pnpm build && pnpm -r --if-present test",
@@ -26,5 +25,8 @@
   },
   "devDependencies": {
     "typescript": "^6.0.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@google/genai", "koffi", "protobufjs"]
   }
 }

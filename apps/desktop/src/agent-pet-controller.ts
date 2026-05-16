@@ -2,7 +2,7 @@ import { BrowserWindow } from "electron";
 
 import { getAppStateSnapshot } from "./app-state.js";
 import { defaultPetWindowSize, getDefaultPetInitialPosition } from "./display.js";
-import { transientDisplayMs, type OpenPetsReaction } from "./local-ipc-protocol.js";
+import { transientDisplayMs, type NoelCrewReaction } from "./local-ipc-protocol.js";
 import { clearTransientReaction, createAgentPetWindow, getTransientReactionAnimationMs, loadExplicitPetContent, mergePetTransientDisplay, setPetReactionState, type PetStatusBadgeReaction, type PetTransientDisplay } from "./pet-window.js";
 
 const agentPetWindows = new Map<string, BrowserWindow>();
@@ -45,13 +45,13 @@ export function clearAgentPetLeaseState(petId: string): void {
   clearAgentDisplay(petId);
 }
 
-export function applyAgentPetReaction(petId: string, reaction: OpenPetsReaction): { readonly shown: boolean; readonly reason?: string } {
+export function applyAgentPetReaction(petId: string, reaction: NoelCrewReaction): { readonly shown: boolean; readonly reason?: string } {
   setAgentDisplay(petId, { reaction });
   const shown = showAgentPet(petId);
   return shown ? { shown } : { shown, reason: "dismissed" };
 }
 
-export function applyAgentPetSay(petId: string, message: string, reaction?: OpenPetsReaction): { readonly shown: boolean; readonly reason?: string } {
+export function applyAgentPetSay(petId: string, message: string, reaction?: NoelCrewReaction): { readonly shown: boolean; readonly reason?: string } {
   if (!reaction) clearStatusBadge(petId);
   setAgentDisplay(petId, { message, reaction });
   const shown = showAgentPet(petId);
@@ -148,7 +148,7 @@ function clearAgentDisplay(petId: string): void {
   statusBadges.delete(petId);
 }
 
-function setStatusBadge(petId: string, reaction: OpenPetsReaction): void {
+function setStatusBadge(petId: string, reaction: NoelCrewReaction): void {
   if (reaction === "idle") {
     clearStatusBadge(petId);
     return;
@@ -172,6 +172,6 @@ function clearStatusBadge(petId: string): void {
   statusBadgeTimers.delete(petId);
 }
 
-function isBusyStatusBadgeReaction(reaction: OpenPetsReaction): boolean {
+function isBusyStatusBadgeReaction(reaction: NoelCrewReaction): boolean {
   return reaction === "thinking" || reaction === "working" || reaction === "editing" || reaction === "running" || reaction === "testing" || reaction === "waiting";
 }

@@ -14,69 +14,69 @@ export function classifyOpenCodeMcpStatus(configs: readonly Record<string, unkno
     const entry = mcp?.[openCodeMcpServerName];
     return entry === undefined ? [] : [{ source: String(index), entry }];
   });
-  if (entries.length === 0) return { status: "not_installed", message: "OpenCode OpenPets MCP is not installed.", matches: [] };
+  if (entries.length === 0) return { status: "not_installed", message: "OpenCode NoelCrew MCP is not installed.", matches: [] };
   const expectedEntry = buildOpenCodeMcpEntry(expected);
   const current = entries.filter(({ entry }) => isSameMcpEntry(entry, expectedEntry));
-  const managed = entries.filter(({ entry }) => isManagedOpenPetsMcpEntry(entry, expectedEntry.command));
-  if (current.length === 1 && entries.length === 1) return { status: "installed", message: "OpenCode OpenPets MCP is installed.", matches: [entries[0]?.source ?? "0"] };
-  if (current.length > 0 || managed.length > 0) return { status: entries.length > 1 ? "conflict" : "needs_update", message: "OpenCode OpenPets MCP needs update.", matches: entries.map((entry) => entry.source) };
-  return { status: "custom", message: "OpenCode has a custom openpets MCP entry.", matches: entries.map((entry) => entry.source) };
+  const managed = entries.filter(({ entry }) => isManagedNoelCrewMcpEntry(entry, expectedEntry.command));
+  if (current.length === 1 && entries.length === 1) return { status: "installed", message: "OpenCode NoelCrew MCP is installed.", matches: [entries[0]?.source ?? "0"] };
+  if (current.length > 0 || managed.length > 0) return { status: entries.length > 1 ? "conflict" : "needs_update", message: "OpenCode NoelCrew MCP needs update.", matches: entries.map((entry) => entry.source) };
+  return { status: "custom", message: "OpenCode has a custom noelcrew MCP entry.", matches: entries.map((entry) => entry.source) };
 }
 
 export function classifyOpenCodeInstructionsStatus(configs: readonly Record<string, unknown>[], scope: "project" | "global", configDir?: string, instructionFiles: Record<string, string> = {}): OpenCodeStatusResult {
   const expected = buildOpenCodeInstructionPath(scope, configDir);
-  const allEntries = configs.flatMap((config, index) => Array.isArray(config.instructions) ? config.instructions.filter((entry): entry is string => typeof entry === "string" && isOpenPetsLikeInstruction(entry)).map((entry) => ({ source: String(index), entry })) : []);
+  const allEntries = configs.flatMap((config, index) => Array.isArray(config.instructions) ? config.instructions.filter((entry): entry is string => typeof entry === "string" && isNoelCrewLikeInstruction(entry)).map((entry) => ({ source: String(index), entry })) : []);
   const managedEntries = allEntries.filter(({ entry }) => entry === expected);
   const customEntries = allEntries.filter(({ entry }) => entry !== expected);
-  if (allEntries.length === 0) return { status: "not_installed", message: "OpenCode OpenPets instructions are not installed.", matches: [] };
-  if (managedEntries.length > 1 || (managedEntries.length > 0 && customEntries.length > 0)) return { status: "conflict", message: "OpenCode has conflicting OpenPets instruction entries.", matches: allEntries.map((entry) => entry.source) };
-  if (managedEntries.length === 1 && hasManagedInstructionBlock(instructionFiles[expected])) return { status: "installed", message: "OpenCode OpenPets instructions are installed.", matches: managedEntries.map((entry) => entry.source) };
-  if (managedEntries.length === 1) return { status: "needs_update", message: "OpenCode OpenPets instruction file needs managed block.", matches: managedEntries.map((entry) => entry.source) };
-  return { status: "custom", message: "OpenCode has custom OpenPets-like instruction entries.", matches: customEntries.map((entry) => entry.source) };
+  if (allEntries.length === 0) return { status: "not_installed", message: "OpenCode NoelCrew instructions are not installed.", matches: [] };
+  if (managedEntries.length > 1 || (managedEntries.length > 0 && customEntries.length > 0)) return { status: "conflict", message: "OpenCode has conflicting NoelCrew instruction entries.", matches: allEntries.map((entry) => entry.source) };
+  if (managedEntries.length === 1 && hasManagedInstructionBlock(instructionFiles[expected])) return { status: "installed", message: "OpenCode NoelCrew instructions are installed.", matches: managedEntries.map((entry) => entry.source) };
+  if (managedEntries.length === 1) return { status: "needs_update", message: "OpenCode NoelCrew instruction file needs managed block.", matches: managedEntries.map((entry) => entry.source) };
+  return { status: "custom", message: "OpenCode has custom NoelCrew-like instruction entries.", matches: customEntries.map((entry) => entry.source) };
 }
 
 export function classifyOpenCodePluginStatus(configs: readonly Record<string, unknown>[], petId?: string, packageVersion?: string): OpenCodeStatusResult {
   const expected = buildOpenCodePluginPreview(petId, packageVersion);
   const pluginEntries = configs.flatMap((config, index) => Array.isArray(config.plugin) ? config.plugin.map((entry) => ({ source: String(index), entry })) : []);
   const current = pluginEntries.filter(({ entry }) => isExpectedPlugin(entry, expected));
-  const recognizable = pluginEntries.filter(({ entry }) => isManagedOpenPetsPluginEntry(entry));
-  const custom = pluginEntries.filter(({ entry }) => !isManagedOpenPetsPluginEntry(entry) && isOpenPetsLikePluginEntry(entry));
-  if (current.length === 1 && recognizable.length === 1 && custom.length === 0) return { status: "installed", message: "OpenCode OpenPets plugin is installed.", matches: current.map((entry) => entry.source) };
-  if (recognizable.length > 0 && custom.length > 0) return { status: "conflict", message: "OpenCode has conflicting OpenPets plugin entries.", matches: [...recognizable, ...custom].map((entry) => entry.source) };
-  if (recognizable.length > 0) return { status: recognizable.length > 1 ? "conflict" : "needs_update", message: "OpenCode OpenPets plugin needs update.", matches: recognizable.map((entry) => entry.source) };
-  if (custom.length > 0) return { status: "custom", message: "OpenCode has custom OpenPets-like plugin entries.", matches: custom.map((entry) => entry.source) };
-  return { status: "not_installed", message: "OpenCode OpenPets plugin is not installed.", matches: [] };
+  const recognizable = pluginEntries.filter(({ entry }) => isManagedNoelCrewPluginEntry(entry));
+  const custom = pluginEntries.filter(({ entry }) => !isManagedNoelCrewPluginEntry(entry) && isNoelCrewLikePluginEntry(entry));
+  if (current.length === 1 && recognizable.length === 1 && custom.length === 0) return { status: "installed", message: "OpenCode NoelCrew plugin is installed.", matches: current.map((entry) => entry.source) };
+  if (recognizable.length > 0 && custom.length > 0) return { status: "conflict", message: "OpenCode has conflicting NoelCrew plugin entries.", matches: [...recognizable, ...custom].map((entry) => entry.source) };
+  if (recognizable.length > 0) return { status: recognizable.length > 1 ? "conflict" : "needs_update", message: "OpenCode NoelCrew plugin needs update.", matches: recognizable.map((entry) => entry.source) };
+  if (custom.length > 0) return { status: "custom", message: "OpenCode has custom NoelCrew-like plugin entries.", matches: custom.map((entry) => entry.source) };
+  return { status: "not_installed", message: "OpenCode NoelCrew plugin is not installed.", matches: [] };
 }
 
-export function isManagedOpenPetsMcpEntry(value: unknown, expectedCommand?: readonly string[]): boolean {
+export function isManagedNoelCrewMcpEntry(value: unknown, expectedCommand?: readonly string[]): boolean {
   if (!isRecord(value) || value.type !== "local" || value.enabled !== true || !Array.isArray(value.command)) return false;
   const keys = Object.keys(value).sort();
   if (keys.length !== 3 || keys[0] !== "command" || keys[1] !== "enabled" || keys[2] !== "type") return false;
-  return isManagedOpenPetsMcpCommand(value.command, expectedCommand);
+  return isManagedNoelCrewMcpCommand(value.command, expectedCommand);
 }
 
-function isManagedOpenPetsMcpCommand(command: readonly unknown[], expectedCommand?: readonly string[]): boolean {
+function isManagedNoelCrewMcpCommand(command: readonly unknown[], expectedCommand?: readonly string[]): boolean {
   if (!command.every((part) => typeof part === "string")) return false;
   const parts = command as readonly string[];
   if (expectedCommand && isSameCommand(parts, expectedCommand)) return true;
-  if (expectedCommand && isExpectedNodeOpenPetsMcpCommand(parts, expectedCommand)) return true;
-  return isPublishedOpenPetsMcpCommand(parts) || isNodeOpenPetsMcpCommand(parts);
+  if (expectedCommand && isExpectedNodeNoelCrewMcpCommand(parts, expectedCommand)) return true;
+  return isPublishedNoelCrewMcpCommand(parts) || isNodeNoelCrewMcpCommand(parts);
 }
 
-function isExpectedNodeOpenPetsMcpCommand(command: readonly string[], expected: readonly string[]): boolean {
+function isExpectedNodeNoelCrewMcpCommand(command: readonly string[], expected: readonly string[]): boolean {
   return expected[0] === "node" && command.length >= 3 && command[0] === "node" && command[1] === expected[1] && command[2] === "mcp" && hasValidPetArgs(command.slice(3));
 }
 
-function isPublishedOpenPetsMcpCommand(command: readonly string[]): boolean {
-  return command.length >= 4 && command[0] === "npx" && command[1] === "-y" && /^@open-pets\/cli@\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?(?:\+[A-Za-z0-9.-]+)?$/.test(command[2] ?? "") && command[3] === "mcp" && hasValidPetArgs(command.slice(4));
+function isPublishedNoelCrewMcpCommand(command: readonly string[]): boolean {
+  return command.length >= 4 && command[0] === "npx" && command[1] === "-y" && /^@noel-crew\/cli@\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?(?:\+[A-Za-z0-9.-]+)?$/.test(command[2] ?? "") && command[3] === "mcp" && hasValidPetArgs(command.slice(4));
 }
 
-function isNodeOpenPetsMcpCommand(command: readonly string[]): boolean {
-  return command.length >= 3 && command[0] === "node" && isOpenPetsCliEntryPath(command[1] ?? "") && command[2] === "mcp" && hasValidPetArgs(command.slice(3));
+function isNodeNoelCrewMcpCommand(command: readonly string[]): boolean {
+  return command.length >= 3 && command[0] === "node" && isNoelCrewCliEntryPath(command[1] ?? "") && command[2] === "mcp" && hasValidPetArgs(command.slice(3));
 }
 
-function isOpenPetsCliEntryPath(path: string): boolean {
-  return /(?:^|[\\/])node_modules[\\/]@open-pets[\\/]cli[\\/]dist[\\/]index\.js$/u.test(path) || /(?:^|[\\/])packages[\\/]cli[\\/]dist[\\/]index\.js$/u.test(path);
+function isNoelCrewCliEntryPath(path: string): boolean {
+  return /(?:^|[\\/])node_modules[\\/]@noel-crew[\\/]cli[\\/]dist[\\/]index\.js$/u.test(path) || /(?:^|[\\/])packages[\\/]cli[\\/]dist[\\/]index\.js$/u.test(path);
 }
 
 function hasValidPetArgs(args: readonly string[]): boolean {
@@ -93,14 +93,14 @@ function isExpectedPlugin(value: unknown, expected: string | readonly [string, {
   return Array.isArray(value) && value.length === 2 && value[0] === expected[0] && isSamePluginOptions(value[1], expected[1]);
 }
 
-export function isManagedOpenPetsPluginEntry(value: unknown): boolean {
-  if (typeof value === "string") return /^@open-pets\/opencode(?:@[^/]+)?$/.test(value);
-  return Array.isArray(value) && value.length === 2 && typeof value[0] === "string" && /^@open-pets\/opencode(?:@[^/]+)?$/.test(value[0]) && isPetPluginOptions(value[1]);
+export function isManagedNoelCrewPluginEntry(value: unknown): boolean {
+  if (typeof value === "string") return /^@noel-crew\/opencode(?:@[^/]+)?$/.test(value);
+  return Array.isArray(value) && value.length === 2 && typeof value[0] === "string" && /^@noel-crew\/opencode(?:@[^/]+)?$/.test(value[0]) && isPetPluginOptions(value[1]);
 }
 
-export function isOpenPetsLikePluginEntry(value: unknown): boolean {
-  if (typeof value === "string") return /openpets|open-pets/i.test(value);
-  if (Array.isArray(value)) return value.some(isOpenPetsLikePluginEntry);
+export function isNoelCrewLikePluginEntry(value: unknown): boolean {
+  if (typeof value === "string") return /noelcrew|noel-crew/i.test(value);
+  if (Array.isArray(value)) return value.some(isNoelCrewLikePluginEntry);
   return false;
 }
 
@@ -123,12 +123,12 @@ function isSamePluginOptions(value: unknown, expected: { readonly pet?: string }
   return keys.length === Object.keys(expected).length && value.pet === expected.pet;
 }
 
-function isOpenPetsLikeInstruction(value: string): boolean {
-  return /openpets\.md$/i.test(value) || /@open-pets\/opencode/i.test(value);
+function isNoelCrewLikeInstruction(value: string): boolean {
+  return /noelcrew\.md$/i.test(value) || /@noel-crew\/opencode/i.test(value);
 }
 
 function hasManagedInstructionBlock(value: string | undefined): boolean {
-  return typeof value === "string" && /<!-- OPENPETS:START -->[\s\S]*?<!-- OPENPETS:END -->/.test(value);
+  return typeof value === "string" && /<!-- NOELCREW:START -->[\s\S]*?<!-- NOELCREW:END -->/.test(value);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

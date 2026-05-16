@@ -2,49 +2,49 @@ import { chmodSync, closeSync, existsSync, lstatSync, mkdirSync, openSync, readF
 import { dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 
-export interface ClaudeOpenPetsMemoryResult {
+export interface ClaudeNoelCrewMemoryResult {
   readonly changed: boolean;
   readonly claudeMdPath: string;
-  readonly openPetsMemoryPath: string;
+  readonly noelCrewMemoryPath: string;
 }
 
-export interface ClaudeOpenPetsMemoryStatus {
+export interface ClaudeNoelCrewMemoryStatus {
   readonly status: "installed" | "not_installed" | "error";
   readonly message: string;
   readonly claudeMdPath: string;
-  readonly openPetsMemoryPath: string;
+  readonly noelCrewMemoryPath: string;
 }
 
-export const openPetsClaudeImportLine = "@~/.claude/openpets.md";
+export const noelCrewClaudeImportLine = "@~/.claude/noelcrew.md";
 
-const openPetsImportStart = "<!-- OPENPETS:IMPORT:START -->";
-const openPetsImportEnd = "<!-- OPENPETS:IMPORT:END -->";
-const openPetsMemoryStart = "<!-- OPENPETS:START -->";
-const openPetsMemoryEnd = "<!-- OPENPETS:END -->";
+const noelCrewImportStart = "<!-- NOELCREW:IMPORT:START -->";
+const noelCrewImportEnd = "<!-- NOELCREW:IMPORT:END -->";
+const noelCrewMemoryStart = "<!-- NOELCREW:START -->";
+const noelCrewMemoryEnd = "<!-- NOELCREW:END -->";
 const maxClaudeMemoryBytes = 1024 * 1024;
 
-export function installClaudeOpenPetsMemory(homeDir: string): ClaudeOpenPetsMemoryResult {
+export function installClaudeNoelCrewMemory(homeDir: string): ClaudeNoelCrewMemoryResult {
   const paths = getClaudeMemoryPaths(homeDir);
-  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.openPetsMemoryPath);
+  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.noelCrewMemoryPath);
   mkdirSync(paths.claudeDir, { recursive: true, mode: 0o700 });
-  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.openPetsMemoryPath);
+  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.noelCrewMemoryPath);
 
-  const currentOpenPetsMemory = readTextFile(paths.openPetsMemoryPath);
-  const nextOpenPetsMemory = upsertOpenPetsMemoryBlock(currentOpenPetsMemory, createOpenPetsMemoryBlock());
-  const openPetsChanged = currentOpenPetsMemory !== nextOpenPetsMemory;
-  if (openPetsChanged) writePrivateTextFile(paths.openPetsMemoryPath, nextOpenPetsMemory);
+  const currentNoelCrewMemory = readTextFile(paths.noelCrewMemoryPath);
+  const nextNoelCrewMemory = upsertNoelCrewMemoryBlock(currentNoelCrewMemory, createNoelCrewMemoryBlock());
+  const noelCrewChanged = currentNoelCrewMemory !== nextNoelCrewMemory;
+  if (noelCrewChanged) writePrivateTextFile(paths.noelCrewMemoryPath, nextNoelCrewMemory);
 
   const currentClaudeMd = readTextFile(paths.claudeMdPath);
   const nextClaudeMd = ensureManagedImport(currentClaudeMd);
   const claudeMdChanged = currentClaudeMd !== nextClaudeMd;
   if (claudeMdChanged) writePrivateTextFile(paths.claudeMdPath, nextClaudeMd);
 
-  return { changed: openPetsChanged || claudeMdChanged, claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+  return { changed: noelCrewChanged || claudeMdChanged, claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
 }
 
-export function uninstallClaudeOpenPetsMemory(homeDir: string): ClaudeOpenPetsMemoryResult {
+export function uninstallClaudeNoelCrewMemory(homeDir: string): ClaudeNoelCrewMemoryResult {
   const paths = getClaudeMemoryPaths(homeDir);
-  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.openPetsMemoryPath);
+  assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.noelCrewMemoryPath);
 
   let changed = false;
   const currentClaudeMd = readTextFile(paths.claudeMdPath);
@@ -55,59 +55,59 @@ export function uninstallClaudeOpenPetsMemory(homeDir: string): ClaudeOpenPetsMe
     changed = true;
   }
 
-  const currentOpenPetsMemory = readTextFile(paths.openPetsMemoryPath);
-  if (currentOpenPetsMemory) {
-    const nextOpenPetsMemory = removeOpenPetsMemoryBlock(currentOpenPetsMemory);
-    if (nextOpenPetsMemory.trim().length === 0) {
+  const currentNoelCrewMemory = readTextFile(paths.noelCrewMemoryPath);
+  if (currentNoelCrewMemory) {
+    const nextNoelCrewMemory = removeNoelCrewMemoryBlock(currentNoelCrewMemory);
+    if (nextNoelCrewMemory.trim().length === 0) {
       if (hasUserOwnedImport) {
-        writePrivateTextFile(paths.openPetsMemoryPath, "");
+        writePrivateTextFile(paths.noelCrewMemoryPath, "");
       } else {
-        rmSync(paths.openPetsMemoryPath, { force: true });
+        rmSync(paths.noelCrewMemoryPath, { force: true });
       }
       changed = true;
-    } else if (nextOpenPetsMemory !== currentOpenPetsMemory) {
-      writePrivateTextFile(paths.openPetsMemoryPath, nextOpenPetsMemory);
+    } else if (nextNoelCrewMemory !== currentNoelCrewMemory) {
+      writePrivateTextFile(paths.noelCrewMemoryPath, nextNoelCrewMemory);
       changed = true;
     }
   }
 
-  return { changed, claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+  return { changed, claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
 }
 
-export function doctorClaudeOpenPetsMemory(homeDir: string): ClaudeOpenPetsMemoryStatus {
+export function doctorClaudeNoelCrewMemory(homeDir: string): ClaudeNoelCrewMemoryStatus {
   const paths = getClaudeMemoryPaths(homeDir);
   try {
-    assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.openPetsMemoryPath);
+    assertSafeClaudeMemoryPaths(paths.claudeDir, paths.claudeMdPath, paths.noelCrewMemoryPath);
     const claudeMd = readTextFile(paths.claudeMdPath);
-    const openPetsMemory = readTextFile(paths.openPetsMemoryPath);
+    const noelCrewMemory = readTextFile(paths.noelCrewMemoryPath);
     const hasImport = hasManagedImport(claudeMd) || hasImportLineOutsideManagedBlock(claudeMd);
-    const hasInstructions = createOpenPetsBlockPattern().test(openPetsMemory) || /openpets_say|OpenPets MCP/i.test(openPetsMemory);
+    const hasInstructions = createNoelCrewBlockPattern().test(noelCrewMemory) || /noelcrew_say|NoelCrew MCP/i.test(noelCrewMemory);
     if (hasImport && hasInstructions) {
-      return { status: "installed", message: "Claude will load OpenPets instructions from ~/.claude/openpets.md.", claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+      return { status: "installed", message: "Claude will load NoelCrew instructions from ~/.claude/noelcrew.md.", claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
     }
     if (hasImport) {
-      return { status: "not_installed", message: "Claude imports OpenPets instructions, but the OpenPets memory file is missing or incomplete.", claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+      return { status: "not_installed", message: "Claude imports NoelCrew instructions, but the NoelCrew memory file is missing or incomplete.", claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
     }
     if (hasInstructions) {
-      return { status: "not_installed", message: "OpenPets instructions exist, but Claude is not importing them yet.", claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+      return { status: "not_installed", message: "NoelCrew instructions exist, but Claude is not importing them yet.", claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
     }
-    return { status: "not_installed", message: "Claude OpenPets instructions are not installed.", claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+    return { status: "not_installed", message: "Claude NoelCrew instructions are not installed.", claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
   } catch (error) {
-    return { status: "error", message: error instanceof Error ? error.message : "Claude OpenPets instruction status is unavailable.", claudeMdPath: paths.claudeMdPath, openPetsMemoryPath: paths.openPetsMemoryPath };
+    return { status: "error", message: error instanceof Error ? error.message : "Claude NoelCrew instruction status is unavailable.", claudeMdPath: paths.claudeMdPath, noelCrewMemoryPath: paths.noelCrewMemoryPath };
   }
 }
 
-export function getClaudeMemoryPaths(homeDir: string): { readonly claudeDir: string; readonly claudeMdPath: string; readonly openPetsMemoryPath: string } {
+export function getClaudeMemoryPaths(homeDir: string): { readonly claudeDir: string; readonly claudeMdPath: string; readonly noelCrewMemoryPath: string } {
   const claudeDir = join(homeDir, ".claude");
   return {
     claudeDir,
     claudeMdPath: join(claudeDir, "CLAUDE.md"),
-    openPetsMemoryPath: join(claudeDir, "openpets.md"),
+    noelCrewMemoryPath: join(claudeDir, "noelcrew.md"),
   };
 }
 
-export function createOpenPetsMemoryBlock(): string {
-  return `${openPetsMemoryStart}\n## OpenPets\n\nOpenPets MCP tools may be available.\n\nUse OpenPets as a short visible status channel for meaningful coding progress:\n- Use \`openpets_say\` when starting, completing, blocking, or needing review on non-trivial work.\n- Keep messages brief, user-facing, and non-sensitive.\n- Do not include code, logs, secrets, URLs, or file paths.\n- Use \`openpets_react\` for small visual or emotional feedback.\n- Use \`openpets_status\` only when checking availability or the targeted pet.\n- Do not spam every internal step.\n${openPetsMemoryEnd}\n`;
+export function createNoelCrewMemoryBlock(): string {
+  return `${noelCrewMemoryStart}\n## NoelCrew\n\nNoelCrew MCP tools may be available.\n\nUse NoelCrew as a short visible status channel for meaningful coding progress:\n- Use \`noelcrew_say\` when starting, completing, blocking, or needing review on non-trivial work.\n- Keep messages brief, user-facing, and non-sensitive.\n- Do not include code, logs, secrets, URLs, or file paths.\n- Use \`noelcrew_react\` for small visual or emotional feedback.\n- Use \`noelcrew_status\` only when checking availability or the targeted pet.\n- Do not spam every internal step.\n${noelCrewMemoryEnd}\n`;
 }
 
 export function ensureImportLine(source: string, importLine: string): string {
@@ -119,10 +119,10 @@ export function ensureImportLine(source: string, importLine: string): string {
 
 export function ensureManagedImport(source: string): string {
   const withoutManagedImports = removeManagedImport(source).replace(/\s*$/u, "");
-  if (withoutManagedImports.split(/\r?\n/).some((line) => line.trim() === openPetsClaudeImportLine)) {
+  if (withoutManagedImports.split(/\r?\n/).some((line) => line.trim() === noelCrewClaudeImportLine)) {
     return withoutManagedImports ? `${withoutManagedImports}\n` : "";
   }
-  const block = `${openPetsImportStart}\n${openPetsClaudeImportLine}\n${openPetsImportEnd}`;
+  const block = `${noelCrewImportStart}\n${noelCrewClaudeImportLine}\n${noelCrewImportEnd}`;
   return withoutManagedImports ? `${withoutManagedImports}\n\n${block}\n` : `${block}\n`;
 }
 
@@ -139,22 +139,22 @@ export function removeImportLine(source: string, importLine: string): string {
     .replace(/\s*$/u, (match) => (match.includes("\n") ? "\n" : ""));
 }
 
-export function upsertOpenPetsMemoryBlock(source: string, block: string): string {
-  const withoutBlocks = source.replace(createOpenPetsBlockPattern(), "").replace(/\n{3,}/g, "\n\n").replace(/\s*$/u, "");
+export function upsertNoelCrewMemoryBlock(source: string, block: string): string {
+  const withoutBlocks = source.replace(createNoelCrewBlockPattern(), "").replace(/\n{3,}/g, "\n\n").replace(/\s*$/u, "");
   return withoutBlocks ? `${withoutBlocks}\n\n${block}` : block;
 }
 
-export function removeOpenPetsMemoryBlock(source: string): string {
-  const withoutBlock = source.replace(createOpenPetsBlockPattern(), "").replace(/\n{3,}/g, "\n\n").trim();
+export function removeNoelCrewMemoryBlock(source: string): string {
+  const withoutBlock = source.replace(createNoelCrewBlockPattern(), "").replace(/\n{3,}/g, "\n\n").trim();
   return withoutBlock ? `${withoutBlock}\n` : "";
 }
 
-function createOpenPetsBlockPattern(): RegExp {
-  return new RegExp(`${escapeRegExp(openPetsMemoryStart)}[\\s\\S]*?${escapeRegExp(openPetsMemoryEnd)}\\n?`, "g");
+function createNoelCrewBlockPattern(): RegExp {
+  return new RegExp(`${escapeRegExp(noelCrewMemoryStart)}[\\s\\S]*?${escapeRegExp(noelCrewMemoryEnd)}\\n?`, "g");
 }
 
 function createManagedImportPattern(): RegExp {
-  return new RegExp(`${escapeRegExp(openPetsImportStart)}[\\s\\S]*?${escapeRegExp(openPetsImportEnd)}\\n?`, "g");
+  return new RegExp(`${escapeRegExp(noelCrewImportStart)}[\\s\\S]*?${escapeRegExp(noelCrewImportEnd)}\\n?`, "g");
 }
 
 function hasManagedImport(source: string): boolean {
@@ -162,19 +162,19 @@ function hasManagedImport(source: string): boolean {
 }
 
 function hasImportLineOutsideManagedBlock(source: string): boolean {
-  return removeManagedImport(source).split(/\r?\n/).some((line) => line.trim() === openPetsClaudeImportLine);
+  return removeManagedImport(source).split(/\r?\n/).some((line) => line.trim() === noelCrewClaudeImportLine);
 }
 
-function assertSafeClaudeMemoryPaths(claudeDir: string, claudeMdPath: string, openPetsMemoryPath: string): void {
+function assertSafeClaudeMemoryPaths(claudeDir: string, claudeMdPath: string, noelCrewMemoryPath: string): void {
   if (existsSync(claudeDir)) {
     const stat = lstatSync(claudeDir);
     if (stat.isSymbolicLink() || !stat.isDirectory()) throw new Error("Claude memory directory is not a safe directory.");
   }
-  for (const path of [claudeMdPath, openPetsMemoryPath]) {
+  for (const path of [claudeMdPath, noelCrewMemoryPath]) {
     if (!existsSync(path)) continue;
     const stat = lstatSync(path);
     if (stat.isSymbolicLink() || !stat.isFile()) throw new Error("Claude memory file is not a safe regular file.");
-    if (stat.size > maxClaudeMemoryBytes) throw new Error("Claude memory file is too large for OpenPets to update safely.");
+    if (stat.size > maxClaudeMemoryBytes) throw new Error("Claude memory file is too large for NoelCrew to update safely.");
   }
 }
 
@@ -202,7 +202,7 @@ function assertSafeWriteTarget(path: string): void {
   if (!existsSync(path)) return;
   const stat = lstatSync(path);
   if (stat.isSymbolicLink() || !stat.isFile()) throw new Error("Claude memory file is not a safe regular file.");
-  if (stat.size > maxClaudeMemoryBytes) throw new Error("Claude memory file is too large for OpenPets to update safely.");
+  if (stat.size > maxClaudeMemoryBytes) throw new Error("Claude memory file is too large for NoelCrew to update safely.");
 }
 
 function escapeRegExp(value: string): string {

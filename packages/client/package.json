@@ -1,10 +1,10 @@
 {
-  "name": "@open-pets/client",
+  "name": "@noelclaw/client",
   "version": "2.0.6",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openpetstech/openpets.git",
+    "url": "git+https://github.com/noelclaw/noel-crew.git",
     "directory": "packages/client"
   },
   "type": "module",

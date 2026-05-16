@@ -1,15 +1,15 @@
 # packages/pi/src/
 
-Source for the OpenPets Pi integration package.
+Source for the NoelCrew Pi integration package.
 
 ## Entry points
 
-- `extension.ts`: Default Pi extension export. Calls `createOpenPetsPiExtension()`.
+- `extension.ts`: Default Pi extension export. Calls `createNoelCrewPiExtension()`.
 - `index.ts`: Public package exports for the extension and testable runtime helpers.
 
 ## Runtime modules
 
-- `runtime.ts`: Pi extension registration, event classification, non-blocking OpenPets dispatch, `/openpets` command parsing, speech validation, and debug sanitization.
+- `runtime.ts`: Pi extension registration, event classification, non-blocking NoelCrew dispatch, `/noelcrew` command parsing, speech validation, and debug sanitization.
 
 ## Contract checks
 

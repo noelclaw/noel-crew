@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
-export const openPetsIpcProtocol = "openpets-ipc";
-export const openPetsIpcVersion = 1;
+export const noelCrewIpcProtocol = "noelcrew-ipc";
+export const noelCrewIpcVersion = 1;
 export const maxIpcMessageBytes = 16 * 1024;
 export const transientDisplayMs = 4_000;
 
@@ -19,18 +19,18 @@ export const allowedReactions = [
   "celebrating",
 ] as const;
 
-export type OpenPetsReaction = typeof allowedReactions[number];
-export type OpenPetsIpcMethod = "hello" | "status" | "pets.list" | "pets.install" | "lease.acquire" | "lease.heartbeat" | "lease.release" | "pet.react" | "pet.say";
+export type NoelCrewReaction = typeof allowedReactions[number];
+export type NoelCrewIpcMethod = "hello" | "status" | "pets.list" | "pets.install" | "lease.acquire" | "lease.heartbeat" | "lease.release" | "pet.react" | "pet.say";
 
-export interface OpenPetsIpcRequest {
+export interface NoelCrewIpcRequest {
   readonly id: string;
   readonly version: number;
   readonly token: string;
-  readonly method: OpenPetsIpcMethod;
+  readonly method: NoelCrewIpcMethod;
   readonly params?: unknown;
 }
 
-export interface OpenPetsIpcResponse {
+export interface NoelCrewIpcResponse {
   readonly id: string | null;
   readonly ok: boolean;
   readonly result?: unknown;
@@ -44,7 +44,7 @@ export function createRequestId(): string {
   return randomUUID();
 }
 
-export function parseIpcRequest(raw: string, expectedToken: string): OpenPetsIpcRequest {
+export function parseIpcRequest(raw: string, expectedToken: string): NoelCrewIpcRequest {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw) as unknown;
@@ -53,7 +53,7 @@ export function parseIpcRequest(raw: string, expectedToken: string): OpenPetsIpc
   }
   if (!isRecord(parsed)) throw new IpcProtocolError("invalid_request", "IPC request must be an object.");
   if (typeof parsed.id !== "string" || parsed.id.length < 1 || parsed.id.length > 120) throw new IpcProtocolError("invalid_request", "IPC request id is invalid.");
-  if (parsed.version !== openPetsIpcVersion) throw new IpcProtocolError("invalid_version", "Unsupported IPC protocol version.");
+  if (parsed.version !== noelCrewIpcVersion) throw new IpcProtocolError("invalid_version", "Unsupported IPC protocol version.");
   if (parsed.token !== expectedToken) throw new IpcProtocolError("invalid_token", "Invalid IPC token.");
   if (parsed.method !== "hello" && parsed.method !== "status" && parsed.method !== "pets.list" && parsed.method !== "pets.install" && parsed.method !== "lease.acquire" && parsed.method !== "lease.heartbeat" && parsed.method !== "lease.release" && parsed.method !== "pet.react" && parsed.method !== "pet.say") {
     throw new IpcProtocolError("unknown_method", "Unknown IPC method.");
@@ -75,11 +75,11 @@ export function validateInstallPetId(value: unknown): string {
   return value;
 }
 
-export function validateReaction(value: unknown): OpenPetsReaction {
-  if (typeof value !== "string" || !allowedReactions.includes(value as OpenPetsReaction)) {
+export function validateReaction(value: unknown): NoelCrewReaction {
+  if (typeof value !== "string" || !allowedReactions.includes(value as NoelCrewReaction)) {
     throw new IpcProtocolError("invalid_params", "Invalid pet reaction.");
   }
-  return value as OpenPetsReaction;
+  return value as NoelCrewReaction;
 }
 
 export function validateSayMessage(value: unknown): string {
@@ -113,11 +113,11 @@ export function validateRequestedPetId(value: unknown): string | undefined {
   return trimmed;
 }
 
-export function okResponse(id: string | null, result: unknown): OpenPetsIpcResponse {
+export function okResponse(id: string | null, result: unknown): NoelCrewIpcResponse {
   return { id, ok: true, result };
 }
 
-export function errorResponse(id: string | null, error: unknown): OpenPetsIpcResponse {
+export function errorResponse(id: string | null, error: unknown): NoelCrewIpcResponse {
   if (error instanceof IpcProtocolError) {
     return { id, ok: false, error: { code: error.code, message: error.message } };
   }

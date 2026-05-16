@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Container for deployable application packages. Currently hosts the OpenPets desktop Electron application. Acts as the integration layer between workspace packages (`packages/`) and user-facing applications.
+Container for deployable application packages. Currently hosts the NoelCrew desktop Electron application. Acts as the integration layer between workspace packages (`packages/`) and user-facing applications.
 
 ## Design
 
@@ -20,6 +20,6 @@ Container for deployable application packages. Currently hosts the OpenPets desk
 
 ## Integration Points
 
-- **packages/**: Consumes `@open-pets/agent-events`, `@open-pets/claude`, `@open-pets/cli`, `@open-pets/mcp`, `@open-pets/opencode`
-- **External**: GitHub Releases API (update checks), openpets.dev (catalog), zip.openpets.dev (pet downloads)
+- **packages/**: Consumes `@noelclaw/agent-events`, `@noelclaw/claude`, `@noelclaw/cli`, `@noelclaw/mcp`, `@noelclaw/opencode`
+- **External**: GitHub Releases API (update checks), noelclaw.fun (catalog), zip.noelclaw.fun (pet downloads)
 - **System**: Claude Code CLI, OpenCode CLI, OS tray/dock, file system (userData, ~/.codex, ~/.claude)

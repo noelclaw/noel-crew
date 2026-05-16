@@ -1,6 +1,6 @@
 # packages/opencode/
 
-OpenCode editor integration for OpenPets.
+OpenCode editor integration for NoelCrew.
 
 ## Responsibility
 
@@ -10,8 +10,8 @@ Provides comprehensive OpenCode editor integration including: MCP server configu
 
 **Plugin Architecture** (`plugin.ts`):
 - Default export: `{ id, server }` object
-- Server factory: `createOpenPetsOpenCodeHooks(options)`
-- Plugin ID: `open-pets-opencode`
+- Server factory: `createNoelCrewOpenCodeHooks(options)`
+- Plugin ID: `noel-crew-opencode`
 
 **Plugin Runtime** (`opencode-plugin-runtime.ts`):
 - Event hooks: `event`, `chat.message`, `tool.execute.before`, `tool.execute.after`
@@ -30,9 +30,9 @@ Provides comprehensive OpenCode editor integration including: MCP server configu
 
 **Project Setup** (`opencode-project-setup.ts`):
 - Status classification: `not_installed`, `installed`, `needs_update`, `custom`, `conflict`, `error`
-- Managed block detection in instruction files (`<!-- OPENPETS:START/END -->`)
+- Managed block detection in instruction files (`<!-- NOELCREW:START/END -->`)
 - Config field updates: `mcp`, `instructions`, `plugin` arrays
-- Instruction file: `.opencode/openpets.md` with usage guidelines
+- Instruction file: `.opencode/noelcrew.md` with usage guidelines
 
 **Global Setup** (`opencode-global-setup.ts`):
 - Similar to project setup but for `~/.config/opencode/`
@@ -40,8 +40,8 @@ Provides comprehensive OpenCode editor integration including: MCP server configu
 - Doctor command: `doctorOpenCodeGlobalSetup()` for status checking
 
 **Status Classification** (`opencode-status.ts`):
-- MCP entry detection: `isManagedOpenPetsMcpEntry()`
-- Plugin entry detection: `isManagedOpenPetsPluginEntry()`
+- MCP entry detection: `isManagedNoelCrewMcpEntry()`
+- Plugin entry detection: `isManagedNoelCrewPluginEntry()`
 - Command pattern matching (npx, node, local paths)
 - Version comparison for update detection
 
@@ -49,7 +49,7 @@ Provides comprehensive OpenCode editor integration including: MCP server configu
 - MCP entry builder: `buildOpenCodeMcpEntry()` (published/local/bundled modes)
 - Plugin spec builder: `buildOpenCodePluginPreview()`
 - Instruction path builder: `buildOpenCodeInstructionPath()`
-- Pet ID validation: `validateOpenPetsPetArg()`
+- Pet ID validation: `validateNoelCrewPetArg()`
 
 ## Flow
 
@@ -76,12 +76,12 @@ writePreparedOpenCodeProjectSetup() → Execute writes atomically
 ## Integration Points
 
 **Dependencies**:
-- `@open-pets/client` - IPC for plugin runtime
-- `@open-pets/agent-events` - Speech pools and validation
+- `@noelclaw/client` - IPC for plugin runtime
+- `@noelclaw/agent-events` - Speech pools and validation
 - `jsonc-parser` - JSONC config parsing and editing
 
 **Consumers**:
-- `@open-pets/cli` - `configure` command for OpenCode projects
+- `@noelclaw/cli` - `configure` command for OpenCode projects
 
 **Exports**:
 - `plugin.ts` - Default plugin export for OpenCode

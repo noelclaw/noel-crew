@@ -1,26 +1,26 @@
 import net from "node:net";
 import { randomUUID } from "node:crypto";
 
-import { parseIpcEndpoint, readDiscoveryFile, type OpenPetsDiscoveryFile } from "./discovery.js";
-import { connectTimeoutMs, maxIpcMessageBytes, openPetsIpcVersion, parseIpcResponse, responseTimeoutMs, validateReaction, OpenPetsClientError, type OpenPetsIpcMethod, type OpenPetsIpcRequest, type OpenPetsReaction } from "./protocol.js";
+import { parseIpcEndpoint, readDiscoveryFile, type NoelCrewDiscoveryFile } from "./discovery.js";
+import { connectTimeoutMs, maxIpcMessageBytes, noelCrewIpcVersion, parseIpcResponse, responseTimeoutMs, validateReaction, NoelCrewClientError, type NoelCrewIpcMethod, type NoelCrewIpcRequest, type NoelCrewReaction } from "./protocol.js";
 
-export { getDiscoveryFilePath, parseIpcEndpoint, readDiscoveryFile, validateDiscovery, validateEndpoint, type OpenPetsDiscoveryFile, type ParsedIpcEndpoint } from "./discovery.js";
-export { allowedReactions, OpenPetsClientError, type OpenPetsReaction } from "./protocol.js";
+export { getDiscoveryFilePath, parseIpcEndpoint, readDiscoveryFile, validateDiscovery, validateEndpoint, type NoelCrewDiscoveryFile, type ParsedIpcEndpoint } from "./discovery.js";
+export { allowedReactions, NoelCrewClientError, type NoelCrewReaction } from "./protocol.js";
 
-export interface OpenPetsClientOptions {
+export interface NoelCrewClientOptions {
   readonly discoveryPath?: string;
   readonly connectTimeoutMs?: number;
   readonly responseTimeoutMs?: number;
 }
 
-export interface OpenPetsStatusResult {
+export interface NoelCrewStatusResult {
   readonly ok: boolean;
   readonly appRunning: boolean;
   readonly unavailableReason?: string;
   readonly [key: string]: unknown;
 }
 
-export interface OpenPetsLeaseResult {
+export interface NoelCrewLeaseResult {
   readonly leaseId: string;
   readonly requestedPetId?: string;
   readonly targetKind: "default" | "explicit";
@@ -32,49 +32,49 @@ export interface OpenPetsLeaseResult {
   readonly leaseActive: boolean;
 }
 
-export interface OpenPetsPetListResult {
+export interface NoelCrewPetListResult {
   readonly ok: true;
-  readonly pets: readonly OpenPetsPetListItem[];
+  readonly pets: readonly NoelCrewPetListItem[];
   readonly defaultPetId: string;
 }
 
-export interface OpenPetsPetInstallResult {
+export interface NoelCrewPetInstallResult {
   readonly ok: true;
   readonly petId: string;
   readonly displayName: string;
   readonly installed: true;
 }
 
-export interface OpenPetsPetListItem {
+export interface NoelCrewPetListItem {
   readonly id: string;
   readonly displayName: string;
   readonly builtIn: boolean;
   readonly broken: boolean;
 }
 
-export interface OpenPetsClient {
+export interface NoelCrewClient {
   hello(): Promise<unknown>;
-  status(options?: { readonly leaseId?: string }): Promise<OpenPetsStatusResult>;
-  listPets(): Promise<OpenPetsPetListResult>;
-  installPet(petId: string): Promise<OpenPetsPetInstallResult>;
-  acquireLease(options?: { readonly requestedPetId?: string }): Promise<OpenPetsLeaseResult>;
+  status(options?: { readonly leaseId?: string }): Promise<NoelCrewStatusResult>;
+  listPets(): Promise<NoelCrewPetListResult>;
+  installPet(petId: string): Promise<NoelCrewPetInstallResult>;
+  acquireLease(options?: { readonly requestedPetId?: string }): Promise<NoelCrewLeaseResult>;
   heartbeatLease(leaseId: string): Promise<{ readonly leaseId: string; readonly expiresAt: number }>;
   releaseLease(leaseId: string): Promise<{ readonly released: boolean }>;
-  react(reaction: OpenPetsReaction, options?: { readonly leaseId?: string }): Promise<unknown>;
-  say(message: string, options?: { readonly reaction?: OpenPetsReaction; readonly leaseId?: string }): Promise<unknown>;
+  react(reaction: NoelCrewReaction, options?: { readonly leaseId?: string }): Promise<unknown>;
+  say(message: string, options?: { readonly reaction?: NoelCrewReaction; readonly leaseId?: string }): Promise<unknown>;
 }
 
-export function createOpenPetsClient(options: OpenPetsClientOptions = {}): OpenPetsClient {
+export function createNoelCrewClient(options: NoelCrewClientOptions = {}): NoelCrewClient {
   return {
     hello: () => sendDiscoveredRequest("hello", {}, options),
     status: async (statusOptions) => {
       try {
-        return await sendDiscoveredRequest<OpenPetsStatusResult>("status", { leaseId: statusOptions?.leaseId }, options);
+        return await sendDiscoveredRequest<NoelCrewStatusResult>("status", { leaseId: statusOptions?.leaseId }, options);
       } catch (error) {
         return {
           ok: false,
           appRunning: false,
-          unavailableReason: error instanceof Error ? error.message : "OpenPets is unavailable.",
+          unavailableReason: error instanceof Error ? error.message : "NoelCrew is unavailable.",
         };
       }
     },
@@ -88,23 +88,23 @@ export function createOpenPetsClient(options: OpenPetsClientOptions = {}): OpenP
   };
 }
 
-export function parsePetInstallResult(value: unknown): OpenPetsPetInstallResult {
+export function parsePetInstallResult(value: unknown): NoelCrewPetInstallResult {
   if (!isRecord(value) || value.ok !== true || typeof value.petId !== "string" || typeof value.displayName !== "string" || value.installed !== true) {
-    throw new OpenPetsClientError("invalid_response", "OpenPets pet install response is invalid.");
+    throw new NoelCrewClientError("invalid_response", "NoelCrew pet install response is invalid.");
   }
   return { ok: true, petId: value.petId, displayName: value.displayName, installed: true };
 }
 
 function validatePetId(value: string): string {
   if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(value) || value === "builtin") {
-    throw new OpenPetsClientError("invalid_pet_id", "Invalid OpenPets pet id.");
+    throw new NoelCrewClientError("invalid_pet_id", "Invalid NoelCrew pet id.");
   }
   return value;
 }
 
-export function parsePetListResult(value: unknown): OpenPetsPetListResult {
+export function parsePetListResult(value: unknown): NoelCrewPetListResult {
   if (!isRecord(value) || value.ok !== true || !Array.isArray(value.pets) || typeof value.defaultPetId !== "string") {
-    throw new OpenPetsClientError("invalid_response", "OpenPets pet list response is invalid.");
+    throw new NoelCrewClientError("invalid_response", "NoelCrew pet list response is invalid.");
   }
   return {
     ok: true,
@@ -113,9 +113,9 @@ export function parsePetListResult(value: unknown): OpenPetsPetListResult {
   };
 }
 
-function parsePetListItem(value: unknown): OpenPetsPetListItem {
+function parsePetListItem(value: unknown): NoelCrewPetListItem {
   if (!isRecord(value) || typeof value.id !== "string" || typeof value.displayName !== "string" || typeof value.builtIn !== "boolean" || typeof value.broken !== "boolean") {
-    throw new OpenPetsClientError("invalid_response", "OpenPets pet list item is invalid.");
+    throw new NoelCrewClientError("invalid_response", "NoelCrew pet list item is invalid.");
   }
   return { id: value.id, displayName: value.displayName, builtIn: value.builtIn, broken: value.broken };
 }
@@ -124,15 +124,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-async function sendDiscoveredRequest<T>(method: OpenPetsIpcMethod, params: unknown, options: OpenPetsClientOptions): Promise<T> {
+async function sendDiscoveredRequest<T>(method: NoelCrewIpcMethod, params: unknown, options: NoelCrewClientOptions): Promise<T> {
   const discovery = readDiscoveryFile(options.discoveryPath);
   return sendRequest<T>(discovery, method, params, options);
 }
 
-export function sendRequest<T>(discovery: OpenPetsDiscoveryFile, method: OpenPetsIpcMethod, params: unknown, options: OpenPetsClientOptions = {}): Promise<T> {
-  const request: OpenPetsIpcRequest = {
+export function sendRequest<T>(discovery: NoelCrewDiscoveryFile, method: NoelCrewIpcMethod, params: unknown, options: NoelCrewClientOptions = {}): Promise<T> {
+  const request: NoelCrewIpcRequest = {
     id: randomUUID(),
-    version: openPetsIpcVersion,
+    version: noelCrewIpcVersion,
     token: discovery.token,
     method,
     params,
@@ -140,7 +140,7 @@ export function sendRequest<T>(discovery: OpenPetsDiscoveryFile, method: OpenPet
 
   const requestLine = `${JSON.stringify(request)}\n`;
   if (Buffer.byteLength(requestLine, "utf8") > maxIpcMessageBytes) {
-    return Promise.reject(new OpenPetsClientError("request_too_large", "OpenPets IPC request is too large."));
+    return Promise.reject(new NoelCrewClientError("request_too_large", "NoelCrew IPC request is too large."));
   }
 
   return new Promise<T>((resolve, reject) => {
@@ -149,8 +149,8 @@ export function sendRequest<T>(discovery: OpenPetsDiscoveryFile, method: OpenPet
     let buffer = "";
     let settled = false;
 
-    const connectTimer = setTimeout(() => finish(new OpenPetsClientError("connect_timeout", "Timed out connecting to OpenPets.")), options.connectTimeoutMs ?? connectTimeoutMs);
-    const responseTimer = setTimeout(() => finish(new OpenPetsClientError("response_timeout", "Timed out waiting for OpenPets response.")), options.responseTimeoutMs ?? responseTimeoutMs);
+    const connectTimer = setTimeout(() => finish(new NoelCrewClientError("connect_timeout", "Timed out connecting to NoelCrew.")), options.connectTimeoutMs ?? connectTimeoutMs);
+    const responseTimer = setTimeout(() => finish(new NoelCrewClientError("response_timeout", "Timed out waiting for NoelCrew response.")), options.responseTimeoutMs ?? responseTimeoutMs);
 
     const finish = (error?: unknown, result?: T): void => {
       if (settled) return;
@@ -170,7 +170,7 @@ export function sendRequest<T>(discovery: OpenPetsDiscoveryFile, method: OpenPet
     socket.on("data", (chunk) => {
       buffer += chunk;
       if (Buffer.byteLength(buffer, "utf8") > maxIpcMessageBytes) {
-        finish(new OpenPetsClientError("response_too_large", "OpenPets IPC response is too large."));
+        finish(new NoelCrewClientError("response_too_large", "NoelCrew IPC response is too large."));
         return;
       }
 
@@ -180,14 +180,14 @@ export function sendRequest<T>(discovery: OpenPetsDiscoveryFile, method: OpenPet
       try {
         const parsed = parseIpcResponse<T>(JSON.parse(buffer.slice(0, newline)) as unknown);
         if (parsed.ok) finish(undefined, parsed.result);
-        else finish(new OpenPetsClientError(parsed.error.code, parsed.error.message));
+        else finish(new NoelCrewClientError(parsed.error.code, parsed.error.message));
       } catch (error) {
         finish(error);
       }
     });
-    socket.once("error", (error) => finish(new OpenPetsClientError("unavailable", error.message)));
+    socket.once("error", (error) => finish(new NoelCrewClientError("unavailable", error.message)));
     socket.once("end", () => {
-      if (!settled) finish(new OpenPetsClientError("connection_closed", "OpenPets closed the IPC connection before responding."));
+      if (!settled) finish(new NoelCrewClientError("connection_closed", "NoelCrew closed the IPC connection before responding."));
     });
   });
 }

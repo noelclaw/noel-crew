@@ -1,4 +1,4 @@
-export const claudePackageName = "@open-pets/claude";
+export const claudePackageName = "@noelclaw/claude";
 
 export * from "./claude-code.js";
 export * from "./hooks.js";

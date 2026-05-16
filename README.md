@@ -1,164 +1,148 @@
 <p align="center">
-  <img src="assets/openpets.png" alt="OpenPets - pixel art desktop pets for coding agents" width="100%" />
+  <img src="assets/noelcrew.png" alt="Noel Crew — tray-first desktop companion for AI coding agents" width="100%" />
 </p>
 
 <p align="center">
-  <strong>A tiny desktop pet for coding agents.</strong>
+  <strong>Your crew. Always watching. Always reacting.</strong>
 </p>
 
 <p align="center">
-  See agent progress, tool use, test runs, and coding state as a playful desktop companion.
+  Noel Crew is a tray-first desktop companion app for AI coding agents.<br/>
+  Watch your agent think, edit, test, and ship — through the eyes of a tiny animated companion.
 </p>
 
 ---
 
-## Star OpenPets
+## What is Noel Crew?
 
-Here is an extra GIF of me starring my own repo to encourage you to do the same. If OpenPets makes your coding setup a little more fun, please give the repo a star.
+Noel Crew puts a live desktop pet on your screen that reacts to everything your coding agent does — thinking, editing, running tests, waiting for your approval, finishing, or hitting an error.
 
-<p align="center">
-  <img src="assets/star-repo.gif" alt="Starring the OpenPets repository" width="100%" />
-</p>
+- **Desktop companion** — a small animated pet that reacts in real time to agent activity.
+- **Agent integrations** — first-class setup for Claude Code and OpenCode, including MCP tools, instructions, and automatic hooks/plugins.
+- **MCP ready** — any MCP-capable agent can send speech bubbles and reactions through the Noel Crew MCP server.
+- **Pet-pack friendly** — load installed animated pet packs and route each agent/project to its own pet window.
+- **Privacy-conscious by design** — automatic hook speech is static and local; prompts, code, logs, command output, URLs, paths, and secrets are never shown in bubbles.
 
-## What is OpenPets?
+## Manage your crew
 
-OpenPets is a tray-first desktop companion app for AI coding agents.
-
-- **Desktop companion** - a small pet that reacts while agents think, edit, test, wait for approval, finish, or hit an error.
-- **Agent integrations** - first-class setup for Claude Code and OpenCode, including MCP tools, instructions, and automatic hooks/plugins.
-- **MCP ready** - any MCP-capable agent can send short safe speech bubbles and reactions through the OpenPets MCP server.
-- **Pet-pack friendly** - loads installed animated pet packs and can route a selected agent/project to its own pet window.
-- **Privacy-conscious by design** - automatic hook speech is static and local; prompts, code, logs, command output, URLs, paths, and secrets are not shown in bubbles.
-
-## Manage your pets
-
-Browse installed pets, preview their animations, and choose which companion should follow each coding agent from the OpenPets desktop app.
+Browse installed pets, preview their animations, and choose which companion follows each coding agent.
 
 <p align="center">
-  <img src="assets/manage-pets.png" alt="Managing pets in the OpenPets desktop app" width="100%" />
+  <img src="assets/manage-pets.png" alt="Managing pets in the Noel Crew desktop app" width="100%" />
 </p>
 
 ## Quick start
 
-Install the desktop app, then connect your coding agent.
+### 1. Install Noel Crew Desktop
 
-### 1. Install OpenPets Desktop
+Download the latest installer from [Noel Crew Releases](https://github.com/noelclaw/noel-crew/releases/latest):
 
-Download the latest app from [OpenPets Releases](https://github.com/openpetstech/openpets/releases/latest):
+- **macOS Apple Silicon**: `NoelCrew-*-mac-arm64.dmg`
+- **macOS Intel**: `NoelCrew-*-mac-x64.dmg`
+- **Windows**: `NoelCrew-*-win-x64-setup.exe`
+- **Linux**: `NoelCrew-*-linux-x86_64.AppImage`
 
-- **macOS Apple Silicon**: `OpenPets-*-mac-arm64.dmg`
-- **macOS Intel**: `OpenPets-*-mac-x64.dmg`
-- **Windows**: `OpenPets-*-win-x64-setup.exe`
-- **Linux**: `OpenPets-*-linux-x86_64.AppImage`
+Launch Noel Crew. You'll see the desktop pet and the Noel Crew tray/menu-bar icon.
 
-Launch OpenPets. You should see the desktop pet and the OpenPets tray/menu-bar icon.
+> Current builds may be unsigned. macOS or Windows may show a security warning the first time.
 
-> Current builds may be unsigned. macOS or Windows may show a security warning the first time you open the app.
-
-If macOS says the app is damaged or should be moved to Trash, remove the quarantine flag and open it again:
+If macOS says the app is damaged, remove the quarantine flag:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/OpenPets.app
-open /Applications/OpenPets.app
+xattr -dr com.apple.quarantine /Applications/Noel\ Crew.app
+open /Applications/Noel\ Crew.app
 ```
 
 ### 2. Connect your agent
 
-Use the desktop **Integrations** screen for global setup when available:
+Use the desktop **Integrations** screen for global setup:
 
-- **Claude Code** - installs OpenPets MCP, Claude memory instructions, and optional Claude hooks.
-- **OpenCode** - installs OpenPets MCP, an OpenCode instruction file, and the `@open-pets/opencode` plugin.
+- **Claude Code** — installs Noel Crew MCP, Claude memory instructions, and optional hooks.
+- **OpenCode** — installs Noel Crew MCP, an instruction file, and the `@noelclaw/opencode` plugin.
 
 <p align="center">
-  <img src="assets/integrations.png" alt="OpenPets desktop integrations screen" width="100%" />
+  <img src="assets/integrations.png" alt="Noel Crew desktop integrations screen" width="100%" />
 </p>
 
-For project-local setup, run the CLI from the project you want to configure:
+For project-local setup, run the CLI from your project directory:
 
 ```bash
-npx -y @open-pets/cli configure --agent claude --pet <petId>
-npx -y @open-pets/cli configure --agent opencode --pet <petId>
+npx -y @noelclaw/cli configure --agent claude --pet <petId>
+npx -y @noelclaw/cli configure --agent opencode --pet <petId>
 ```
-
-Project-local setup can create project files such as `.claude/settings.local.json` or `.opencode/opencode.jsonc`. Review them before committing because they may include the selected pet id.
 
 ## Agent integrations
 
-OpenPets integrations have three layers:
+Noel Crew integrations have three layers:
 
 1. **MCP tools** for explicit agent actions.
 2. **Agent instructions** so agents know when to use those tools.
-3. **Hooks/plugins** for automatic decorative reactions during normal agent work.
+3. **Hooks/plugins** for automatic reactions during normal agent work.
 
 ### Claude Code
 
-Claude Code integration supports:
-
-- `openpets` MCP setup via Claude Code.
-- Managed Claude memory instructions in `~/.claude/CLAUDE.md` and `~/.claude/openpets.md`.
-- Managed Claude hooks in `~/.claude/settings.json`.
-- Project-local setup through `openpets configure --agent claude --pet <petId>`.
-
-Typical global MCP command shape:
-
-```bash
-claude mcp add --scope user openpets -- npx -y @open-pets/mcp
-```
-
-With a selected pet:
-
-```bash
-claude mcp add --scope user openpets -- npx -y @open-pets/mcp --pet <petId>
-```
-
 <p align="center">
-  <img src="assets/claude.png" alt="OpenPets reacting to Claude Code" width="100%" />
+  <img src="assets/claude.png" alt="Noel Crew reacting to Claude Code" width="100%" />
 </p>
 
-See [`docs/claude-integration.md`](docs/claude-integration.md) for the full file layout, hook mapping, project-local behavior, and safety rules.
+Claude Code integration includes:
+
+- `noelcrew` MCP setup via Claude Code.
+- Managed Claude memory instructions in `~/.claude/CLAUDE.md` and `~/.claude/noelcrew.md`.
+- Managed Claude hooks in `~/.claude/settings.json`.
+- Project-local setup via `noelcrew configure --agent claude --pet <petId>`.
+
+Global MCP setup:
+
+```bash
+claude mcp add --scope user noelcrew -- npx -y @noelclaw/mcp
+```
+
+With a specific pet:
+
+```bash
+claude mcp add --scope user noelcrew -- npx -y @noelclaw/mcp --pet <petId>
+```
 
 ### OpenCode
 
-OpenCode integration supports:
+OpenCode integration includes:
 
-- An MCP entry using `@open-pets/cli mcp`.
-- A managed `openpets.md` instruction file.
-- The `@open-pets/opencode` plugin for automatic reactions.
-- Global desktop setup and project-local `.opencode` setup.
+- MCP entry using `@noelclaw/cli mcp`.
+- A managed `noelcrew.md` instruction file.
+- The `@noelclaw/opencode` plugin for automatic reactions.
 
 Project-local setup:
 
 ```bash
-npx -y @open-pets/cli configure --agent opencode --pet <petId>
+npx -y @noelclaw/cli configure --agent opencode --pet <petId>
 ```
-
-See [`docs/opencode.md`](docs/opencode.md) for global config selection, plugin behavior, project-local setup, and safety rules.
 
 ### Generic MCP clients
 
-Any MCP-capable editor or coding agent can talk to OpenPets through the MCP server while the desktop app is running.
+Any MCP-capable agent can connect while the desktop app is running:
 
 ```json
 {
   "mcpServers": {
-    "openpets": {
+    "noelcrew": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@open-pets/mcp"]
+      "args": ["-y", "@noelclaw/mcp"]
     }
   }
 }
 ```
 
-To target a specific installed non-default pet:
+To target a specific pet:
 
 ```json
 {
   "mcpServers": {
-    "openpets": {
+    "noelcrew": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@open-pets/mcp", "--pet", "<petId>"]
+      "args": ["-y", "@noelclaw/mcp", "--pet", "<petId>"]
     }
   }
 }
@@ -166,32 +150,13 @@ To target a specific installed non-default pet:
 
 Available MCP tools:
 
-- `openpets_status` - check whether OpenPets is reachable and which pet is targeted.
-- `openpets_react` - set a short reaction on the target pet.
-- `openpets_say` - show a short safe speech bubble, optionally with a reaction.
+- `noelcrew_status` — check whether Noel Crew is reachable and which pet is targeted.
+- `noelcrew_react` — set a short reaction on the target pet.
+- `noelcrew_say` — show a short safe speech bubble, optionally with a reaction.
 
-`openpets_say` messages must be short, single-line, and must not look like code, logs, secrets, URLs, or file paths.
+`noelcrew_say` messages must be short, single-line, and must not look like code, logs, secrets, URLs, or file paths.
 
-## How it works
-
-```text
-Claude Code / OpenCode / Pi / MCP client
-  -> @open-pets/mcp, @open-pets/cli mcp, @open-pets/claude hook, @open-pets/opencode plugin, or @open-pets/pi extension
-  -> @open-pets/client
-  -> OpenPets desktop local IPC discovery file
-  -> OpenPets desktop IPC socket/pipe
-  -> default pet or selected agent pet window
-```
-
-The desktop app writes a local discovery file containing an IPC endpoint and a per-run token. Clients must send that token with every request.
-
-For Windows desktop + WSL agent setups, see [`docs/wsl-ipc.md`](docs/wsl-ipc.md) for the opt-in loopback TCP transport.
-
-When an integration is configured with `--pet <petId>`, OpenPets asks the desktop app for a short-lived lease. Valid installed non-default pets open as explicit agent pet windows. Missing, invalid, broken, built-in, or default pet requests fall back to the desktop default pet.
-
-## Reactions and speech
-
-Automatic hooks are decorative and best-effort. They do not approve, deny, block, or change agent behavior.
+## Reactions
 
 Common reaction mapping:
 
@@ -204,18 +169,18 @@ Common reaction mapping:
 | Successful idle/stop | `success` |
 | Session/error stop | `error` |
 
-Generic shell activity is intentionally quiet by default. Hook/plugin speech is throttled and selected from local static message pools such as `Approval needed` or `Something failed`.
+Automatic hook speech is throttled and drawn from local static message pools like `Approval needed` or `Something failed`.
 
-### Pi extension package
+## How it works
 
-OpenPets includes an experimental Pi extension package at `@open-pets/pi`. Pi support is extension-first rather than MCP-first: the extension listens to Pi lifecycle/tool events and sends local best-effort reactions through `@open-pets/client`.
-
-```bash
-pi install npm:@open-pets/pi
-pi install -l npm:@open-pets/pi
+```text
+Claude Code / OpenCode / MCP client
+  -> @noelclaw/mcp, @noelclaw/cli mcp, @noelclaw/claude hook, @noelclaw/opencode plugin
+  -> @noelclaw/client
+  -> Noel Crew desktop local IPC discovery file
+  -> Noel Crew desktop IPC socket/pipe
+  -> default pet or selected agent pet window
 ```
-
-Inside Pi, the extension registers `/openpets status`, `/openpets test`, `/openpets react <reaction>`, and `/openpets say <message>`. Automatic events do not forward prompts, assistant text, tool output, file contents, paths, URLs, or secrets. Real Pi CLI install validation is still required before marking the integration fully supported.
 
 ## Development
 
@@ -224,8 +189,6 @@ Inside Pi, the extension registers `/openpets status`, `/openpets test`, `/openp
 - Node.js 20+
 - pnpm 11+
 - TypeScript
-
-No Bun runtime is required for development.
 
 ### Install
 
@@ -239,61 +202,44 @@ pnpm install
 pnpm dev:desktop
 ```
 
-Equivalent package command:
+### Build
 
 ```bash
-pnpm --filter @open-pets/desktop dev
-```
-
-### Checks
-
-```bash
-pnpm check
-pnpm typecheck
 pnpm build
-pnpm test
 ```
-
-OpenPets currently uses lightweight Node contract checks instead of a full test framework. See [`docs/testing.md`](docs/testing.md).
 
 ### Package desktop builds
 
 ```bash
-pnpm package:desktop:dir
 pnpm package:desktop
 ```
-
-Release process details live in [`docs/release.md`](docs/release.md).
 
 ## Workspace layout
 
 ```text
 apps/desktop              Electron desktop app
-packages/client           @open-pets/client, local IPC client
-packages/mcp              @open-pets/mcp, MCP stdio server
-packages/claude           @open-pets/claude, Claude command and hook helpers
-packages/opencode         @open-pets/opencode, OpenCode config and plugin integration
-packages/pi               @open-pets/pi, Pi extension package
+packages/client           @noelclaw/client, local IPC client
+packages/mcp              @noelclaw/mcp, MCP stdio server
+packages/claude           @noelclaw/claude, Claude hook helpers
+packages/opencode         @noelclaw/opencode, OpenCode plugin
+packages/pi               @noelclaw/pi, Pi extension
 packages/agent-events     Shared safe agent event speech helpers
-packages/cli              @open-pets/cli, user-run CLI and MCP/hook entrypoints
-packages/pet-format       @open-pets/pet-format, pet/catalog format types
+packages/cli              @noelclaw/cli, CLI and MCP/hook entrypoints
+packages/pet-format       @noelclaw/pet-format, pet/catalog format types
 docs/                     Documentation
 ```
 
-## Documentation
+## Safety and privacy
 
-- [`docs/claude-integration.md`](docs/claude-integration.md) - Claude Code setup, MCP, memory, hooks, and safety.
-- [`docs/opencode.md`](docs/opencode.md) - OpenCode global/project setup, plugin behavior, and safety.
-- [`docs/wsl-ipc.md`](docs/wsl-ipc.md) - Windows desktop + WSL MCP transport setup.
-- [`docs/testing.md`](docs/testing.md) - test/check strategy.
-- [`docs/release.md`](docs/release.md) - desktop release process.
-- [`docs/workflow.md`](docs/workflow.md) - project workflow notes.
-
-## Safety and privacy notes
-
-- OpenPets local IPC is local-only and protected by a per-run token.
+- Noel Crew local IPC is local-only and protected by a per-run token.
 - Hook/plugin errors are swallowed unless debug logging is enabled.
 - Automatic speech is static and local; it does not include model-generated prompt text.
 - Tool inputs and command text are used only for coarse reaction classification.
-- Managed setup preserves unrelated user config and removes only OpenPets-managed entries.
+- Managed setup preserves unrelated user config and removes only Noel Crew-managed entries.
 - Speech validation rejects code-like, secret-like, URL-like, path-like, or multiline messages.
+
+## Links
+
+- **Homepage**: [noelclaw.fun](https://noelclaw.fun)
+- **Releases**: [github.com/noelclaw/noel-crew/releases](https://github.com/noelclaw/noel-crew/releases)
+- **Repository**: [github.com/noelclaw/noel-crew](https://github.com/noelclaw/noel-crew)

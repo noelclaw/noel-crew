@@ -1,35 +1,35 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 const api = {
-  getState: () => ipcRenderer.invoke("openpets:get-state"),
-  getCatalog: () => ipcRenderer.invoke("openpets:get-catalog"),
-  getCatalogPage: (page) => ipcRenderer.invoke("openpets:get-catalog-page", page),
-  getCatalogSearch: () => ipcRenderer.invoke("openpets:get-catalog-search"),
-  getCodexPets: () => ipcRenderer.invoke("openpets:get-codex-pets"),
-  updatePreferences: (patch) => ipcRenderer.invoke("openpets:update-preferences", patch),
-  getLaunchAtLogin: () => ipcRenderer.invoke("openpets:get-launch-at-login"),
-  setLaunchAtLogin: (enabled) => ipcRenderer.invoke("openpets:set-launch-at-login", enabled),
-  getUpdateStatus: () => ipcRenderer.invoke("openpets:get-update-status"),
-  checkForUpdates: () => ipcRenderer.invoke("openpets:check-for-updates"),
-  openUpdateReleasePage: () => ipcRenderer.invoke("openpets:open-update-release-page"),
-  setDefaultPet: (petId) => ipcRenderer.invoke("openpets:set-default-pet", petId),
-  installPet: (petId) => ipcRenderer.invoke("openpets:install-pet", petId),
-  importCodexPet: (petId) => ipcRenderer.invoke("openpets:import-codex-pet", petId),
-  removePet: (petId) => ipcRenderer.invoke("openpets:remove-pet", petId),
-  resetDefaultPetPosition: () => ipcRenderer.invoke("openpets:reset-default-pet-position"),
+  getState: () => ipcRenderer.invoke("noelcrew:get-state"),
+  getCatalog: () => ipcRenderer.invoke("noelcrew:get-catalog"),
+  getCatalogPage: (page) => ipcRenderer.invoke("noelcrew:get-catalog-page", page),
+  getCatalogSearch: () => ipcRenderer.invoke("noelcrew:get-catalog-search"),
+  getCodexPets: () => ipcRenderer.invoke("noelcrew:get-codex-pets"),
+  updatePreferences: (patch) => ipcRenderer.invoke("noelcrew:update-preferences", patch),
+  getLaunchAtLogin: () => ipcRenderer.invoke("noelcrew:get-launch-at-login"),
+  setLaunchAtLogin: (enabled) => ipcRenderer.invoke("noelcrew:set-launch-at-login", enabled),
+  getUpdateStatus: () => ipcRenderer.invoke("noelcrew:get-update-status"),
+  checkForUpdates: () => ipcRenderer.invoke("noelcrew:check-for-updates"),
+  openUpdateReleasePage: () => ipcRenderer.invoke("noelcrew:open-update-release-page"),
+  setDefaultPet: (petId) => ipcRenderer.invoke("noelcrew:set-default-pet", petId),
+  installPet: (petId) => ipcRenderer.invoke("noelcrew:install-pet", petId),
+  importCodexPet: (petId) => ipcRenderer.invoke("noelcrew:import-codex-pet", petId),
+  removePet: (petId) => ipcRenderer.invoke("noelcrew:remove-pet", petId),
+  resetDefaultPetPosition: () => ipcRenderer.invoke("noelcrew:reset-default-pet-position"),
 };
 
 const agentSetupApi = {
-  snapshot: (selectedPetId, commandMode) => ipcRenderer.invoke("openpets:agent-setup-snapshot", selectedPetId, commandMode),
-  action: (action, selectedPetId, commandMode) => ipcRenderer.invoke("openpets:agent-setup-action", action, selectedPetId, commandMode),
-  updateCommandPaths: (patch) => ipcRenderer.invoke("openpets:agent-setup-command-paths", patch),
+  snapshot: (selectedPetId, commandMode) => ipcRenderer.invoke("noelcrew:agent-setup-snapshot", selectedPetId, commandMode),
+  action: (action, selectedPetId, commandMode) => ipcRenderer.invoke("noelcrew:agent-setup-action", action, selectedPetId, commandMode),
+  updateCommandPaths: (patch) => ipcRenderer.invoke("noelcrew:agent-setup-command-paths", patch),
 };
 
 const onboardingApi = {
-  snapshot: () => ipcRenderer.invoke("openpets:onboarding-snapshot"),
-  complete: () => ipcRenderer.invoke("openpets:onboarding-complete"),
-  openPetManager: () => ipcRenderer.invoke("openpets:onboarding-open-pet-manager"),
-  openAgentSetup: () => ipcRenderer.invoke("openpets:onboarding-open-agent-setup"),
+  snapshot: () => ipcRenderer.invoke("noelcrew:onboarding-snapshot"),
+  complete: () => ipcRenderer.invoke("noelcrew:onboarding-complete"),
+  openPetManager: () => ipcRenderer.invoke("noelcrew:onboarding-open-pet-manager"),
+  openAgentSetup: () => ipcRenderer.invoke("noelcrew:onboarding-open-agent-setup"),
 };
 
 let activeAgentCommandMode = "published";
@@ -41,12 +41,12 @@ let activePetManagerDefaultId = "";
 let petGalleryInstance = 0;
 const remoteCatalogFilters = new Set(["original", "western", "asian"]);
 
-contextBridge.exposeInMainWorld("openPets", api);
-contextBridge.exposeInMainWorld("openpetsAgentSetup", agentSetupApi);
-contextBridge.exposeInMainWorld("openpetsOnboarding", onboardingApi);
+contextBridge.exposeInMainWorld("noelCrew", api);
+contextBridge.exposeInMainWorld("noelcrewAgentSetup", agentSetupApi);
+contextBridge.exposeInMainWorld("noelcrewOnboarding", onboardingApi);
 
 window.addEventListener("DOMContentLoaded", () => {
-  const view = document.body.dataset.openpetsView;
+  const view = document.body.dataset.noelcrewView;
 
   if (view !== "pet-manager" && view !== "settings" && view !== "agent-setup" && view !== "onboarding") {
     return;
@@ -67,7 +67,7 @@ async function renderCurrentState(view) {
   const state = await api.getState();
 
   if (!isStateSnapshot(state)) {
-    renderError("OpenPets state is unavailable.");
+    renderError("NoelCrew state is unavailable.");
     return;
   }
 
@@ -109,7 +109,7 @@ async function renderOnboarding() {
   requireButton("onboarding-welcome-next").onclick = () => showStep(1);
   requireButton("onboarding-pets-next").onclick = () => showStep(2);
   requireButton("onboarding-agents-next").onclick = () => showStep(3);
-  requireButton("onboarding-open-pets").onclick = () => { void openOnboardingWindowManually("pets", onboardingApi.openPetManager); };
+  requireButton("onboarding-noel-crew").onclick = () => { void openOnboardingWindowManually("pets", onboardingApi.openPetManager); };
   requireButton("onboarding-ready-pets").onclick = () => { void onboardingApi.openPetManager().catch(renderCaughtError); };
   requireButton("onboarding-open-agents").onclick = () => { void openOnboardingWindowManually("agents", onboardingApi.openAgentSetup); };
   requireButton("onboarding-ready-agents").onclick = () => { void onboardingApi.openAgentSetup().catch(renderCaughtError); };
@@ -119,7 +119,7 @@ async function renderOnboarding() {
     button.textContent = "Finishing…";
     void onboardingApi.complete().catch((error) => {
       button.disabled = false;
-      button.textContent = "Start using OpenPets";
+      button.textContent = "Start using NoelCrew";
       renderCaughtError(error);
     });
   };
@@ -140,7 +140,7 @@ async function openOnboardingWindowManually(kind, opener) {
 }
 
 function markOnboardingWindowOpened(kind) {
-  const openButton = document.getElementById(kind === "pets" ? "onboarding-open-pets" : "onboarding-open-agents");
+  const openButton = document.getElementById(kind === "pets" ? "onboarding-noel-crew" : "onboarding-open-agents");
   const continueButton = document.getElementById(kind === "pets" ? "onboarding-pets-next" : "onboarding-agents-next");
   if (openButton instanceof HTMLButtonElement) openButton.hidden = true;
   if (continueButton instanceof HTMLButtonElement) {
@@ -205,7 +205,7 @@ async function renderAgentSetup(selectedPetId, commandMode) {
   hookPreview.textContent = JSON.stringify(snapshot.hookStatus.preview, null, 2);
   memoryStatus.textContent = formatMemoryStatus(snapshot.memoryStatus.status);
   memoryStatus.className = `agent-status-pill ${memoryStatusClassFor(snapshot.memoryStatus.status)}`;
-  memoryDetails.textContent = `${snapshot.memoryStatus.message} Files: ${snapshot.memoryStatus.claudeMdPath}, ${snapshot.memoryStatus.openPetsMemoryPath}`;
+  memoryDetails.textContent = `${snapshot.memoryStatus.message} Files: ${snapshot.memoryStatus.claudeMdPath}, ${snapshot.memoryStatus.noelCrewMemoryPath}`;
   updateClaudeIntegrationCard(snapshot);
   updateClaudeCommandPathHelp(snapshot);
   updateOpenCodeIntegration(snapshot, selected);
@@ -268,7 +268,7 @@ function updateOpenCodeIntegration(snapshot, selected) {
     paths.textContent = `Config file: ${preview.configPath || preview.configDir}. Instructions: ${preview.instructionPath}${cleanup}`;
   }
   const json = document.getElementById("opencode-json-preview");
-  if (json) json.textContent = JSON.stringify(preview.configPreview && Object.keys(preview.configPreview).length > 0 ? preview.configPreview : { mcp: { openpets: { type: "local", command: preview.mcpCommand, enabled: true } }, instructions: [preview.instructionPath], plugin: preview.plugin ? [preview.plugin] : [] }, null, 2);
+  if (json) json.textContent = JSON.stringify(preview.configPreview && Object.keys(preview.configPreview).length > 0 ? preview.configPreview : { mcp: { noelcrew: { type: "local", command: preview.mcpCommand, enabled: true } }, instructions: [preview.instructionPath], plugin: preview.plugin ? [preview.plugin] : [] }, null, 2);
   const result = document.getElementById("opencode-action-result");
   if (result) result.textContent = snapshot.lastAction && String(snapshot.lastAction.action).startsWith("opencode-") ? snapshot.lastAction.message : "OpenCode may need to be restarted after global setup changes.";
   bindAgentSetupButton("opencode-install", () => runAgentAction("opencode-install", select instanceof HTMLSelectElement ? select.value : selected, getCommandMode()), snapshot.busy || !opencode.canInstall, "Installing…");
@@ -391,8 +391,8 @@ function bindIntegrationHubButtons(snapshot, select) {
   if (openCodeBack instanceof HTMLButtonElement) openCodeBack.onclick = () => showIntegrationsView("opencode");
   const piBack = document.getElementById("pi-integration-back");
   if (piBack instanceof HTMLButtonElement) piBack.onclick = () => showIntegrationsView("pi");
-  bindAgentSetupButton("pi-copy-global-install", async () => copyText("pi install npm:@open-pets/pi", "pi-action-result", "Copied Pi global install command."), false);
-  bindAgentSetupButton("pi-copy-project-install", async () => copyText("pi install -l npm:@open-pets/pi", "pi-action-result", "Copied Pi project install command."), false);
+  bindAgentSetupButton("pi-copy-global-install", async () => copyText("pi install npm:@noelclaw/pi", "pi-action-result", "Copied Pi global install command."), false);
+  bindAgentSetupButton("pi-copy-project-install", async () => copyText("pi install -l npm:@noelclaw/pi", "pi-action-result", "Copied Pi project install command."), false);
 }
 
 function showClaudeDetailView() {
@@ -448,7 +448,7 @@ function displayClaudeStatusLabel(snapshot) {
 function statusTitleFor(snapshot) {
   const state = snapshot.status.state;
   if (state === "configured" && snapshot.status.canReplace) return "Installed with custom settings";
-  if (state === "configured") return "OpenPets is connected";
+  if (state === "configured") return "NoelCrew is connected";
   if (state === "needs_setup") return "Ready to configure";
   if (state === "detected") return "Claude detected";
   if (state === "not_detected") return "Claude not found";
@@ -544,9 +544,9 @@ function renderPetSelect(select, snapshot, selected) {
 }
 
 function createClaudeSetupWarning(snapshot) {
-  const removeWarning = "Remove deletes the Claude MCP server named openpets and removes OpenPets-managed Claude instructions.";
+  const removeWarning = "Remove deletes the Claude MCP server named noelcrew and removes NoelCrew-managed Claude instructions.";
   if (snapshot.commandMode === "bundled") {
-    const note = "Packaged mode uses bundled OpenPets commands inside this app. Moving or deleting OpenPets may require Replace/Install again.";
+    const note = "Packaged mode uses bundled NoelCrew commands inside this app. Moving or deleting NoelCrew may require Replace/Install again.";
     if (!snapshot.status.canRemove && !snapshot.status.canReplace) return note;
     if (snapshot.status.canReplace) return `${note} This existing Claude entry is treated as installed and will be kept unless you choose Replace. ${removeWarning}`;
     return `${note} ${removeWarning}`;
@@ -927,7 +927,7 @@ function createPetManagerItem(id, displayName, description, installed, catalogPe
 function createEmptyPetGalleryMessage(filterName) {
   if (filterName === "installed") return "No installed pets match your search.";
   if (filterName === "codex") return "No Codex pets match your search.";
-  if (filterName === "original") return "No OpenPets originals match your search.";
+  if (filterName === "original") return "No NoelCrew originals match your search.";
   if (filterName === "western") return "No Western pets match your search.";
   if (filterName === "asian") return "No Asian pets match your search.";
   return "No pets match your search.";
@@ -1182,7 +1182,7 @@ function isAllowedCatalogPreview(value) {
   try {
     const url = new URL(value);
     return url.protocol === "https:"
-      && url.hostname === "openpets.dev"
+      && url.hostname === "noelclaw.fun"
       && url.port === ""
       && url.username === ""
       && url.password === ""
@@ -1194,7 +1194,7 @@ function isAllowedCatalogPreview(value) {
 }
 
 function isAllowedCodexPreview(value) {
-  return typeof value === "string" && /^openpets-codex:\/\/spritesheet\/[a-z0-9][a-z0-9_-]{0,63}$/u.test(value);
+  return typeof value === "string" && /^noelcrew-codex:\/\/spritesheet\/[a-z0-9][a-z0-9_-]{0,63}$/u.test(value);
 }
 
 function setCardBusy(card, busy, label) {
@@ -1286,7 +1286,7 @@ function renderUpdateStatus(status) {
     title.textContent = `Update available: ${status.latestVersion || "latest"}`;
     detail.textContent = `Installed: ${status.currentVersion || "unknown"}. Open the GitHub release page to download the update.`;
   } else if (status.state === "current") {
-    title.textContent = "OpenPets is up to date";
+    title.textContent = "NoelCrew is up to date";
     detail.textContent = `Installed: ${status.currentVersion || "unknown"}. Latest public release: ${status.latestVersion || "unknown"}.`;
   } else if (status.state === "checking") {
     title.textContent = "Checking for updates";
@@ -1296,13 +1296,13 @@ function renderUpdateStatus(status) {
     detail.textContent = status.error || "Couldn’t read the latest public GitHub release.";
   } else {
     title.textContent = "Check for updates";
-    detail.textContent = "OpenPets checks public GitHub releases and opens the release page when an update is available.";
+    detail.textContent = "NoelCrew checks public GitHub releases and opens the release page when an update is available.";
   }
 }
 
 function updateStatusMessage(status) {
   if (status.state === "available") return `Update ${status.latestVersion || "latest"} is available.`;
-  if (status.state === "current") return "OpenPets is up to date.";
+  if (status.state === "current") return "NoelCrew is up to date.";
   if (status.state === "error") return "Couldn’t check for updates.";
   return "Update check finished.";
 }
@@ -1314,7 +1314,7 @@ function bindLaunchAtLogin(input, detail) {
     if (!isLaunchAtLoginState(state)) throw new Error("Launch-at-login status is unavailable.");
     input.checked = state.enabled;
     input.disabled = !state.supported;
-    detail.textContent = state.supported ? "Start OpenPets automatically when you sign in." : "Launch at login is not available on this platform.";
+    detail.textContent = state.supported ? "Start NoelCrew automatically when you sign in." : "Launch at login is not available on this platform.";
   }).catch((error) => {
     input.disabled = true;
     detail.textContent = "Couldn’t read login setting.";
@@ -1391,7 +1391,7 @@ function createBadge(label, className) {
 }
 
 function renderCaughtError(error) {
-  renderError(error instanceof Error ? error.message : "OpenPets action failed.");
+  renderError(error instanceof Error ? error.message : "NoelCrew action failed.");
 }
 
 function renderError(message) {
@@ -1492,7 +1492,7 @@ function isAgentSetupSnapshot(value) {
     && typeof value.memoryStatus.status === "string"
     && typeof value.memoryStatus.message === "string"
     && typeof value.memoryStatus.claudeMdPath === "string"
-    && typeof value.memoryStatus.openPetsMemoryPath === "string"
+    && typeof value.memoryStatus.noelCrewMemoryPath === "string"
     && typeof value.commandPaths.claude === "string"
     && typeof value.commandPaths.node === "string"
     && typeof value.commandPaths.opencode === "string";

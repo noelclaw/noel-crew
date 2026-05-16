@@ -7,7 +7,7 @@ import { Transform } from "node:stream";
 import yauzl from "yauzl";
 import type { Entry, ZipFile } from "yauzl";
 
-import { getAppStateSnapshot, installPetState, removePetState, setDefaultPet, type OpenPetsStateV1 } from "./app-state.js";
+import { getAppStateSnapshot, installPetState, removePetState, setDefaultPet, type NoelCrewStateV1 } from "./app-state.js";
 import { getCatalogPet } from "./catalog.js";
 import { builtInPet } from "./built-in-pet.js";
 import { assertInsideRoot, assertSafePetId, getInstalledPetDir, getPetsRoot } from "./pet-paths.js";
@@ -21,7 +21,7 @@ const downloadTimeoutMs = 30_000;
 
 const operations = new Set<string>();
 
-export async function installPet(petId: string): Promise<OpenPetsStateV1> {
+export async function installPet(petId: string): Promise<NoelCrewStateV1> {
   return withPetOperation(petId, async () => {
     assertSafePetId(petId);
 
@@ -66,7 +66,7 @@ export async function installPet(petId: string): Promise<OpenPetsStateV1> {
   });
 }
 
-export async function removePet(petId: string): Promise<OpenPetsStateV1> {
+export async function removePet(petId: string): Promise<NoelCrewStateV1> {
   return withPetOperation(petId, async () => {
     if (petId === builtInPet.id) {
       throw new Error("Built-in pet cannot be removed.");
@@ -77,13 +77,13 @@ export async function removePet(petId: string): Promise<OpenPetsStateV1> {
     try {
       await rm(dir, { recursive: true, force: true });
     } catch (error) {
-      throw new Error(`Pet was removed from OpenPets state, but local files could not be deleted from ${dir}. You may need to remove them manually. ${error instanceof Error ? error.message : ""}`.trim());
+      throw new Error(`Pet was removed from NoelCrew state, but local files could not be deleted from ${dir}. You may need to remove them manually. ${error instanceof Error ? error.message : ""}`.trim());
     }
     return state;
   });
 }
 
-export async function setDefaultInstalledPet(petId: string): Promise<OpenPetsStateV1> {
+export async function setDefaultInstalledPet(petId: string): Promise<NoelCrewStateV1> {
   return withPetOperation(petId, async () => {
     if (petId !== builtInPet.id) {
       assertSafePetId(petId);
@@ -132,7 +132,7 @@ async function downloadPetZip(zipUrl: string): Promise<Buffer> {
 function validateZipUrl(value: string): void {
   const url = new URL(value);
   if (url.protocol !== "https:") throw new Error("Zip URL must use https.");
-  if (url.hostname !== "zip.openpets.dev") throw new Error("Zip URL host is not allowed.");
+  if (url.hostname !== "zip.noelclaw.fun") throw new Error("Zip URL host is not allowed.");
   if (!url.pathname.startsWith("/pets/")) throw new Error("Zip URL path is not allowed.");
   if (url.username || url.password) throw new Error("Zip URL cannot include credentials.");
   if (url.port) throw new Error("Zip URL cannot include a custom port.");

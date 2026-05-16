@@ -3,71 +3,71 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { ensureImportLine, ensureManagedImport, installClaudeOpenPetsMemory, openPetsClaudeImportLine, removeImportLine, removeOpenPetsMemoryBlock, uninstallClaudeOpenPetsMemory, upsertOpenPetsMemoryBlock } from "./claude-memory.js";
+import { ensureImportLine, ensureManagedImport, installClaudeNoelCrewMemory, noelCrewClaudeImportLine, removeImportLine, removeNoelCrewMemoryBlock, uninstallClaudeNoelCrewMemory, upsertNoelCrewMemoryBlock } from "./claude-memory.js";
 
-assert.equal(ensureImportLine("", openPetsClaudeImportLine), `${openPetsClaudeImportLine}\n`);
-assert.equal(ensureImportLine("# User notes\n", openPetsClaudeImportLine), `# User notes\n\n${openPetsClaudeImportLine}\n`);
-assert.equal(ensureImportLine(`# User notes\n${openPetsClaudeImportLine}\n${openPetsClaudeImportLine}\n`, openPetsClaudeImportLine), `# User notes\n\n${openPetsClaudeImportLine}\n`);
-assert.equal(removeImportLine(`# User notes\n\n${openPetsClaudeImportLine}\n`, openPetsClaudeImportLine), "# User notes\n");
-assert.match(upsertOpenPetsMemoryBlock("custom\n", "<!-- OPENPETS:START -->\nmanaged\n<!-- OPENPETS:END -->\n"), /custom[\s\S]*managed/);
-assert.equal((upsertOpenPetsMemoryBlock("<!-- OPENPETS:START -->\nold\n<!-- OPENPETS:END -->\n\n<!-- OPENPETS:START -->\nolder\n<!-- OPENPETS:END -->\n", "<!-- OPENPETS:START -->\nnew\n<!-- OPENPETS:END -->\n").match(/OPENPETS:START/g) ?? []).length, 1);
-assert.match(ensureManagedImport("# User notes\n"), /OPENPETS:IMPORT:START[\s\S]*@~\/\.claude\/openpets\.md[\s\S]*OPENPETS:IMPORT:END/);
-assert.equal(ensureManagedImport(`${openPetsClaudeImportLine}\n`), `${openPetsClaudeImportLine}\n`, "user-owned import line should not be wrapped as managed.");
-assert.equal(removeOpenPetsMemoryBlock("custom\n<!-- OPENPETS:START -->\nmanaged\n<!-- OPENPETS:END -->\n"), "custom\n");
+assert.equal(ensureImportLine("", noelCrewClaudeImportLine), `${noelCrewClaudeImportLine}\n`);
+assert.equal(ensureImportLine("# User notes\n", noelCrewClaudeImportLine), `# User notes\n\n${noelCrewClaudeImportLine}\n`);
+assert.equal(ensureImportLine(`# User notes\n${noelCrewClaudeImportLine}\n${noelCrewClaudeImportLine}\n`, noelCrewClaudeImportLine), `# User notes\n\n${noelCrewClaudeImportLine}\n`);
+assert.equal(removeImportLine(`# User notes\n\n${noelCrewClaudeImportLine}\n`, noelCrewClaudeImportLine), "# User notes\n");
+assert.match(upsertNoelCrewMemoryBlock("custom\n", "<!-- NOELCREW:START -->\nmanaged\n<!-- NOELCREW:END -->\n"), /custom[\s\S]*managed/);
+assert.equal((upsertNoelCrewMemoryBlock("<!-- NOELCREW:START -->\nold\n<!-- NOELCREW:END -->\n\n<!-- NOELCREW:START -->\nolder\n<!-- NOELCREW:END -->\n", "<!-- NOELCREW:START -->\nnew\n<!-- NOELCREW:END -->\n").match(/NOELCREW:START/g) ?? []).length, 1);
+assert.match(ensureManagedImport("# User notes\n"), /NOELCREW:IMPORT:START[\s\S]*@~\/\.claude\/noelcrew\.md[\s\S]*NOELCREW:IMPORT:END/);
+assert.equal(ensureManagedImport(`${noelCrewClaudeImportLine}\n`), `${noelCrewClaudeImportLine}\n`, "user-owned import line should not be wrapped as managed.");
+assert.equal(removeNoelCrewMemoryBlock("custom\n<!-- NOELCREW:START -->\nmanaged\n<!-- NOELCREW:END -->\n"), "custom\n");
 
-const dir = mkdtempSync(join(tmpdir(), "openpets-claude-memory-"));
+const dir = mkdtempSync(join(tmpdir(), "noelcrew-claude-memory-"));
 try {
   const claudeDir = join(dir, ".claude");
   const claudeMd = join(claudeDir, "CLAUDE.md");
-  const openpetsMd = join(claudeDir, "openpets.md");
+  const noelcrewMd = join(claudeDir, "noelcrew.md");
   mkdirSync(claudeDir);
   writeFileSync(claudeMd, "# Existing Claude instructions\n\nKeep this.\n", "utf8");
 
-  const installed = installClaudeOpenPetsMemory(dir);
+  const installed = installClaudeNoelCrewMemory(dir);
   assert.equal(installed.changed, true);
-  assert.match(readFileSync(claudeMd, "utf8"), /Keep this\.[\s\S]*@~\/\.claude\/openpets\.md/);
-  assert.match(readFileSync(openpetsMd, "utf8"), /openpets_say/);
+  assert.match(readFileSync(claudeMd, "utf8"), /Keep this\.[\s\S]*@~\/\.claude\/noelcrew\.md/);
+  assert.match(readFileSync(noelcrewMd, "utf8"), /noelcrew_say/);
 
-  const reinstalled = installClaudeOpenPetsMemory(dir);
+  const reinstalled = installClaudeNoelCrewMemory(dir);
   assert.equal(reinstalled.changed, false);
-  assert.equal((readFileSync(claudeMd, "utf8").match(/@~\/\.claude\/openpets\.md/g) ?? []).length, 1);
-  assert.match(readFileSync(claudeMd, "utf8"), /OPENPETS:IMPORT:START/);
+  assert.equal((readFileSync(claudeMd, "utf8").match(/@~\/\.claude\/noelcrew\.md/g) ?? []).length, 1);
+  assert.match(readFileSync(claudeMd, "utf8"), /NOELCREW:IMPORT:START/);
 
-  writeFileSync(openpetsMd, `${readFileSync(openpetsMd, "utf8")}\nUser custom note.\n`, "utf8");
-  const uninstalled = uninstallClaudeOpenPetsMemory(dir);
+  writeFileSync(noelcrewMd, `${readFileSync(noelcrewMd, "utf8")}\nUser custom note.\n`, "utf8");
+  const uninstalled = uninstallClaudeNoelCrewMemory(dir);
   assert.equal(uninstalled.changed, true);
-  assert.doesNotMatch(readFileSync(claudeMd, "utf8"), /openpets\.md/);
-  assert.equal(existsSync(openpetsMd), true, "customized openpets.md should be preserved after managed block removal.");
-  assert.match(readFileSync(openpetsMd, "utf8"), /User custom note/);
+  assert.doesNotMatch(readFileSync(claudeMd, "utf8"), /noelcrew\.md/);
+  assert.equal(existsSync(noelcrewMd), true, "customized noelcrew.md should be preserved after managed block removal.");
+  assert.match(readFileSync(noelcrewMd, "utf8"), /User custom note/);
 
   const userImportHome = join(dir, "user-import-home");
   const userClaudeDir = join(userImportHome, ".claude");
   mkdirSync(userClaudeDir, { recursive: true });
-  writeFileSync(join(userClaudeDir, "CLAUDE.md"), `# User-owned import\n${openPetsClaudeImportLine}\n`, "utf8");
-  writeFileSync(join(userClaudeDir, "openpets.md"), "User-owned content.\n", "utf8");
-  installClaudeOpenPetsMemory(userImportHome);
-  assert.doesNotMatch(readFileSync(join(userClaudeDir, "CLAUDE.md"), "utf8"), /OPENPETS:IMPORT:START/, "pre-existing import should remain user-owned.");
-  uninstallClaudeOpenPetsMemory(userImportHome);
-  assert.match(readFileSync(join(userClaudeDir, "CLAUDE.md"), "utf8"), /@~\/\.claude\/openpets\.md/, "user-owned import should not be removed.");
-  assert.match(readFileSync(join(userClaudeDir, "openpets.md"), "utf8"), /User-owned content/, "user-owned openpets.md content should be preserved.");
+  writeFileSync(join(userClaudeDir, "CLAUDE.md"), `# User-owned import\n${noelCrewClaudeImportLine}\n`, "utf8");
+  writeFileSync(join(userClaudeDir, "noelcrew.md"), "User-owned content.\n", "utf8");
+  installClaudeNoelCrewMemory(userImportHome);
+  assert.doesNotMatch(readFileSync(join(userClaudeDir, "CLAUDE.md"), "utf8"), /NOELCREW:IMPORT:START/, "pre-existing import should remain user-owned.");
+  uninstallClaudeNoelCrewMemory(userImportHome);
+  assert.match(readFileSync(join(userClaudeDir, "CLAUDE.md"), "utf8"), /@~\/\.claude\/noelcrew\.md/, "user-owned import should not be removed.");
+  assert.match(readFileSync(join(userClaudeDir, "noelcrew.md"), "utf8"), /User-owned content/, "user-owned noelcrew.md content should be preserved.");
 
   const symlinkHome = join(dir, "symlink-home");
   const symlinkTarget = join(dir, "outside");
   mkdirSync(symlinkHome);
   mkdirSync(symlinkTarget);
   symlinkSync(symlinkTarget, join(symlinkHome, ".claude"));
-  assert.throws(() => installClaudeOpenPetsMemory(symlinkHome));
+  assert.throws(() => installClaudeNoelCrewMemory(symlinkHome));
 
   const symlinkFileHome = join(dir, "symlink-file-home");
   mkdirSync(join(symlinkFileHome, ".claude"), { recursive: true });
   writeFileSync(join(dir, "outside-file"), "x", "utf8");
   symlinkSync(join(dir, "outside-file"), join(symlinkFileHome, ".claude", "CLAUDE.md"));
-  assert.throws(() => installClaudeOpenPetsMemory(symlinkFileHome));
+  assert.throws(() => installClaudeNoelCrewMemory(symlinkFileHome));
 
   const oversizedHome = join(dir, "oversized-home");
   mkdirSync(join(oversizedHome, ".claude"), { recursive: true });
   writeFileSync(join(oversizedHome, ".claude", "CLAUDE.md"), "x".repeat(1024 * 1024 + 1), "utf8");
-  assert.throws(() => installClaudeOpenPetsMemory(oversizedHome));
+  assert.throws(() => installClaudeNoelCrewMemory(oversizedHome));
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

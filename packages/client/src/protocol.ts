@@ -1,5 +1,5 @@
-export const openPetsIpcProtocol = "openpets-ipc";
-export const openPetsIpcVersion = 1;
+export const noelCrewIpcProtocol = "noelcrew-ipc";
+export const noelCrewIpcVersion = 1;
 export const maxIpcMessageBytes = 16 * 1024;
 export const connectTimeoutMs = 2_000;
 export const responseTimeoutMs = 3_000;
@@ -18,24 +18,24 @@ export const allowedReactions = [
   "celebrating",
 ] as const;
 
-export type OpenPetsReaction = typeof allowedReactions[number];
-export type OpenPetsIpcMethod = "hello" | "status" | "pets.list" | "pets.install" | "lease.acquire" | "lease.heartbeat" | "lease.release" | "pet.react" | "pet.say";
+export type NoelCrewReaction = typeof allowedReactions[number];
+export type NoelCrewIpcMethod = "hello" | "status" | "pets.list" | "pets.install" | "lease.acquire" | "lease.heartbeat" | "lease.release" | "pet.react" | "pet.say";
 
-export interface OpenPetsIpcRequest {
+export interface NoelCrewIpcRequest {
   readonly id: string;
   readonly version: 1;
   readonly token: string;
-  readonly method: OpenPetsIpcMethod;
+  readonly method: NoelCrewIpcMethod;
   readonly params?: unknown;
 }
 
-export interface OpenPetsIpcOkResponse<T = unknown> {
+export interface NoelCrewIpcOkResponse<T = unknown> {
   readonly id: string | null;
   readonly ok: true;
   readonly result: T;
 }
 
-export interface OpenPetsIpcErrorResponse {
+export interface NoelCrewIpcErrorResponse {
   readonly id: string | null;
   readonly ok: false;
   readonly error: {
@@ -44,11 +44,11 @@ export interface OpenPetsIpcErrorResponse {
   };
 }
 
-export type OpenPetsIpcResponse<T = unknown> = OpenPetsIpcOkResponse<T> | OpenPetsIpcErrorResponse;
+export type NoelCrewIpcResponse<T = unknown> = NoelCrewIpcOkResponse<T> | NoelCrewIpcErrorResponse;
 
-export function parseIpcResponse<T = unknown>(value: unknown): OpenPetsIpcResponse<T> {
-  if (!isRecord(value)) throw new OpenPetsClientError("invalid_response", "IPC response must be an object.");
-  if (typeof value.id !== "string" && value.id !== null) throw new OpenPetsClientError("invalid_response", "IPC response id is invalid.");
+export function parseIpcResponse<T = unknown>(value: unknown): NoelCrewIpcResponse<T> {
+  if (!isRecord(value)) throw new NoelCrewClientError("invalid_response", "IPC response must be an object.");
+  if (typeof value.id !== "string" && value.id !== null) throw new NoelCrewClientError("invalid_response", "IPC response id is invalid.");
 
   if (value.ok === true) {
     return { id: value.id, ok: true, result: value.result as T };
@@ -58,17 +58,17 @@ export function parseIpcResponse<T = unknown>(value: unknown): OpenPetsIpcRespon
     return { id: value.id, ok: false, error: { code: value.error.code, message: value.error.message } };
   }
 
-  throw new OpenPetsClientError("invalid_response", "IPC response shape is invalid.");
+  throw new NoelCrewClientError("invalid_response", "IPC response shape is invalid.");
 }
 
-export function validateReaction(value: string): OpenPetsReaction {
-  if (!allowedReactions.includes(value as OpenPetsReaction)) {
-    throw new OpenPetsClientError("invalid_reaction", "Invalid OpenPets reaction.");
+export function validateReaction(value: string): NoelCrewReaction {
+  if (!allowedReactions.includes(value as NoelCrewReaction)) {
+    throw new NoelCrewClientError("invalid_reaction", "Invalid NoelCrew reaction.");
   }
-  return value as OpenPetsReaction;
+  return value as NoelCrewReaction;
 }
 
-export class OpenPetsClientError extends Error {
+export class NoelCrewClientError extends Error {
   constructor(readonly code: string, message: string) {
     super(message);
   }

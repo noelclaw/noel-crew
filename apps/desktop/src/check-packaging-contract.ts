@@ -15,18 +15,18 @@ const rootPackageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), 
 const builderConfigPath = join(appDir, "electron-builder.yml");
 const builderConfig = readFileSync(builderConfigPath, "utf8");
 
-assert.equal(packageJson.description, "OpenPets tray-first desktop companion app.");
-assert.equal(packageJson.author, "OpenPets");
+assert.equal(packageJson.description, "NoelCrew tray-first desktop companion app.");
+assert.equal(packageJson.author, "NoelCrew");
 assert.match(packageJson.scripts?.package ?? "", /node scripts\/clean-package-output\.cjs && electron-builder/);
 assert.match(packageJson.scripts?.["package:dir"] ?? "", /node scripts\/clean-package-output\.cjs && electron-builder --dir/);
-assert.equal(rootPackageJson.scripts?.["package:desktop:dir"], "pnpm build && pnpm --filter @open-pets/desktop package:dir");
-assert.equal(packageJson.dependencies?.["@open-pets/claude"], "workspace:*");
-assert.equal(packageJson.dependencies?.["@open-pets/cli"], "workspace:*");
-assert.equal(packageJson.dependencies?.["@open-pets/mcp"], "workspace:*");
-assert.equal(packageJson.dependencies?.["@open-pets/opencode"], "workspace:*");
-assert.equal(packageJson.dependencies?.["@open-pets/agent-events"], "workspace:*");
-assert.match(builderConfig, /appId:\s*dev\.openpets\.app/);
-assert.match(builderConfig, /productName:\s*OpenPets/);
+assert.equal(rootPackageJson.scripts?.["package:desktop:dir"], "pnpm build && pnpm --filter @noelclaw/desktop package:dir");
+assert.equal(packageJson.dependencies?.["@noelclaw/claude"], "workspace:*");
+assert.equal(packageJson.dependencies?.["@noelclaw/cli"], "workspace:*");
+assert.equal(packageJson.dependencies?.["@noelclaw/mcp"], "workspace:*");
+assert.equal(packageJson.dependencies?.["@noelclaw/opencode"], "workspace:*");
+assert.equal(packageJson.dependencies?.["@noelclaw/agent-events"], "workspace:*");
+assert.match(builderConfig, /appId:\s*dev\.noelcrew\.app/);
+assert.match(builderConfig, /productName:\s*NoelCrew/);
 assert.match(builderConfig, /output:\s*dist-electron/);
 assert.match(builderConfig, /publish:\s*null/);
 assert.match(builderConfig, /asar:\s*true/);
@@ -74,15 +74,15 @@ for (const reaction of ["idle", "thinking", "working", "editing", "running", "te
   assert.match(petWindowSource, new RegExp(`${reaction}:\\s*["']`), `pet renderer must map reaction to sprite state: ${reaction}`);
   assert.match(reactionMessagesSource, new RegExp(`${reaction}:\\s*\\[`), `reaction messages must define a pool for: ${reaction}`);
 }
-assert.match(petWindowSource, /satisfies Record<OpenPetsReaction, UniversalSpriteState>/, "reaction-to-sprite-state mapping must be exhaustive over OpenPetsReaction.");
-assert.match(reactionMessagesSource, /satisfies Record<OpenPetsReaction, readonly string\[\]>/, "reaction-only bubble message pools must be exhaustive over OpenPetsReaction.");
+assert.match(petWindowSource, /satisfies Record<NoelCrewReaction, UniversalSpriteState>/, "reaction-to-sprite-state mapping must be exhaustive over NoelCrewReaction.");
+assert.match(reactionMessagesSource, /satisfies Record<NoelCrewReaction, readonly string\[\]>/, "reaction-only bubble message pools must be exhaustive over NoelCrewReaction.");
 assert.match(petWindowSource, /pickReactionMessage\(display\.reaction\)/, "reaction-only bubbles must render randomized messages instead of raw lowercase reaction ids.");
 assert.match(petWindowSource, /function preparePetTransientDisplay/, "reaction-only bubbles must prepare a stable random message before rerenders.");
 assert.match(petWindowSource, /function mergePetTransientDisplay/, "reaction-only events must not replace an active explicit message bubble.");
 assert.match(petWindowSource, /function getTransientReactionAnimationMs/, "finite reaction animations must expose their own shorter lifetime.");
 assert.match(petWindowSource, /function clearTransientReaction/, "finite reaction animations must be clearable while the bubble remains visible.");
-assert.match(petWindowSource, /webContents\.send\("openpets:pet-reaction-state"/, "finite reaction animations must clear sprite state without reloading the bubble.");
-assert.match(petPreloadSource, /openpets:pet-reaction-state/, "pet preload must accept in-place reaction state updates.");
+assert.match(petWindowSource, /webContents\.send\("noelcrew:pet-reaction-state"/, "finite reaction animations must clear sprite state without reloading the bubble.");
+assert.match(petPreloadSource, /noelcrew:pet-reaction-state/, "pet preload must accept in-place reaction state updates.");
 assert.match(displaySource, /width:\s*220/, "pet windows must stay tightly bounded around pet and bubble.");
 assert.match(displaySource, /height:\s*320/, "pet windows must be tall enough for adaptive long message bubbles at large pet scale without becoming a huge click shield.");
 assert.match(petWindowSource, /function getBubbleClassName/, "pet bubbles must classify explicit messages by length.");
@@ -93,8 +93,8 @@ assert.match(petWindowSource, /function installMousePassthroughAndDrag/, "pet wi
 assert.match(petWindowSource, /setIgnoreMouseEvents\(true, \{ forward: true \}\)/, "transparent pet window background must use OS-level mouse passthrough.");
 assert.match(petWindowSource, /setIgnoreMouseEvents\(false\)/, "visible pet and bubble hit targets must re-enable mouse handling.");
 assert.match(petWindowSource, /\.pet-shell[\s\S]*?-webkit-app-region: no-drag; cursor: grab;/, "pet dragging must avoid Electron draggable regions so right-click context menus work.");
-assert.match(petPreloadSource, /openpets:pet-hit-test/, "pet preload must report visible pet and bubble hit testing for passthrough.");
-assert.match(petPreloadSource, /openpets:pet-drag-start/, "pet preload must start controlled pet dragging from the sprite.");
+assert.match(petPreloadSource, /noelcrew:pet-hit-test/, "pet preload must report visible pet and bubble hit testing for passthrough.");
+assert.match(petPreloadSource, /noelcrew:pet-drag-start/, "pet preload must start controlled pet dragging from the sprite.");
 assert.match(petWindowSource, /function installPetContextMenu/, "pet windows must install a native right-click context menu.");
 assert.match(petWindowSource, /webContents\.on\("context-menu"/, "pet context menu must be handled in the Electron main process.");
 assert.match(petWindowSource, /Menu\.buildFromTemplate/, "pet context menu must use a small native Electron menu.");
@@ -108,12 +108,12 @@ assert.match(agentPetControllerSource, /function clearAgentPetLeaseState/, "agen
 assert.match(localIpcSource, /handleLastExplicitLease/, "agent pet dismissal must clear when the explicit lease group ends.");
 assert.match(localIpcSource, /clearAgentPetLeaseState\(petId\)/, "last explicit lease cleanup must reset dismissed agent pet state.");
 assert.match(localIpcSource, /reason: applied\.reason/, "IPC responses must report dismissed explicit pet events as not shown.");
-assert.match(updateCheckerSource, /alvinunreal\/openpets/, "GitHub release notice must check the public OpenPets repository.");
+assert.match(updateCheckerSource, /alvinunreal\/noelcrew/, "GitHub release notice must check the public NoelCrew repository.");
 assert.match(updateCheckerSource, /api\.github\.com\/repos\/\$\{githubRepository\}\/releases\/latest/, "update checker must use GitHub latest release API.");
 assert.match(updateCheckerSource, /shell\.openExternal\(url\)/, "update action must open the GitHub release page externally.");
 assert.match(traySource, /Update available:/, "tray menu must surface available updates.");
-assert.match(windowsSource, /openpets:check-for-updates/, "settings window must be able to trigger update checks.");
-assert.match(windowsSource, /openpets:open-update-release-page/, "settings window must be able to open the release page.");
+assert.match(windowsSource, /noelcrew:check-for-updates/, "settings window must be able to trigger update checks.");
+assert.match(windowsSource, /noelcrew:open-update-release-page/, "settings window must be able to open the release page.");
 assert.match(windowsSource, /id="check-for-updates"/, "settings UI must include a Check for updates button.");
 assert.match(windowsSource, /id="open-update-release"/, "settings UI must include an Open release button.");
 assert.match(preloadSource, /checkForUpdates/, "settings preload must expose update checks.");
@@ -153,12 +153,12 @@ for (const reaction of allowedReactions) {
 }
 assert.equal(pickReactionMessage("success", () => 0), reactionMessagePools.success[0], "reaction message picking must be deterministic when random is injected.");
 const agentSetupHtmlSource = windowsSource.match(/function createAgentSetupHtml[\s\S]*?function createSettingsHtml/)?.[0] ?? "";
-assert.match(windowsSource, /onboarding-logo\.webp/, "onboarding greeting must reference the bundled OpenPets logo asset.");
+assert.match(windowsSource, /onboarding-logo\.webp/, "onboarding greeting must reference the bundled NoelCrew logo asset.");
 assert.match(windowsSource, /onboarding-pets\.webp/, "onboarding greeting must reference the bundled pet scene asset.");
 assert.ok(windowsSource.includes(`content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'"`), "onboarding image CSP must stay data-only for embedded packaged assets.");
 assert.doesNotMatch(windowsSource, /data-default-pet-sprite-src|createAssetDataUrl\("default-pet-spritesheet\.webp"/, "Pet Manager must not embed the large default spritesheet into the task-window data URL.");
 assert.match(windowsSource, /default-pet-thumbnail\.png/, "Pet Manager must use the small bundled default pet thumbnail for built-in preview.");
-assert.ok(windowsSource.includes(`content="default-src 'none'; img-src data: https://openpets.dev openpets-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'"`), "Pet Manager image CSP must stay scoped to data URLs, openpets.dev catalog previews, and the Codex spritesheet protocol.");
+assert.ok(windowsSource.includes(`content="default-src 'none'; img-src data: https://noelclaw.fun noelcrew-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'"`), "Pet Manager image CSP must stay scoped to data URLs, noelclaw.fun catalog previews, and the Codex spritesheet protocol.");
 assert.match(windowsSource, /petManagerWindowWidth\s*=\s*1160/, "Pet Manager should use the approved wider 1160px default window width.");
 assert.match(windowsSource, /petManagerWindowHeight\s*=\s*780/, "Pet Manager should use the approved taller 780px default window height.");
 assert.match(agentSetupHtmlSource, /content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'"/, "Agent Setup image CSP must stay data-only for the bundled logo asset.");
@@ -185,12 +185,12 @@ assert.match(windowsSource, /agentSetupWindowHeight\s*=\s*780/, "Agent Setup sho
 assert.match(windowsSource, /refreshDefaultPetContent\(\);\s*refreshAgentPetContent\(\);/, "pet scale preference changes must refresh default and agent pet windows.");
 assert.ok(existsSync(join(appDir, "scripts", "clean-package-output.cjs")), "package output cleanup helper must exist.");
 assert.ok(existsSync(join(distDir, "main.js")), "desktop main build output must exist before packaging checks run.");
-assert.ok(existsSync(join(repoRoot, "packages", "claude", "dist", "index.js")), "@open-pets/claude must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "client", "dist", "index.js")), "@open-pets/client must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "mcp", "dist", "index.js")), "@open-pets/mcp must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "cli", "dist", "index.js")), "@open-pets/cli must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "opencode", "dist", "plugin.js")), "@open-pets/opencode plugin must be built before packaging.");
-assert.ok(existsSync(join(repoRoot, "packages", "agent-events", "dist", "index.js")), "@open-pets/agent-events must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "claude", "dist", "index.js")), "@noelclaw/claude must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "client", "dist", "index.js")), "@noelclaw/client must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "mcp", "dist", "index.js")), "@noelclaw/mcp must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "cli", "dist", "index.js")), "@noelclaw/cli must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "opencode", "dist", "plugin.js")), "@noelclaw/opencode plugin must be built before packaging.");
+assert.ok(existsSync(join(repoRoot, "packages", "agent-events", "dist", "index.js")), "@noelclaw/agent-events must be built before packaging.");
 
 if (process.argv.includes("--output")) {
   checkPackageOutput();
@@ -211,27 +211,27 @@ function checkPackageOutput(): void {
   assert.ok(existsSync(join(appResourceDir, "app.asar")), "packaged app.asar is missing.");
   const appContents = join(appResourceDir, "app.asar.unpacked");
   assert.ok(existsSync(appContents), "packaged app.asar.unpacked resources are missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "claude", "dist", "index.js")), "packaged @open-pets/claude runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "claude", "dist", "cli.js")), "packaged @open-pets/claude CLI runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "claude", "package.json")), "packaged @open-pets/claude package metadata is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "client", "dist", "index.js")), "packaged @open-pets/client runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "client", "package.json")), "packaged @open-pets/client package metadata is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "mcp", "dist", "index.js")), "packaged @open-pets/mcp runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "mcp", "package.json")), "packaged @open-pets/mcp package metadata is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "cli", "dist", "index.js")), "packaged @open-pets/cli runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "opencode", "dist", "plugin.js")), "packaged @open-pets/opencode plugin runtime is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "opencode", "package.json")), "packaged @open-pets/opencode package metadata is missing.");
-  assert.ok(existsSync(join(appContents, "node_modules", "@open-pets", "agent-events", "dist", "index.js")), "packaged @open-pets/agent-events runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "claude", "dist", "index.js")), "packaged @noelclaw/claude runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "claude", "dist", "cli.js")), "packaged @noelclaw/claude CLI runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "claude", "package.json")), "packaged @noelclaw/claude package metadata is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "client", "dist", "index.js")), "packaged @noelclaw/client runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "client", "package.json")), "packaged @noelclaw/client package metadata is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "mcp", "dist", "index.js")), "packaged @noelclaw/mcp runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "mcp", "package.json")), "packaged @noelclaw/mcp package metadata is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "cli", "dist", "index.js")), "packaged @noelclaw/cli runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "opencode", "dist", "plugin.js")), "packaged @noelclaw/opencode plugin runtime is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "opencode", "package.json")), "packaged @noelclaw/opencode package metadata is missing.");
+  assert.ok(existsSync(join(appContents, "node_modules", "@noel-crew", "agent-events", "dist", "index.js")), "packaged @noelclaw/agent-events runtime is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "@modelcontextprotocol", "sdk")), "packaged MCP SDK runtime dependency is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "zod", "index.cjs")), "packaged zod runtime dependency is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "yauzl", "index.js")), "packaged yauzl runtime dependency is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "yauzl", "fd-slicer.js")), "packaged yauzl fd-slicer helper is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "buffer-crc32", "index.js")), "packaged yauzl transitive dependency buffer-crc32 is missing.");
   assert.ok(existsSync(join(appContents, "node_modules", "pend", "index.js")), "packaged yauzl transitive dependency pend is missing.");
-  assertRegularNonSymlink(join(appContents, "node_modules", "@open-pets", "mcp", "dist", "index.js"));
-  assertRegularNonSymlink(join(appContents, "node_modules", "@open-pets", "cli", "dist", "index.js"));
-  assertRegularNonSymlink(join(appContents, "node_modules", "@open-pets", "opencode", "dist", "plugin.js"));
-  assertRegularNonSymlink(join(appContents, "node_modules", "@open-pets", "claude", "dist", "cli.js"));
+  assertRegularNonSymlink(join(appContents, "node_modules", "@noel-crew", "mcp", "dist", "index.js"));
+  assertRegularNonSymlink(join(appContents, "node_modules", "@noel-crew", "cli", "dist", "index.js"));
+  assertRegularNonSymlink(join(appContents, "node_modules", "@noel-crew", "opencode", "dist", "plugin.js"));
+  assertRegularNonSymlink(join(appContents, "node_modules", "@noel-crew", "claude", "dist", "cli.js"));
   assertCommandSmoke(appContents);
 }
 
@@ -296,7 +296,7 @@ function isInside(parent: string, child: string): boolean {
 }
 
 function checkCleanupHelper(): void {
-  const sentinel = join(appDir, "dist-electron", ".openpets-clean-sentinel");
+  const sentinel = join(appDir, "dist-electron", ".noelcrew-clean-sentinel");
   mkdirSync(dirname(sentinel), { recursive: true });
   writeFileSync(sentinel, "stale", "utf8");
   const result = spawnSync(process.execPath, [join(appDir, "scripts", "clean-package-output.cjs")], { cwd: appDir, encoding: "utf8" });
@@ -326,20 +326,20 @@ function assertSafeBundledSvg(path: string, message: string): void {
 }
 
 function assertCommandSmoke(appContents: string): void {
-  const mcpEntry = join(appContents, "node_modules", "@open-pets", "mcp", "dist", "index.js");
+  const mcpEntry = join(appContents, "node_modules", "@noel-crew", "mcp", "dist", "index.js");
   const mcp = spawnSync(process.execPath, [mcpEntry, "--version"], { encoding: "utf8" });
   assert.equal(mcp.status, 0, `packaged MCP command smoke failed: ${mcp.stderr || mcp.stdout}`);
 
-  const hookEntry = join(appContents, "node_modules", "@open-pets", "claude", "dist", "cli.js");
-  const hook = spawnSync(process.execPath, [hookEntry, "hook", "--openpets-managed"], {
+  const hookEntry = join(appContents, "node_modules", "@noel-crew", "claude", "dist", "cli.js");
+  const hook = spawnSync(process.execPath, [hookEntry, "hook", "--noelcrew-managed"], {
     input: JSON.stringify({ hook_event_name: "Notification", message: "safe" }),
     encoding: "utf8",
-    env: { ...process.env, OPENPETS_DISCOVERY_FILE: join(appContents, "missing-ipc.json") },
+    env: { ...process.env, NOELCREW_DISCOVERY_FILE: join(appContents, "missing-ipc.json") },
   });
   assert.equal(hook.status, 0, `packaged Claude hook command smoke failed: ${hook.stderr || hook.stdout}`);
   assert.equal(hook.stdout, "");
 
-  const opencodePlugin = join(appContents, "node_modules", "@open-pets", "opencode", "dist", "plugin.js");
+  const opencodePlugin = join(appContents, "node_modules", "@noel-crew", "opencode", "dist", "plugin.js");
   const plugin = spawnSync(process.execPath, ["--input-type=module", "--eval", `const mod = await import(${JSON.stringify(`file://${opencodePlugin}`)}); if (!mod.default?.server || !mod.default?.id) process.exit(2);`], { encoding: "utf8" });
   assert.equal(plugin.status, 0, `packaged OpenCode plugin smoke failed: ${plugin.stderr || plugin.stdout}`);
 }

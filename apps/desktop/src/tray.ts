@@ -3,7 +3,7 @@ import { Menu, Tray, type MenuItemConstructorOptions } from "electron";
 import { getAppStateSnapshot, isOnboardingCompleted } from "./app-state.js";
 import { createTrayIcon } from "./assets.js";
 import { hideDefaultPet, isDefaultPetVisible, setDefaultPetPaused, showDefaultPet } from "./default-pet-controller.js";
-import { quitOpenPets } from "./lifecycle.js";
+import { quitNoelCrew } from "./lifecycle.js";
 import { shellState, togglePaused } from "./state.js";
 import { getUpdateStatus, openUpdateReleasePage } from "./update-checker.js";
 import { openTaskWindow } from "./windows.js";
@@ -16,9 +16,9 @@ export function createAppTray(): Tray {
   }
 
   tray = new Tray(createTrayIcon());
-  tray.setToolTip("OpenPets");
+  tray.setToolTip("NoelCrew");
   refreshTrayMenu();
-  console.log("OpenPets tray created.");
+  console.log("NoelCrew tray created.");
 
   return tray;
 }
@@ -44,7 +44,7 @@ export function refreshTrayMenu(): void {
 
   const menu = Menu.buildFromTemplate([
     {
-      label: "OpenPets",
+      label: "NoelCrew",
       enabled: false,
     },
     ...createUpdateMenuItems(),
@@ -71,7 +71,7 @@ export function refreshTrayMenu(): void {
       click: () => {
         const paused = togglePaused();
         setDefaultPetPaused(paused);
-        console.log(paused ? "OpenPets paused." : "OpenPets resumed.");
+        console.log(paused ? "NoelCrew paused." : "NoelCrew resumed.");
         refreshTrayMenu();
       },
     },
@@ -90,8 +90,8 @@ export function refreshTrayMenu(): void {
     },
     { type: "separator" },
     {
-      label: "Quit OpenPets",
-      click: () => quitOpenPets(),
+      label: "Quit NoelCrew",
+      click: () => quitNoelCrew(),
     },
   ]);
 

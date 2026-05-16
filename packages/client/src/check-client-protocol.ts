@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 
 import { parseIpcEndpoint, validateDiscovery } from "./discovery.js";
 import { parsePetInstallResult, parsePetListResult } from "./index.js";
-import { OpenPetsClientError, parseIpcResponse, validateReaction } from "./protocol.js";
+import { NoelCrewClientError, parseIpcResponse, validateReaction } from "./protocol.js";
 
 const baseDiscovery = {
   protocolVersion: 1,
-  protocol: "openpets-ipc",
-  endpoint: process.platform === "win32" ? "\\\\.\\pipe\\openpets-abc-123" : "/tmp/openpets-501/openpets-123.sock",
+  protocol: "noelcrew-ipc",
+  endpoint: process.platform === "win32" ? "\\\\.\\pipe\\noelcrew-abc-123" : "/tmp/noelcrew-501/noelcrew-123.sock",
   token: "x".repeat(32),
   appVersion: "0.0.0",
   pid: 123,
@@ -51,7 +51,7 @@ function assertRejects(callback: () => unknown): void {
   try {
     callback();
   } catch (error) {
-    if (error instanceof OpenPetsClientError || error instanceof Error) return;
+    if (error instanceof NoelCrewClientError || error instanceof Error) return;
   }
   throw new Error("Expected validation to reject.");
 }

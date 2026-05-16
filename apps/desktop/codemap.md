@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-OpenPets desktop companion application. Tray-first Electron app providing animated desktop pets that react to coding agent events. Manages pet installations, agent integrations (Claude Code, OpenCode), and local IPC for CLI communication.
+NoelCrew desktop companion application. Tray-first Electron app providing animated desktop pets that react to coding agent events. Manages pet installations, agent integrations (Claude Code, OpenCode), and local IPC for CLI communication.
 
 ## Design
 
@@ -32,10 +32,10 @@ OpenPets desktop companion application. Tray-first Electron app providing animat
 
 ## Integration Points
 
-- **Workspace Packages**: `@open-pets/claude` (MCP/hooks), `@open-pets/opencode` (global setup), `@open-pets/cli` (bundled commands)
+- **Workspace Packages**: `@noelclaw/claude` (MCP/hooks), `@noelclaw/opencode` (global setup), `@noelclaw/cli` (bundled commands)
 - **External Services**: 
-  - `https://openpets.dev/pets/catalog.v2.json` (pet catalog)
-  - `https://zip.openpets.dev/pets/{id}.zip` (pet downloads)
+  - `https://noelclaw.fun/pets/catalog.v2.json` (pet catalog)
+  - `https://zip.noelclaw.fun/pets/{id}.zip` (pet downloads)
   - GitHub API (release checks)
 - **System Integration**:
   - Claude Code: `~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `claude mcp` commands

@@ -7,7 +7,7 @@ import { getAppStateSnapshot, markPetBroken, type PetScaleValue } from "./app-st
 import { clampToPrimaryWorkArea, defaultPetWindowSize, getDefaultPetInitialPosition, type Point } from "./display.js";
 import { builtInPet } from "./built-in-pet.js";
 import { getInstalledPetDir } from "./pet-paths.js";
-import type { OpenPetsReaction } from "./local-ipc-protocol.js";
+import type { NoelCrewReaction } from "./local-ipc-protocol.js";
 import { pickReactionMessage } from "./reaction-messages.js";
 
 export interface DefaultPetWindowOptions {
@@ -29,12 +29,12 @@ export interface AgentPetWindowOptions {
 }
 
 export interface PetTransientDisplay {
-  readonly reaction?: OpenPetsReaction;
+  readonly reaction?: NoelCrewReaction;
   readonly message?: string;
   readonly reactionMessage?: string;
 }
 
-export type PetStatusBadgeReaction = Exclude<OpenPetsReaction, "idle">;
+export type PetStatusBadgeReaction = Exclude<NoelCrewReaction, "idle">;
 
 type PetMotionState = "idle" | "run-left" | "run-right";
 type UniversalSpriteState = "idle" | "running-right" | "running-left" | "waving" | "jumping" | "failed" | "waiting" | "running" | "review";
@@ -57,7 +57,7 @@ const reactionToSpriteState = {
   success: "jumping",
   error: "failed",
   celebrating: "jumping",
-} as const satisfies Record<OpenPetsReaction, UniversalSpriteState>;
+} as const satisfies Record<NoelCrewReaction, UniversalSpriteState>;
 
 const defaultPetSprite = {
   fileName: "default-pet-spritesheet.webp",
@@ -79,7 +79,7 @@ const defaultPetSprite = {
 } as const;
 
 export function createDefaultPetWindow(options: DefaultPetWindowOptions): BrowserWindow {
-  const window = createBasePetWindow("OpenPets — Default Pet", options.position);
+  const window = createBasePetWindow("NoelCrew — Default Pet", options.position);
   installMousePassthroughAndDrag(window);
   installMotionStatePublisher(window);
   installPetContextMenu(window, { label: "Hide pet", click: options.onHideRequested });
@@ -104,7 +104,7 @@ export function createDefaultPetWindow(options: DefaultPetWindowOptions): Browse
 }
 
 export function createAgentPetWindow(options: AgentPetWindowOptions): BrowserWindow {
-  const window = createBasePetWindow(`OpenPets — ${options.displayName}`, options.position);
+  const window = createBasePetWindow(`NoelCrew — ${options.displayName}`, options.position);
   installMousePassthroughAndDrag(window);
   installMotionStatePublisher(window);
   installPetContextMenu(window, { label: "Close pet", click: options.onCloseRequested });
@@ -162,16 +162,16 @@ function installMousePassthroughAndDrag(window: BrowserWindow): void {
     dragging = null;
   };
 
-  ipcMain.on("openpets:pet-hit-test", handleHitTest);
-  ipcMain.on("openpets:pet-drag-start", handleDragStart);
-  ipcMain.on("openpets:pet-drag-move", handleDragMove);
-  ipcMain.on("openpets:pet-drag-end", handleDragEnd);
+  ipcMain.on("noelcrew:pet-hit-test", handleHitTest);
+  ipcMain.on("noelcrew:pet-drag-start", handleDragStart);
+  ipcMain.on("noelcrew:pet-drag-move", handleDragMove);
+  ipcMain.on("noelcrew:pet-drag-end", handleDragEnd);
   window.webContents.once("did-finish-load", () => setPassthrough(true));
   window.on("closed", () => {
-    ipcMain.off("openpets:pet-hit-test", handleHitTest);
-    ipcMain.off("openpets:pet-drag-start", handleDragStart);
-    ipcMain.off("openpets:pet-drag-move", handleDragMove);
-    ipcMain.off("openpets:pet-drag-end", handleDragEnd);
+    ipcMain.off("noelcrew:pet-hit-test", handleHitTest);
+    ipcMain.off("noelcrew:pet-drag-start", handleDragStart);
+    ipcMain.off("noelcrew:pet-drag-move", handleDragMove);
+    ipcMain.off("noelcrew:pet-drag-end", handleDragEnd);
   });
 }
 
@@ -291,7 +291,7 @@ export function clearTransientReaction(display: PetTransientDisplay): PetTransie
 
 export function setPetReactionState(window: BrowserWindow, state: UniversalSpriteState): void {
   if (window.isDestroyed()) return;
-  window.webContents.send("openpets:pet-reaction-state", state);
+  window.webContents.send("noelcrew:pet-reaction-state", state);
 }
 
 export function getSafeDefaultPetPosition(position: Point | undefined): Point {
@@ -320,7 +320,7 @@ async function createDefaultPetHtml(paused: boolean, display: PetTransientDispla
         <meta charset="utf-8" />
         <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src file: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>OpenPets Default Pet</title>
+        <title>NoelCrew Default Pet</title>
         <style>
           ${createPetWindowCss(paused, scale)}
           .sprite {
@@ -347,7 +347,7 @@ async function createDefaultPetHtml(paused: boolean, display: PetTransientDispla
         </style>
       </head>
       <body>
-        <div class="stage" aria-label="OpenPets default pet">
+        <div class="stage" aria-label="NoelCrew default pet">
           ${bubble}
           <div class="pet-shell">
             <div class="sprite" role="img" aria-label="Claude animated default pet"></div>
@@ -395,7 +395,7 @@ async function createInstalledPetHtml(petId: string, displayName: string, paused
           <meta charset="utf-8" />
           <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src file: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>OpenPets Default Pet</title>
+          <title>NoelCrew Default Pet</title>
           <style>
             ${createPetWindowCss(paused, scale)}
             .installed-card { width: ${Math.ceil(defaultPetSprite.frameWidth * scale)}px; height: ${Math.ceil(defaultPetSprite.frameHeight * scale)}px; overflow: visible; position: relative; }
@@ -493,7 +493,7 @@ function createSpriteRule(selector: string, state: UniversalSpriteState): string
   return `${selector} { --sprite-row-y: -${row.row * defaultPetSprite.frameHeight}px; --sprite-frames: ${row.frames}; --sprite-duration: ${row.durationMs}ms; --sprite-iterations: ${iterations}; }`;
 }
 
-function getReactionSpriteState(reaction: OpenPetsReaction | undefined): UniversalSpriteState {
+function getReactionSpriteState(reaction: NoelCrewReaction | undefined): UniversalSpriteState {
   return reaction ? reactionToSpriteState[reaction] : "idle";
 }
 
@@ -554,7 +554,7 @@ function installMotionStatePublisher(window: BrowserWindow): void {
   const sendMotionState = (state: PetMotionState): void => {
     if (window.isDestroyed() || lastSent === state) return;
     lastSent = state;
-    window.webContents.send("openpets:pet-motion", state);
+    window.webContents.send("noelcrew:pet-motion", state);
   };
 
   const scheduleIdle = (): void => {
@@ -581,7 +581,7 @@ function installMotionStatePublisher(window: BrowserWindow): void {
   window.on("moved", handleMove);
   window.webContents.on("did-finish-load", () => {
     lastSent = "idle";
-    window.webContents.send("openpets:pet-motion", "idle");
+    window.webContents.send("noelcrew:pet-motion", "idle");
   });
   window.on("closed", () => {
     if (idleTimer) clearTimeout(idleTimer);

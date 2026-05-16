@@ -9,18 +9,18 @@ let intentionalQuit = false;
 
 export function installAppLifecycle(): void {
   app.on("second-instance", () => {
-    console.log("Second OpenPets launch requested; keeping existing instance.");
+    console.log("Second NoelCrew launch requested; keeping existing instance.");
     focusOpenTaskWindows();
   });
 
   app.on("window-all-closed", () => {
     if (!intentionalQuit) {
-      console.log("All OpenPets task windows closed; keeping tray app running.");
+      console.log("All NoelCrew task windows closed; keeping tray app running.");
     }
   });
 
   app.on("activate", () => {
-    console.log("OpenPets activate event received; not opening a dashboard window.");
+    console.log("NoelCrew activate event received; not opening a dashboard window.");
   });
 
   app.on("before-quit", () => {
@@ -31,7 +31,7 @@ export function installAppLifecycle(): void {
   });
 }
 
-export function quitOpenPets(): void {
+export function quitNoelCrew(): void {
   intentionalQuit = true;
   app.quit();
 }

@@ -5,7 +5,7 @@ const allowedReactionStates = new Set(["idle", "running-right", "running-left", 
 let lastInteractiveHit = null;
 let dragging = false;
 
-ipcRenderer.on("openpets:pet-motion", (_event, state) => {
+ipcRenderer.on("noelcrew:pet-motion", (_event, state) => {
   if (!allowedMotionStates.has(state)) {
     return;
   }
@@ -21,7 +21,7 @@ ipcRenderer.on("openpets:pet-motion", (_event, state) => {
   }
 });
 
-ipcRenderer.on("openpets:pet-reaction-state", (_event, state) => {
+ipcRenderer.on("noelcrew:pet-reaction-state", (_event, state) => {
   if (!allowedReactionStates.has(state)) {
     return;
   }
@@ -45,7 +45,7 @@ const getInteractiveTarget = (event) => {
 const setInteractiveHit = (interactive) => {
   if (lastInteractiveHit === interactive) return;
   lastInteractiveHit = interactive;
-  ipcRenderer.send("openpets:pet-hit-test", interactive);
+  ipcRenderer.send("noelcrew:pet-hit-test", interactive);
 };
 
 const updateInteractiveHit = (event) => {
@@ -55,7 +55,7 @@ const updateInteractiveHit = (event) => {
 const installMouseInterop = () => {
   document.addEventListener("mousemove", (event) => {
     updateInteractiveHit(event);
-    if (dragging) ipcRenderer.send("openpets:pet-drag-move", { screenX: event.screenX, screenY: event.screenY });
+    if (dragging) ipcRenderer.send("noelcrew:pet-drag-move", { screenX: event.screenX, screenY: event.screenY });
   }, { passive: true });
 
   document.addEventListener("mousedown", (event) => {
@@ -65,13 +65,13 @@ const installMouseInterop = () => {
     event.preventDefault();
     dragging = true;
     setInteractiveHit(true);
-    ipcRenderer.send("openpets:pet-drag-start", { screenX: event.screenX, screenY: event.screenY });
+    ipcRenderer.send("noelcrew:pet-drag-start", { screenX: event.screenX, screenY: event.screenY });
   });
 
   document.addEventListener("mouseup", () => {
     if (!dragging) return;
     dragging = false;
-    ipcRenderer.send("openpets:pet-drag-end");
+    ipcRenderer.send("noelcrew:pet-drag-end");
   });
 
   document.addEventListener("mouseleave", () => {

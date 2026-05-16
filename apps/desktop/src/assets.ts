@@ -12,7 +12,7 @@ export function createTrayIcon(): NativeImage {
     return assetImage.resize({ width: 22, height: 22 });
   }
 
-  console.error(`OpenPets tray icon asset could not be loaded from ${assetPath}; using generated fallback icon.`);
+  console.error(`NoelCrew tray icon asset could not be loaded from ${assetPath}; using generated fallback icon.`);
   return createFallbackTrayIcon();
 }
 
@@ -45,7 +45,7 @@ function createFallbackTrayIcon(): NativeImage {
   });
 
   if (image.isEmpty()) {
-    console.error("OpenPets tray icon creation produced an empty image.");
+    console.error("NoelCrew tray icon creation produced an empty image.");
   }
 
   if (process.platform === "darwin") {

@@ -1,17 +1,17 @@
 # packages/cli/
 
-Main CLI tool for OpenPets agent configuration and pet management.
+Main CLI tool for NoelCrew agent configuration and pet management.
 
 ## Responsibility
 
-Primary user-facing CLI for the OpenPets ecosystem. Provides commands for: installing pets from gallery, configuring projects for Claude/OpenCode agents, running MCP server wrapper, and executing Claude hooks.
+Primary user-facing CLI for the NoelCrew ecosystem. Provides commands for: installing pets from gallery, configuring projects for Claude/OpenCode agents, running MCP server wrapper, and executing Claude hooks.
 
 ## Design
 
 **Command Router**: `main()` dispatches to subcommands based on `process.argv[2]`:
 - `install <pet-id>` - Install pet via running app or direct download
 - `configure` - Interactive project setup for Claude or OpenCode
-- `mcp` - Spawn MCP server (delegates to `@open-pets/mcp`)
+- `mcp` - Spawn MCP server (delegates to `@noelclaw/mcp`)
 - `hook` - Execute Claude hook from stdin
 
 **Configuration Flow** (`configureProject`):
@@ -20,7 +20,7 @@ Primary user-facing CLI for the OpenPets ecosystem. Provides commands for: insta
 3. List installed pets, prompt for selection (if no `--pet`)
 4. Build MCP command spec (published vs local dev mode)
 5. For Claude: Write MCP config via `claude mcp add-json`, write hook settings
-6. For OpenCode: Prepare and write OpenCode config via `@open-pets/opencode`
+6. For OpenCode: Prepare and write OpenCode config via `@noelclaw/opencode`
 
 **Safety Checks**:
 - Project path validation (no symlinks, must be directory)
@@ -36,7 +36,7 @@ Primary user-facing CLI for the OpenPets ecosystem. Provides commands for: insta
 ## Flow
 
 ```
-openpets configure --agent claude --pet <id> --cwd <dir>
+noelcrew configure --agent claude --pet <id> --cwd <dir>
     ↓
 resolveProjectDir() → assertSafeProjectHookPath()
     ↓
@@ -54,10 +54,10 @@ writePreparedHooks() → Atomic write to .claude/settings.local.json
 ## Integration Points
 
 **Dependencies**:
-- `@open-pets/client` - Pet listing, installation
-- `@open-pets/claude` - Hook management, MCP config
-- `@open-pets/mcp` - MCP server spawning
-- `@open-pets/opencode` - OpenCode project setup
+- `@noelclaw/client` - Pet listing, installation
+- `@noelclaw/claude` - Hook management, MCP config
+- `@noelclaw/mcp` - MCP server spawning
+- `@noelclaw/opencode` - OpenCode project setup
 
 **External Commands**:
 - `claude` - Claude Code CLI for MCP configuration

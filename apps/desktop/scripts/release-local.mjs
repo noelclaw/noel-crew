@@ -9,7 +9,7 @@ const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const desktopDir = resolve(scriptsDir, "..");
 const repoRoot = resolve(desktopDir, "../..");
 const outputDir = join(desktopDir, "dist-electron");
-const repository = "alvinunreal/openpets";
+const repository = "alvinunreal/noelcrew";
 
 const allowedArgs = new Set([
   "--dry-run",
@@ -53,7 +53,7 @@ function main() {
   preflight();
   if (!skipChecks) {
     run("pnpm", ["build"], { cwd: repoRoot });
-    run("pnpm", ["--filter", "@open-pets/desktop", "check"], { cwd: repoRoot });
+    run("pnpm", ["--filter", "@noelclaw/desktop", "check"], { cwd: repoRoot });
   }
 
   run("node", ["scripts/clean-package-output.cjs"], { cwd: desktopDir });
@@ -83,7 +83,7 @@ function main() {
   }
 
   const target = commandOutput("git", ["rev-parse", "HEAD"], { cwd: repoRoot }).trim();
-  run("gh", ["release", "create", tag, "--repo", repository, "--target", target, "--draft", "--title", `OpenPets ${tag}`, "--notes", defaultReleaseNotes()], { cwd: repoRoot });
+  run("gh", ["release", "create", tag, "--repo", repository, "--target", target, "--draft", "--title", `NoelCrew ${tag}`, "--notes", defaultReleaseNotes()], { cwd: repoRoot });
   run("gh", ["release", "upload", tag, "--repo", repository, ...uploadArtifacts], { cwd: repoRoot });
   console.log(`\nDraft release created: https://github.com/${repository}/releases/tag/${tag}`);
   console.log("Draft releases are not visible to the app update checker until you publish them.");
@@ -205,7 +205,7 @@ function run(command, args, options) {
 
 function defaultReleaseNotes() {
   return [
-    `Local draft release for OpenPets ${tag}.`,
+    `Local draft release for NoelCrew ${tag}.`,
     "",
     "Before publishing:",
     "- Smoke test macOS, Windows, and Linux artifacts.",

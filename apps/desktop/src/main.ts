@@ -8,7 +8,7 @@ import { createAppTray, refreshTrayMenu } from "./tray.js";
 import { checkForGitHubReleaseUpdate } from "./update-checker.js";
 import { installInternalUiHandlers, installInternalUiProtocol, openTaskWindow } from "./windows.js";
 
-// OpenPets does not store browser passwords, cookies, or encrypted app secrets.
+// NoelCrew does not store browser passwords, cookies, or encrypted app secrets.
 // Keep Chromium/Electron from prompting for macOS Keychain or Linux keyring access
 // during startup/profile initialization.
 app.commandLine.appendSwitch("use-mock-keychain");
@@ -22,7 +22,7 @@ if (!gotSingleInstanceLock) {
   installAppLifecycle();
 
   app.whenReady().then(async () => {
-    app.setName("OpenPets");
+    app.setName("NoelCrew");
 
     if (process.platform === "darwin") {
       app.dock?.hide();
@@ -42,15 +42,15 @@ if (!gotSingleInstanceLock) {
       try {
         openTaskWindow("onboarding");
       } catch (error) {
-        console.error("Failed to open OpenPets onboarding; continuing with tray app.", error);
+        console.error("Failed to open NoelCrew onboarding; continuing with tray app.", error);
       }
     }
     refreshTrayMenu();
     void checkForGitHubReleaseUpdate().then(() => refreshTrayMenu());
-    console.log("OpenPets desktop shell ready.");
+    console.log("NoelCrew desktop shell ready.");
   }).catch((error: unknown) => {
     releaseStartupInstallLock();
-    console.error("Failed to start OpenPets desktop shell.", error);
+    console.error("Failed to start NoelCrew desktop shell.", error);
     app.quit();
   });
 }

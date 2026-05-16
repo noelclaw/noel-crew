@@ -28,7 +28,7 @@ export interface InstalledPetState {
   readonly brokenReason?: string;
 }
 
-export interface OpenPetsStateV1 {
+export interface NoelCrewStateV1 {
   readonly version: 1;
   readonly preferences: {
     readonly defaultPetId: string;
@@ -50,11 +50,11 @@ export interface OpenPetsStateV1 {
 
 export { defaultPetScale, normalizePetScale, petScaleOptions, type PetScaleValue };
 
-const stateFileName = "openpets-state.json";
+const stateFileName = "noelcrew-state.json";
 const directInstallLockName = ".install-pet.lock";
 const directInstallLockStaleMs = 10 * 60 * 1000;
 let statePath: string | null = null;
-let currentState: OpenPetsStateV1 | null = null;
+let currentState: NoelCrewStateV1 | null = null;
 let startupInstallLockPath: string | null = null;
 
 export function initializeAppState(): void {
@@ -65,7 +65,7 @@ export function initializeAppState(): void {
   const nextState = normalizeState(readStateFile(statePath));
   writeStateToDisk(nextState);
   currentState = nextState;
-  console.log(`OpenPets state initialized at ${statePath}.`);
+  console.log(`NoelCrew state initialized at ${statePath}.`);
 }
 
 export function releaseStartupInstallLock(): void {
@@ -74,11 +74,11 @@ export function releaseStartupInstallLock(): void {
   if (lockPath) rmSync(lockPath, { recursive: true, force: true });
 }
 
-export function getAppStateSnapshot(): OpenPetsStateV1 {
+export function getAppStateSnapshot(): NoelCrewStateV1 {
   return cloneState(getInitializedState());
 }
 
-export function updatePreferences(patch: Partial<OpenPetsStateV1["preferences"]>): OpenPetsStateV1 {
+export function updatePreferences(patch: Partial<NoelCrewStateV1["preferences"]>): NoelCrewStateV1 {
   const state = getInitializedState();
   const preferences = normalizePreferences({ ...state.preferences, ...patch });
 
@@ -95,14 +95,14 @@ export function isOnboardingCompleted(): boolean {
   return getInitializedState().preferences.onboardingCompleted;
 }
 
-export function completeOnboarding(): OpenPetsStateV1 {
+export function completeOnboarding(): NoelCrewStateV1 {
   const state = getInitializedState();
   const nextState = normalizeState(markOnboardingCompleted(state));
   commitState(nextState);
   return getAppStateSnapshot();
 }
 
-export function setDefaultPet(defaultPetId: string): OpenPetsStateV1 {
+export function setDefaultPet(defaultPetId: string): NoelCrewStateV1 {
   const state = getInitializedState();
   const targetPet = state.pets.installed.find((pet) => pet.id === defaultPetId);
 
@@ -126,7 +126,7 @@ export function setDefaultPet(defaultPetId: string): OpenPetsStateV1 {
   return getAppStateSnapshot();
 }
 
-export function setDefaultPetPosition(position: Point): OpenPetsStateV1 {
+export function setDefaultPetPosition(position: Point): NoelCrewStateV1 {
   const state = getInitializedState();
 
   const nextState = normalizeState({
@@ -141,7 +141,7 @@ export function setDefaultPetPosition(position: Point): OpenPetsStateV1 {
   return getAppStateSnapshot();
 }
 
-export function resetDefaultPetPosition(position: Point): OpenPetsStateV1 {
+export function resetDefaultPetPosition(position: Point): NoelCrewStateV1 {
   return setDefaultPetPosition(position);
 }
 
@@ -149,7 +149,7 @@ export function getDefaultPetPosition(): Point | undefined {
   return getInitializedState().defaultPet.position;
 }
 
-export function installPetState(pet: Omit<InstalledPetState, "builtIn" | "protected" | "installed">): OpenPetsStateV1 {
+export function installPetState(pet: Omit<InstalledPetState, "builtIn" | "protected" | "installed">): NoelCrewStateV1 {
   const state = getInitializedState();
 
   if (state.pets.installed.some((installedPet) => installedPet.id === pet.id)) {
@@ -175,7 +175,7 @@ export function installPetState(pet: Omit<InstalledPetState, "builtIn" | "protec
   return getAppStateSnapshot();
 }
 
-export function removePetState(petId: string): OpenPetsStateV1 {
+export function removePetState(petId: string): NoelCrewStateV1 {
   if (petId === builtInPet.id) {
     throw new Error("Built-in pet cannot be removed.");
   }
@@ -204,7 +204,7 @@ export function removePetState(petId: string): OpenPetsStateV1 {
   return getAppStateSnapshot();
 }
 
-export function markPetBroken(petId: string, brokenReason: string): OpenPetsStateV1 {
+export function markPetBroken(petId: string, brokenReason: string): NoelCrewStateV1 {
   const state = getInitializedState();
 
   if (petId === builtInPet.id) {
@@ -228,15 +228,15 @@ export function markPetBroken(petId: string, brokenReason: string): OpenPetsStat
 
 export function getStateFilePath(): string {
   if (!statePath) {
-    throw new Error("OpenPets app state has not been initialized.");
+    throw new Error("NoelCrew app state has not been initialized.");
   }
 
   return statePath;
 }
 
-function getInitializedState(): OpenPetsStateV1 {
+function getInitializedState(): NoelCrewStateV1 {
   if (!currentState) {
-    throw new Error("OpenPets app state has not been initialized.");
+    throw new Error("NoelCrew app state has not been initialized.");
   }
 
   return currentState;
@@ -250,12 +250,12 @@ function readStateFile(path: string): unknown {
   try {
     return JSON.parse(readFileSync(path, "utf8")) as unknown;
   } catch (error) {
-    console.error(`Failed to read OpenPets state from ${path}; using defaults.`, error);
+    console.error(`Failed to read NoelCrew state from ${path}; using defaults.`, error);
     return undefined;
   }
 }
 
-function normalizeState(value: unknown): OpenPetsStateV1 {
+function normalizeState(value: unknown): NoelCrewStateV1 {
   const record = isRecord(value) ? value : {};
   const defaultPetRecord = isRecord(record.defaultPet) ? record.defaultPet : {};
   const preferencesRecord = isRecord(record.preferences) ? record.preferences : {};
@@ -281,7 +281,7 @@ function normalizeState(value: unknown): OpenPetsStateV1 {
   };
 }
 
-function normalizePreferences(value: Partial<OpenPetsStateV1["preferences"]>): OpenPetsStateV1["preferences"] {
+function normalizePreferences(value: Partial<NoelCrewStateV1["preferences"]>): NoelCrewStateV1["preferences"] {
   const defaultState = createDefaultState();
 
   return {
@@ -349,7 +349,7 @@ function normalizeInstalledPet(value: unknown): InstalledPetState | null {
   };
 }
 
-function createDefaultState(): OpenPetsStateV1 {
+function createDefaultState(): NoelCrewStateV1 {
   return {
     version: 1,
     preferences: {
@@ -369,12 +369,12 @@ function createDefaultState(): OpenPetsStateV1 {
   };
 }
 
-function commitState(nextState: OpenPetsStateV1): void {
+function commitState(nextState: NoelCrewStateV1): void {
   writeStateToDisk(nextState);
   currentState = nextState;
 }
 
-function writeStateToDisk(state: OpenPetsStateV1): void {
+function writeStateToDisk(state: NoelCrewStateV1): void {
   const path = getStateFilePath();
 
   mkdirSync(dirname(path), { recursive: true });
@@ -441,8 +441,8 @@ function normalizePosition(value: Partial<Point>): Point | undefined {
   };
 }
 
-function cloneState(state: OpenPetsStateV1): OpenPetsStateV1 {
-  return structuredClone(state) as OpenPetsStateV1;
+function cloneState(state: NoelCrewStateV1): NoelCrewStateV1 {
+  return structuredClone(state) as NoelCrewStateV1;
 }
 
 function acquireStartupInstallLock(userDataPath: string): string {
@@ -451,7 +451,7 @@ function acquireStartupInstallLock(userDataPath: string): string {
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       mkdirSync(lockPath, { mode: 0o700 });
-      writeFileSync(join(lockPath, "owner.json"), `${JSON.stringify({ pid: process.pid, createdAt: Date.now(), command: "openpets-startup" })}\n`, "utf8");
+      writeFileSync(join(lockPath, "owner.json"), `${JSON.stringify({ pid: process.pid, createdAt: Date.now(), command: "noelcrew-startup" })}\n`, "utf8");
       return lockPath;
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
@@ -460,10 +460,10 @@ function acquireStartupInstallLock(userDataPath: string): string {
         rmSync(lockPath, { recursive: true, force: true });
         continue;
       }
-      throw new Error("OpenPets cannot start while a direct pet install is in progress. Wait for install-pet to finish, then reopen OpenPets.");
+      throw new Error("NoelCrew cannot start while a direct pet install is in progress. Wait for install-pet to finish, then reopen NoelCrew.");
     }
   }
-  throw new Error("Could not acquire OpenPets startup lock.");
+  throw new Error("Could not acquire NoelCrew startup lock.");
 }
 
 function isStaleInstallLock(lockPath: string): boolean {

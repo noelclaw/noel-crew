@@ -1,10 +1,10 @@
 # packages/client/
 
-Core IPC client library for OpenPets desktop app communication.
+Core IPC client library for NoelCrew desktop app communication.
 
 ## Responsibility
 
-Provides the foundational client library for all OpenPets integrations. Handles discovery file reading, TCP socket connections, request/response protocol, and high-level pet operations (status, list, install, lease, react, say).
+Provides the foundational client library for all NoelCrew integrations. Handles discovery file reading, TCP socket connections, request/response protocol, and high-level pet operations (status, list, install, lease, react, say).
 
 ## Design
 
@@ -12,7 +12,7 @@ Provides the foundational client library for all OpenPets integrations. Handles 
 - Defines IPC protocol version (v1), message limits (16KB), timeouts (2s connect, 3s response)
 - Request/response types with discriminated union (`ok: true/false`)
 - Reaction validation against allowed enum values
-- Custom `OpenPetsClientError` with error codes
+- Custom `NoelCrewClientError` with error codes
 
 **Discovery Layer** (`discovery.ts`):
 - Cross-platform discovery file path resolution (macOS, Windows, Linux/XDG)
@@ -21,7 +21,7 @@ Provides the foundational client library for all OpenPets integrations. Handles 
 - Security: XDG_RUNTIME_DIR permission checks (0o700, ownership)
 
 **Client Layer** (`index.ts`):
-- Factory pattern: `createOpenPetsClient(options)` returns `OpenPetsClient` interface
+- Factory pattern: `createNoelCrewClient(options)` returns `NoelCrewClient` interface
 - Methods: `hello()`, `status()`, `listPets()`, `installPet()`, `acquireLease()`, `heartbeatLease()`, `releaseLease()`, `react()`, `say()`
 - Lease-aware operations for multi-pet targeting
 - Result parsers with validation
@@ -51,16 +51,16 @@ parseIpcResponse() → Validate shape, return result or throw
 ## Integration Points
 
 **Consumers** (all depend on this package):
-- `@open-pets/cli` - CLI commands
-- `@open-pets/mcp` - MCP tool implementations
-- `@open-pets/claude` - Hook execution
-- `@open-pets/opencode` - Plugin runtime
-- `@open-pets/install-pet` - Direct installation fallback
+- `@noelclaw/cli` - CLI commands
+- `@noelclaw/mcp` - MCP tool implementations
+- `@noelclaw/claude` - Hook execution
+- `@noelclaw/opencode` - Plugin runtime
+- `@noelclaw/install-pet` - Direct installation fallback
 
-**Desktop App**: Communicates with OpenPets desktop app via local socket (Unix domain socket or Windows named pipe) defined in discovery file.
+**Desktop App**: Communicates with NoelCrew desktop app via local socket (Unix domain socket or Windows named pipe) defined in discovery file.
 
 **Exports**:
-- `createOpenPetsClient()` - Main factory
+- `createNoelCrewClient()` - Main factory
 - `sendRequest()` - Low-level request function
 - `readDiscoveryFile()`, `getDiscoveryFilePath()` - Discovery utilities
-- `OpenPetsClientError`, error codes, types
+- `NoelCrewClientError`, error codes, types

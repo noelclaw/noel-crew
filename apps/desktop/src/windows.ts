@@ -22,23 +22,23 @@ interface TaskWindowDefinition {
 
 const taskWindowDefinitions: Record<TaskWindowKind, TaskWindowDefinition> = {
   "pet-manager": {
-    title: "OpenPets — Pet Manager",
+    title: "NoelCrew — Pet Manager",
     heading: "Manage Pets",
     description: "Install pets from the validated catalog, switch your active companion, and manage local pets.",
   },
   "agent-setup": {
-    title: "OpenPets — Integrations",
+    title: "NoelCrew — Integrations",
     heading: "Integrations",
-    description: "Connect OpenPets to coding tools with explicit confirmation.",
+    description: "Connect NoelCrew to coding tools with explicit confirmation.",
   },
   settings: {
-    title: "OpenPets — Settings",
+    title: "NoelCrew — Settings",
     heading: "Settings",
-    description: "Tune how OpenPets starts and resets your desktop companion.",
+    description: "Tune how NoelCrew starts and resets your desktop companion.",
   },
   onboarding: {
-    title: "OpenPets — Welcome",
-    heading: "Welcome to OpenPets",
+    title: "NoelCrew — Welcome",
+    heading: "Welcome to NoelCrew",
     description: "Set up your pets and coding-agent integrations, or skip anything and come back later from the tray.",
   },
 };
@@ -60,12 +60,12 @@ export function installInternalUiHandlers(): void {
 
   internalUiHandlersInstalled = true;
 
-  ipcMain.handle("openpets:get-state", (event) => {
+  ipcMain.handle("noelcrew:get-state", (event) => {
     assertAllowedSender(event, ["pet-manager", "settings", "agent-setup"]);
     return getAppStateSnapshot();
   });
 
-  ipcMain.handle("openpets:onboarding-snapshot", (event) => {
+  ipcMain.handle("noelcrew:onboarding-snapshot", (event) => {
     assertAllowedSender(event, ["onboarding"]);
     const state = getAppStateSnapshot();
     const defaultPet = state.pets.installed.find((pet) => pet.id === state.preferences.defaultPetId) ?? state.pets.installed[0];
@@ -75,7 +75,7 @@ export function installInternalUiHandlers(): void {
     };
   });
 
-  ipcMain.handle("openpets:onboarding-complete", async (event) => {
+  ipcMain.handle("noelcrew:onboarding-complete", async (event) => {
     assertAllowedSender(event, ["onboarding"]);
     completeOnboarding();
     const { refreshTrayMenu } = await import("./tray.js");
@@ -84,38 +84,38 @@ export function installInternalUiHandlers(): void {
     return { onboardingCompleted: true };
   });
 
-  ipcMain.handle("openpets:onboarding-open-pet-manager", (event) => {
+  ipcMain.handle("noelcrew:onboarding-open-pet-manager", (event) => {
     assertAllowedSender(event, ["onboarding"]);
     openTaskWindow("pet-manager");
   });
 
-  ipcMain.handle("openpets:onboarding-open-agent-setup", (event) => {
+  ipcMain.handle("noelcrew:onboarding-open-agent-setup", (event) => {
     assertAllowedSender(event, ["onboarding"]);
     openTaskWindow("agent-setup");
   });
 
-  ipcMain.handle("openpets:get-catalog", async (event) => {
+  ipcMain.handle("noelcrew:get-catalog", async (event) => {
     assertAllowedSender(event, ["pet-manager"]);
     return getCatalogUiState();
   });
 
-  ipcMain.handle("openpets:get-catalog-page", async (event, page: unknown) => {
+  ipcMain.handle("noelcrew:get-catalog-page", async (event, page: unknown) => {
     assertAllowedSender(event, ["pet-manager"]);
     if (typeof page !== "number" || !Number.isInteger(page) || page < 0) throw new Error("Invalid catalog page.");
     return getCatalogPageUiState(page);
   });
 
-  ipcMain.handle("openpets:get-catalog-search", async (event) => {
+  ipcMain.handle("noelcrew:get-catalog-search", async (event) => {
     assertAllowedSender(event, ["pet-manager"]);
     return getCatalogSearchUiState();
   });
 
-  ipcMain.handle("openpets:get-codex-pets", async (event) => {
+  ipcMain.handle("noelcrew:get-codex-pets", async (event) => {
     assertAllowedSender(event, ["pet-manager"]);
     return getCodexPetsUiState();
   });
 
-  ipcMain.handle("openpets:update-preferences", (event, patch: unknown) => {
+  ipcMain.handle("noelcrew:update-preferences", (event, patch: unknown) => {
     assertAllowedSender(event, ["settings"]);
     const previousScale = getAppStateSnapshot().preferences.petScale;
     const state = updatePreferences(validatePreferencePatch(patch));
@@ -126,12 +126,12 @@ export function installInternalUiHandlers(): void {
     return state;
   });
 
-  ipcMain.handle("openpets:get-launch-at-login", (event) => {
+  ipcMain.handle("noelcrew:get-launch-at-login", (event) => {
     assertAllowedSender(event, ["settings"]);
     return getLaunchAtLoginState();
   });
 
-  ipcMain.handle("openpets:set-launch-at-login", (event, enabled: unknown) => {
+  ipcMain.handle("noelcrew:set-launch-at-login", (event, enabled: unknown) => {
     assertAllowedSender(event, ["settings"]);
     if (typeof enabled !== "boolean") throw new Error("Invalid launch-at-login value.");
     if (!isLaunchAtLoginSupported()) return getLaunchAtLoginState();
@@ -139,12 +139,12 @@ export function installInternalUiHandlers(): void {
     return getLaunchAtLoginState();
   });
 
-  ipcMain.handle("openpets:get-update-status", (event) => {
+  ipcMain.handle("noelcrew:get-update-status", (event) => {
     assertAllowedSender(event, ["settings"]);
     return getUpdateStatus();
   });
 
-  ipcMain.handle("openpets:check-for-updates", async (event) => {
+  ipcMain.handle("noelcrew:check-for-updates", async (event) => {
     assertAllowedSender(event, ["settings"]);
     const status = await checkForGitHubReleaseUpdate();
     const { refreshTrayMenu } = await import("./tray.js");
@@ -152,12 +152,12 @@ export function installInternalUiHandlers(): void {
     return status;
   });
 
-  ipcMain.handle("openpets:open-update-release-page", async (event) => {
+  ipcMain.handle("noelcrew:open-update-release-page", async (event) => {
     assertAllowedSender(event, ["settings"]);
     await openUpdateReleasePage();
   });
 
-  ipcMain.handle("openpets:set-default-pet", async (event, petId: unknown) => {
+  ipcMain.handle("noelcrew:set-default-pet", async (event, petId: unknown) => {
     assertAllowedSender(event, ["pet-manager"]);
     if (typeof petId !== "string") {
       throw new Error("Invalid pet id.");
@@ -168,7 +168,7 @@ export function installInternalUiHandlers(): void {
     return state;
   });
 
-  ipcMain.handle("openpets:install-pet", async (event, petId: unknown) => {
+  ipcMain.handle("noelcrew:install-pet", async (event, petId: unknown) => {
     assertAllowedSender(event, ["pet-manager"]);
     if (typeof petId !== "string") {
       throw new Error("Invalid pet id.");
@@ -177,7 +177,7 @@ export function installInternalUiHandlers(): void {
     return installPet(petId);
   });
 
-  ipcMain.handle("openpets:import-codex-pet", async (event, petId: unknown) => {
+  ipcMain.handle("noelcrew:import-codex-pet", async (event, petId: unknown) => {
     assertAllowedSender(event, ["pet-manager"]);
     if (typeof petId !== "string") {
       throw new Error("Invalid pet id.");
@@ -186,7 +186,7 @@ export function installInternalUiHandlers(): void {
     return importCodexPet(petId);
   });
 
-  ipcMain.handle("openpets:remove-pet", async (event, petId: unknown) => {
+  ipcMain.handle("noelcrew:remove-pet", async (event, petId: unknown) => {
     assertAllowedSender(event, ["pet-manager"]);
     if (typeof petId !== "string") {
       throw new Error("Invalid pet id.");
@@ -197,18 +197,18 @@ export function installInternalUiHandlers(): void {
     return state;
   });
 
-  ipcMain.handle("openpets:reset-default-pet-position", (event) => {
+  ipcMain.handle("noelcrew:reset-default-pet-position", (event) => {
     assertAllowedSender(event, ["settings"]);
     resetDefaultPetToInitialPosition();
     return getAppStateSnapshot();
   });
 
-  ipcMain.handle("openpets:agent-setup-snapshot", async (event, selectedPetId: unknown, commandMode: unknown) => {
+  ipcMain.handle("noelcrew:agent-setup-snapshot", async (event, selectedPetId: unknown, commandMode: unknown) => {
     assertAllowedSender(event, ["agent-setup"]);
     return getAgentSetupSnapshot(selectedPetId, commandMode);
   });
 
-  ipcMain.handle("openpets:agent-setup-action", async (event, action: unknown, selectedPetId: unknown, commandMode: unknown) => {
+  ipcMain.handle("noelcrew:agent-setup-action", async (event, action: unknown, selectedPetId: unknown, commandMode: unknown) => {
     assertAllowedSender(event, ["agent-setup"]);
     if (action !== "configure" && action !== "replace" && action !== "remove" && action !== "install-memory" && action !== "doctor-hooks" && action !== "install-hooks" && action !== "uninstall-hooks" && action !== "opencode-install" && action !== "opencode-remove") {
       throw new Error("Invalid agent setup action.");
@@ -217,14 +217,14 @@ export function installInternalUiHandlers(): void {
     return runAgentSetupAction(action, selectedPetId, commandMode);
   });
 
-  ipcMain.handle("openpets:agent-setup-command-paths", (event, patch: unknown) => {
+  ipcMain.handle("noelcrew:agent-setup-command-paths", (event, patch: unknown) => {
     assertAllowedSender(event, ["agent-setup"]);
     return updateAgentSetupCommandPaths(patch);
   });
 }
 
 export function installInternalUiProtocol(): void {
-  protocol.handle("openpets-codex", async (request) => {
+  protocol.handle("noelcrew-codex", async (request) => {
     try {
       if (request.method !== "GET" && request.method !== "HEAD") return new Response(null, { status: 405 });
       const url = new URL(request.url);
@@ -368,7 +368,7 @@ function createPlaceholderHtml(definition: TaskWindowDefinition): string {
       </head>
       <body>
         <main>
-          <p class="eyebrow">OpenPets Phase 01</p>
+          <p class="eyebrow">NoelCrew Phase 01</p>
           <h1>${escapeHtml(definition.heading)}</h1>
           <p>${escapeHtml(definition.description)}</p>
           <span class="badge">Placeholder window</span>
@@ -387,16 +387,16 @@ function createPetManagerHtml(definition: TaskWindowDefinition): string {
     <html lang="en">
       <head>
         <meta charset="utf-8" />
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https://openpets.dev openpets-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https://noelclaw.fun noelcrew-codex:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-src 'none'" />
         <meta name="referrer" content="no-referrer" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>${escapeHtml(definition.title)}</title>
         ${createTaskWindowStyles()}
       </head>
-      <body data-openpets-view="pet-manager" data-default-pet-thumbnail-src="${escapeHtml(defaultThumbnailUrl)}">
+      <body data-noelcrew-view="pet-manager" data-default-pet-thumbnail-src="${escapeHtml(defaultThumbnailUrl)}">
         <main class="pm-shell">
           <section class="pm-gallery-pane" aria-labelledby="pm-title">
-            <img class="pm-logo" src="${escapeHtml(logoUrl)}" alt="OpenPets" draggable="false" />
+            <img class="pm-logo" src="${escapeHtml(logoUrl)}" alt="NoelCrew" draggable="false" />
             <header class="pm-header">
               <h1 id="pm-title">Install a Pet</h1>
               <p class="lede">Pick a companion for your terminal.</p>
@@ -441,10 +441,10 @@ function createOnboardingHtml(definition: TaskWindowDefinition): string {
         <title>${escapeHtml(definition.title)}</title>
         ${createTaskWindowStyles()}
       </head>
-      <body data-openpets-view="onboarding">
+      <body data-noelcrew-view="onboarding">
         <main class="onboarding-main">
           <header class="onboarding-header" id="onboarding-header">
-            <p class="eyebrow">OpenPets</p>
+            <p class="eyebrow">NoelCrew</p>
             <h1>${escapeHtml(definition.heading)}</h1>
             <p class="lede">${escapeHtml(definition.description)}</p>
           </header>
@@ -457,9 +457,9 @@ function createOnboardingHtml(definition: TaskWindowDefinition): string {
           
           <section class="onboarding-step welcome-hero" data-step-panel="0">
             <div class="welcome-content">
-              <img class="welcome-logo" src="${escapeHtml(logoUrl)}" alt="OpenPets" draggable="false" />
+              <img class="welcome-logo" src="${escapeHtml(logoUrl)}" alt="NoelCrew" draggable="false" />
               <h2 class="welcome-title">Your AI coding companion</h2>
-              <p class="welcome-body">OpenPets lives in your tray and gives your coding agents a friendly desktop companion — one command at a time.</p>
+              <p class="welcome-body">NoelCrew lives in your tray and gives your coding agents a friendly desktop companion — one command at a time.</p>
               <p class="welcome-default">Starting with <strong id="onboarding-default-pet">the bundled pet</strong>.</p>
               <div class="welcome-actions">
                 <button id="onboarding-welcome-next" class="welcome-primary-btn">Next ›</button>
@@ -478,16 +478,16 @@ function createOnboardingHtml(definition: TaskWindowDefinition): string {
             <h2>Pick your desktop companion</h2>
             <p>Your current default pet is <strong id="onboarding-pets-default-pet">the bundled pet</strong>. Pet Manager is opening so you can browse what is installed and add more later.</p>
             <p id="onboarding-pets-status" class="onboarding-status-line" aria-live="polite">Open Pet Manager to browse pets, then return here to continue.</p>
-            <p class="onboarding-helper">You can also continue now. OpenPets still works with the bundled pet.</p>
+            <p class="onboarding-helper">You can also continue now. NoelCrew still works with the bundled pet.</p>
             <div class="onboarding-flow-actions">
-              <button id="onboarding-open-pets">Open Pet Manager</button>
+              <button id="onboarding-noel-crew">Open Pet Manager</button>
               <button id="onboarding-pets-next" class="onboarding-continue-link">Continue to next step</button>
             </div>
           </section>
           <section class="onboarding-step onboarding-flow-card" data-step-panel="2" hidden>
             <span class="onboarding-step-badge">Step 3</span>
             <h2>Connect your coding tools</h2>
-            <p>Open Integrations to connect Claude Code or OpenCode when you are ready. OpenPets shows previews and asks before changing MCP, hook, or OpenCode settings.</p>
+            <p>Open Integrations to connect Claude Code or OpenCode when you are ready. NoelCrew shows previews and asks before changing MCP, hook, or OpenCode settings.</p>
             <p id="onboarding-agents-status" class="onboarding-status-line" aria-live="polite">Open Integrations to review agent setup, then return here to continue.</p>
             <p class="onboarding-helper">You can also continue now. Configuration is optional and can be done later from the tray.</p>
             <div class="onboarding-flow-actions">
@@ -497,11 +497,11 @@ function createOnboardingHtml(definition: TaskWindowDefinition): string {
           </section>
           <section class="onboarding-step onboarding-flow-card ready-card" data-step-panel="3" hidden>
             <span class="onboarding-step-badge">Ready</span>
-            <h2>OpenPets is ready</h2>
+            <h2>NoelCrew is ready</h2>
             <p>You can manage pets, open integrations, change settings, or quit from the tray at any time.</p>
-            <p class="onboarding-helper">Nothing else is required. Start using OpenPets now, or reopen the setup windows below.</p>
+            <p class="onboarding-helper">Nothing else is required. Start using NoelCrew now, or reopen the setup windows below.</p>
             <div class="onboarding-flow-actions ready-actions">
-              <button id="onboarding-finish">Start using OpenPets</button>
+              <button id="onboarding-finish">Start using NoelCrew</button>
               <button id="onboarding-ready-pets" class="onboarding-continue-link">Open Pet Manager</button>
               <button id="onboarding-ready-agents" class="onboarding-continue-link">Open Integrations</button>
             </div>
@@ -534,12 +534,12 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
         <title>${escapeHtml(definition.title)}</title>
         ${createTaskWindowStyles()}
       </head>
-      <body data-openpets-view="agent-setup">
+      <body data-noelcrew-view="agent-setup">
         <main class="agent-shell">
           <section id="integrations-view" class="integrations-view" aria-labelledby="agent-title">
             <header class="integrations-header">
-              <img class="agent-logo" src="${escapeHtml(logoUrl)}" alt="OpenPets" draggable="false" />
-              <p class="eyebrow">OpenPets</p>
+              <img class="agent-logo" src="${escapeHtml(logoUrl)}" alt="NoelCrew" draggable="false" />
+              <p class="eyebrow">NoelCrew</p>
               <h1 id="agent-title" tabindex="-1">Integrations</h1>
               <p class="lede">Install Claude or OpenCode integrations now, explore Pi manual setup, or configure the details when you need them.</p>
             </header>
@@ -551,7 +551,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                   <span id="integration-claude-status" class="agent-status-pill">Checking</span>
                 </div>
                 <h2>Claude Code</h2>
-                <p>Connect Claude Code to your OpenPets companion.</p>
+                <p>Connect Claude Code to your NoelCrew companion.</p>
                 <div class="integration-actions stacked">
                   <button id="integration-claude-install" class="agent-action primary" disabled data-loading="true">
                     <svg class="pm-button-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -566,7 +566,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
 
               <article class="integration-card" data-integration-card="opencode" tabindex="-1">
                 <div class="integration-card-top"><span class="integration-icon"><img src="${escapeHtml(integrationIcons.opencode)}" alt="" draggable="false" /></span><span id="integration-opencode-status" class="agent-status-pill">Checking</span></div>
-                <h2>OpenCode</h2><p>Connect OpenCode globally to your OpenPets companion.</p>
+                <h2>OpenCode</h2><p>Connect OpenCode globally to your NoelCrew companion.</p>
                 <div class="integration-actions stacked">
                   <button id="integration-opencode-install" class="agent-action primary" disabled data-loading="true">Checking…</button>
                   <button id="integration-opencode-configure" class="agent-action secondary" disabled data-loading="true">Checking…</button>
@@ -574,7 +574,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
               </article>
               <article class="integration-card" data-integration-card="pi" tabindex="-1">
                 <div class="integration-card-top"><span class="integration-icon"><img src="${escapeHtml(integrationIcons.pi)}" alt="" draggable="false" /></span><span id="integration-pi-status" class="agent-status-pill info">Manual</span></div>
-                <h2>Pi</h2><p>Connect Pi coding-agent activity through the OpenPets Pi extension package.</p>
+                <h2>Pi</h2><p>Connect Pi coding-agent activity through the NoelCrew Pi extension package.</p>
                 <div class="integration-actions stacked">
                   <button id="integration-pi-configure" class="agent-action secondary">View setup</button>
                 </div>
@@ -607,7 +607,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
               <header class="agent-title-block compact-title">
                 <p class="eyebrow">Integration</p>
                 <h1 id="claude-detail-title" tabindex="-1">Claude Code</h1>
-                <p class="lede">Connect Claude to your OpenPets companion. Basic setup is one card; hooks and command details are optional.</p>
+                <p class="lede">Connect Claude to your NoelCrew companion. Basic setup is one card; hooks and command details are optional.</p>
               </header>
 
               <article class="agent-status-card connection-card">
@@ -656,7 +656,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                       <strong>Command and JSON preview</strong>
                     </span>
                   </summary>
-                  <p class="agent-note">Inspect the MCP command OpenPets will add to Claude, or copy it for manual setup.</p>
+                  <p class="agent-note">Inspect the MCP command NoelCrew will add to Claude, or copy it for manual setup.</p>
                   <div class="agent-actions advanced-actions">
                     <button id="claude-copy-command" class="agent-action secondary compact">Copy command</button>
                   </div>
@@ -675,7 +675,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                   <span id="claude-memory-status" class="agent-status-pill">Checking</span>
                 </div>
                 <p id="claude-memory-details" class="agent-note">Checking Claude instructions…</p>
-                <p class="agent-inline-note">OpenPets writes its guidance to <code>~/.claude/openpets.md</code> and adds one managed import to <code>~/.claude/CLAUDE.md</code>. Existing Claude instructions are preserved.</p>
+                <p class="agent-inline-note">NoelCrew writes its guidance to <code>~/.claude/noelcrew.md</code> and adds one managed import to <code>~/.claude/CLAUDE.md</code>. Existing Claude instructions are preserved.</p>
                 <div class="agent-actions memory-actions">
                   <button id="claude-memory-install" class="agent-action secondary">Update instructions</button>
                 </div>
@@ -703,7 +703,7 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                       <strong>Hooks JSON preview</strong>
                     </span>
                   </summary>
-                  <p class="agent-note">Preview the OpenPets-managed Claude hook settings before installing or updating hooks.</p>
+                  <p class="agent-note">Preview the NoelCrew-managed Claude hook settings before installing or updating hooks.</p>
                   <pre id="claude-hooks-preview" class="agent-preview-code hooks-preview" aria-label="Claude hooks JSON preview" aria-live="polite"></pre>
                 </details>
               </article>
@@ -715,13 +715,13 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
           <section id="opencode-detail-view" class="claude-detail-view" aria-labelledby="opencode-detail-title" hidden>
             <div class="claude-detail-toolbar"><button id="opencode-integration-back" class="agent-action secondary compact">Back to integrations</button></div>
             <section class="agent-setup-pane" aria-labelledby="opencode-detail-title">
-              <header class="agent-title-block compact-title"><p class="eyebrow">Integration</p><h1 id="opencode-detail-title" tabindex="-1">OpenCode</h1><p class="lede">Connect OpenCode to OpenPets. Desktop setup writes global OpenCode config; use the CLI for project-local setup.</p></header>
+              <header class="agent-title-block compact-title"><p class="eyebrow">Integration</p><h1 id="opencode-detail-title" tabindex="-1">OpenCode</h1><p class="lede">Connect OpenCode to NoelCrew. Desktop setup writes global OpenCode config; use the CLI for project-local setup.</p></header>
               <article class="agent-status-card connection-card">
                 <div class="agent-section-header"><span><small>Global connection</small><strong id="opencode-status-title">Checking setup…</strong></span><span id="opencode-status" class="agent-status-pill">Checking</span></div>
                 <p id="opencode-details" class="agent-note">Checking OpenCode…</p>
                 <div class="agent-control-group"><label class="agent-field-label" for="opencode-pet-select">Pet routing</label><select id="opencode-pet-select" class="agent-select"></select></div>
                 <section class="agent-command-paths" aria-labelledby="opencode-command-paths-title"><div class="agent-command-paths-title"><small>Configuration</small><strong id="opencode-command-paths-title">Command paths</strong></div><p class="agent-note">If OpenCode or Node.js is not detected from the app, paste the full executable path. Leave blank for automatic PATH detection.</p><label class="agent-subfield" for="opencode-command-path"><span>OpenCode command</span><div class="agent-path-row"><input id="opencode-command-path" class="agent-text-input" type="text" spellcheck="false" placeholder="/Users/alvin/.opencode/bin/opencode" /><button id="opencode-command-path-save" class="agent-action secondary compact">Save path</button></div></label><label class="agent-subfield" for="opencode-node-command-path"><span>Node.js command</span><div class="agent-path-row"><input id="opencode-node-command-path" class="agent-text-input" type="text" spellcheck="false" placeholder="/Users/name/.nvm/versions/node/v22/bin/node" /><button id="opencode-node-command-path-save" class="agent-action secondary compact">Save path</button></div></label></section>
-                <p class="agent-hook-warning warning">Desktop OpenCode setup is global and can affect every OpenCode project. For project-local setup, run <code>openpets configure --agent opencode --pet &lt;id&gt;</code>. OpenCode may need npm/network access to load the published OpenPets plugin unless it is already cached or installed.</p>
+                <p class="agent-hook-warning warning">Desktop OpenCode setup is global and can affect every OpenCode project. For project-local setup, run <code>noelcrew configure --agent opencode --pet &lt;id&gt;</code>. OpenCode may need npm/network access to load the published NoelCrew plugin unless it is already cached or installed.</p>
                 <div class="agent-actions agent-main-actions"><button id="opencode-install" class="agent-action primary">Install global setup</button><button id="opencode-remove" class="agent-action danger">Remove global setup</button><button id="opencode-refresh" class="agent-action secondary">Refresh</button></div>
                 <details class="agent-inline-details" open><summary><span><small>Preview</small><strong>Global OpenCode config</strong></span></summary><p id="opencode-paths" class="agent-note"></p><div class="agent-actions advanced-actions"><button id="opencode-copy-config" class="agent-action secondary compact">Copy config preview</button></div><pre id="opencode-json-preview" class="agent-preview-code json-preview" aria-label="OpenCode config preview" aria-live="polite"></pre></details>
               </article>
@@ -732,10 +732,10 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
           <section id="pi-detail-view" class="claude-detail-view" aria-labelledby="pi-detail-title" hidden>
             <div class="claude-detail-toolbar"><button id="pi-integration-back" class="agent-action secondary compact">Back to integrations</button></div>
             <section class="agent-setup-pane" aria-labelledby="pi-detail-title">
-              <header class="agent-title-block compact-title"><p class="eyebrow">Manual integration</p><h1 id="pi-detail-title" tabindex="-1">Pi</h1><p class="lede">Use Pi's package system to load the OpenPets extension. The extension maps Pi session and tool activity to local pet reactions without forwarding prompts or tool output.</p></header>
+              <header class="agent-title-block compact-title"><p class="eyebrow">Manual integration</p><h1 id="pi-detail-title" tabindex="-1">Pi</h1><p class="lede">Use Pi's package system to load the NoelCrew extension. The extension maps Pi session and tool activity to local pet reactions without forwarding prompts or tool output.</p></header>
               <article class="agent-status-card connection-card">
                 <div class="agent-section-header"><span><small>Status</small><strong>Manual package setup</strong></span><span class="agent-status-pill info">Planned</span></div>
-                <p class="agent-note">The OpenPets Pi package is prepared for extension-first integration. Keep the desktop app running for pet updates. Desktop does not edit Pi settings automatically yet.</p>
+                <p class="agent-note">The NoelCrew Pi package is prepared for extension-first integration. Keep the desktop app running for pet updates. Desktop does not edit Pi settings automatically yet.</p>
                 <div class="docs-table-wrap">
                   <table>
                     <tbody>
@@ -745,9 +745,9 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                     </tbody>
                   </table>
                 </div>
-                <details class="agent-inline-details" open><summary><span><small>Commands</small><strong>Pi package setup</strong></span></summary><p class="agent-note">Copy these commands into your terminal. Restart or reload Pi after changing package settings.</p><div class="agent-actions advanced-actions"><button id="pi-copy-global-install" class="agent-action secondary compact">Copy global install</button><button id="pi-copy-project-install" class="agent-action secondary compact">Copy project install</button></div><pre id="pi-command-preview" class="agent-preview-code command-preview" aria-label="Pi setup command preview">pi install npm:@open-pets/pi
-pi install -l npm:@open-pets/pi
-pi remove npm:@open-pets/pi</pre></details>
+                <details class="agent-inline-details" open><summary><span><small>Commands</small><strong>Pi package setup</strong></span></summary><p class="agent-note">Copy these commands into your terminal. Restart or reload Pi after changing package settings.</p><div class="agent-actions advanced-actions"><button id="pi-copy-global-install" class="agent-action secondary compact">Copy global install</button><button id="pi-copy-project-install" class="agent-action secondary compact">Copy project install</button></div><pre id="pi-command-preview" class="agent-preview-code command-preview" aria-label="Pi setup command preview">pi install npm:@noelclaw/pi
+pi install -l npm:@noelclaw/pi
+pi remove npm:@noelclaw/pi</pre></details>
               </article>
               <p id="pi-action-result" class="agent-result" aria-live="polite">Pi setup is manual until real Pi CLI install validation is complete.</p>
             </section>
@@ -769,10 +769,10 @@ function createSettingsHtml(definition: TaskWindowDefinition): string {
         <title>${escapeHtml(definition.title)}</title>
         ${createTaskWindowStyles()}
       </head>
-      <body data-openpets-view="settings">
+      <body data-noelcrew-view="settings">
         <main class="settings-shell">
           <header class="settings-header">
-            <p class="eyebrow">OpenPets</p>
+            <p class="eyebrow">NoelCrew</p>
             <h1>${escapeHtml(definition.heading)}</h1>
             <p class="lede">${escapeHtml(definition.description)}</p>
           </header>
@@ -786,14 +786,14 @@ function createSettingsHtml(definition: TaskWindowDefinition): string {
             <label class="setting-row">
               <span>
                 <strong>Open default pet on app launch</strong>
-                <small>When disabled, OpenPets starts in the tray and the default pet can still be shown manually.</small>
+                <small>When disabled, NoelCrew starts in the tray and the default pet can still be shown manually.</small>
               </span>
               <input id="open-default-pet-on-launch" type="checkbox" />
             </label>
             <label class="setting-row">
               <span>
-                <strong>Launch OpenPets at login</strong>
-                <small id="launch-at-login-detail">Start OpenPets automatically when you sign in.</small>
+                <strong>Launch NoelCrew at login</strong>
+                <small id="launch-at-login-detail">Start NoelCrew automatically when you sign in.</small>
               </span>
               <input id="launch-at-login" type="checkbox" />
             </label>
@@ -830,7 +830,7 @@ function createSettingsHtml(definition: TaskWindowDefinition): string {
             <div class="setting-row">
               <span>
                 <strong id="update-status-title">Checking for updates</strong>
-                <small id="update-status-detail">OpenPets checks public GitHub releases and opens the release page when an update is available.</small>
+                <small id="update-status-detail">NoelCrew checks public GitHub releases and opens the release page when an update is available.</small>
               </span>
               <span class="settings-actions-inline">
                 <button id="check-for-updates">Check</button>
@@ -886,289 +886,289 @@ function createTaskWindowStyles(): string {
     .search:focus { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2); }
     .error { color: #fca5a5; min-height: 1.2em; }
 
-    html:has(body[data-openpets-view="settings"]), html:has(body[data-openpets-view="onboarding"]) { color-scheme: light; background: #eef7ff; scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
-    body[data-openpets-view="settings"] { overflow: auto; color-scheme: light; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #10244a; }
-    html:has(body[data-openpets-view="settings"]), html:has(body[data-openpets-view="onboarding"]), body[data-openpets-view="settings"], body[data-openpets-view="onboarding"], body[data-openpets-view="agent-setup"] .integration-grid, body[data-openpets-view="agent-setup"] .agent-setup-pane, body[data-openpets-view="agent-setup"] .agent-preview-code { scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
-    html:has(body[data-openpets-view="settings"])::-webkit-scrollbar, html:has(body[data-openpets-view="onboarding"])::-webkit-scrollbar, body[data-openpets-view="settings"]::-webkit-scrollbar, body[data-openpets-view="onboarding"]::-webkit-scrollbar, body[data-openpets-view="agent-setup"] .integration-grid::-webkit-scrollbar, body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar, body[data-openpets-view="agent-setup"] .agent-preview-code::-webkit-scrollbar { width: 8px; height: 8px; }
-    html:has(body[data-openpets-view="settings"])::-webkit-scrollbar-track, html:has(body[data-openpets-view="onboarding"])::-webkit-scrollbar-track, body[data-openpets-view="settings"]::-webkit-scrollbar-track, body[data-openpets-view="onboarding"]::-webkit-scrollbar-track, body[data-openpets-view="agent-setup"] .integration-grid::-webkit-scrollbar-track, body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-track, body[data-openpets-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-track { background: transparent; }
-    html:has(body[data-openpets-view="settings"])::-webkit-scrollbar-thumb, html:has(body[data-openpets-view="onboarding"])::-webkit-scrollbar-thumb, body[data-openpets-view="settings"]::-webkit-scrollbar-thumb, body[data-openpets-view="onboarding"]::-webkit-scrollbar-thumb, body[data-openpets-view="agent-setup"] .integration-grid::-webkit-scrollbar-thumb, body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb, body[data-openpets-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-thumb { background: rgba(126, 161, 210, 0.45); border-radius: 999px; }
-    html:has(body[data-openpets-view="settings"])::-webkit-scrollbar-thumb:hover, html:has(body[data-openpets-view="onboarding"])::-webkit-scrollbar-thumb:hover, body[data-openpets-view="settings"]::-webkit-scrollbar-thumb:hover, body[data-openpets-view="onboarding"]::-webkit-scrollbar-thumb:hover, body[data-openpets-view="agent-setup"] .integration-grid::-webkit-scrollbar-thumb:hover, body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb:hover, body[data-openpets-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-thumb:hover { background: rgba(99, 130, 178, 0.65); }
-    body[data-openpets-view="settings"] .settings-shell { width: min(760px, calc(100vw - 40px)); padding: 30px 0 28px; }
-    body[data-openpets-view="settings"] .settings-header { display: grid; justify-items: center; text-align: center; margin-bottom: 18px; }
-    body[data-openpets-view="settings"] .settings-header .eyebrow { margin: 0 0 5px; color: #2478ff; }
-    body[data-openpets-view="settings"] .settings-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; line-height: 1.05; letter-spacing: -0.05em; color: #102149; }
-    body[data-openpets-view="settings"] .settings-header .lede { max-width: 520px; margin: 8px 0 0; color: #63708f; line-height: 1.38; }
-    body[data-openpets-view="settings"] .settings-panel { display: grid; gap: 12px; margin: 0 0 14px; padding: 20px; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 22px; background: rgba(255,255,255,0.76); box-shadow: 0 18px 42px rgba(61, 99, 160, 0.11), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="settings"] .settings-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 2px; }
-    body[data-openpets-view="settings"] .settings-section-heading span { display: grid; gap: 4px; }
-    body[data-openpets-view="settings"] .settings-section-heading small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-    body[data-openpets-view="settings"] .settings-section-heading h2 { margin: 0; color: #102149; font-size: 19px; line-height: 1.2; }
-    body[data-openpets-view="settings"] .setting-row { min-height: 58px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 15px; border: 1px solid rgba(126, 161, 210, 0.32); border-radius: 16px; background: rgba(255,255,255,0.68); box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); color: #17284f; }
-    body[data-openpets-view="settings"] .setting-row strong { display: block; margin-bottom: 4px; color: #102149; font-size: 14px; }
-    body[data-openpets-view="settings"] .setting-row small { color: #63708f; line-height: 1.35; }
-    body[data-openpets-view="settings"] .setting-row.disabled { opacity: 0.76; }
-    body[data-openpets-view="settings"] input[type="checkbox"] { width: 42px; height: 24px; flex: 0 0 auto; accent-color: #2478ff; cursor: pointer; }
-    body[data-openpets-view="settings"] .settings-select { min-height: 38px; min-width: 128px; box-sizing: border-box; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 12px; font: inherit; font-weight: 850; outline: none; }
-    body[data-openpets-view="settings"] .settings-actions-inline { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-    body[data-openpets-view="settings"] input[type="checkbox"]:focus-visible, body[data-openpets-view="settings"] button:focus-visible, body[data-openpets-view="settings"] .settings-select:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.34); outline-offset: 3px; }
-    body[data-openpets-view="settings"] button { min-height: 36px; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; padding: 0 13px; background: rgba(255,255,255,0.76); color: #176df2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 950; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
-    body[data-openpets-view="settings"] button:hover:not(:disabled) { background: #eff6ff; border-color: rgba(37, 99, 235, 0.64); transform: translateY(-1px); }
-    body[data-openpets-view="settings"] button:disabled { cursor: default; opacity: 0.58; transform: none; }
-    body[data-openpets-view="settings"] .settings-status { min-height: 20px; margin: 12px 0 0; padding: 12px 14px; border-radius: 14px; background: rgba(239, 246, 255, 0.78); border: 1px solid rgba(37, 99, 235, 0.18); color: #36547d; line-height: 1.4; }
-    body[data-openpets-view="settings"] [data-error] { color: #b91c1c; }
-    @media (max-width: 620px) { body[data-openpets-view="settings"] .setting-row { align-items: flex-start; flex-direction: column; } }
+    html:has(body[data-noelcrew-view="settings"]), html:has(body[data-noelcrew-view="onboarding"]) { color-scheme: light; background: #eef7ff; scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
+    body[data-noelcrew-view="settings"] { overflow: auto; color-scheme: light; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #10244a; }
+    html:has(body[data-noelcrew-view="settings"]), html:has(body[data-noelcrew-view="onboarding"]), body[data-noelcrew-view="settings"], body[data-noelcrew-view="onboarding"], body[data-noelcrew-view="agent-setup"] .integration-grid, body[data-noelcrew-view="agent-setup"] .agent-setup-pane, body[data-noelcrew-view="agent-setup"] .agent-preview-code { scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
+    html:has(body[data-noelcrew-view="settings"])::-webkit-scrollbar, html:has(body[data-noelcrew-view="onboarding"])::-webkit-scrollbar, body[data-noelcrew-view="settings"]::-webkit-scrollbar, body[data-noelcrew-view="onboarding"]::-webkit-scrollbar, body[data-noelcrew-view="agent-setup"] .integration-grid::-webkit-scrollbar, body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar, body[data-noelcrew-view="agent-setup"] .agent-preview-code::-webkit-scrollbar { width: 8px; height: 8px; }
+    html:has(body[data-noelcrew-view="settings"])::-webkit-scrollbar-track, html:has(body[data-noelcrew-view="onboarding"])::-webkit-scrollbar-track, body[data-noelcrew-view="settings"]::-webkit-scrollbar-track, body[data-noelcrew-view="onboarding"]::-webkit-scrollbar-track, body[data-noelcrew-view="agent-setup"] .integration-grid::-webkit-scrollbar-track, body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-track, body[data-noelcrew-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-track { background: transparent; }
+    html:has(body[data-noelcrew-view="settings"])::-webkit-scrollbar-thumb, html:has(body[data-noelcrew-view="onboarding"])::-webkit-scrollbar-thumb, body[data-noelcrew-view="settings"]::-webkit-scrollbar-thumb, body[data-noelcrew-view="onboarding"]::-webkit-scrollbar-thumb, body[data-noelcrew-view="agent-setup"] .integration-grid::-webkit-scrollbar-thumb, body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb, body[data-noelcrew-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-thumb { background: rgba(126, 161, 210, 0.45); border-radius: 999px; }
+    html:has(body[data-noelcrew-view="settings"])::-webkit-scrollbar-thumb:hover, html:has(body[data-noelcrew-view="onboarding"])::-webkit-scrollbar-thumb:hover, body[data-noelcrew-view="settings"]::-webkit-scrollbar-thumb:hover, body[data-noelcrew-view="onboarding"]::-webkit-scrollbar-thumb:hover, body[data-noelcrew-view="agent-setup"] .integration-grid::-webkit-scrollbar-thumb:hover, body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb:hover, body[data-noelcrew-view="agent-setup"] .agent-preview-code::-webkit-scrollbar-thumb:hover { background: rgba(99, 130, 178, 0.65); }
+    body[data-noelcrew-view="settings"] .settings-shell { width: min(760px, calc(100vw - 40px)); padding: 30px 0 28px; }
+    body[data-noelcrew-view="settings"] .settings-header { display: grid; justify-items: center; text-align: center; margin-bottom: 18px; }
+    body[data-noelcrew-view="settings"] .settings-header .eyebrow { margin: 0 0 5px; color: #2478ff; }
+    body[data-noelcrew-view="settings"] .settings-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; line-height: 1.05; letter-spacing: -0.05em; color: #102149; }
+    body[data-noelcrew-view="settings"] .settings-header .lede { max-width: 520px; margin: 8px 0 0; color: #63708f; line-height: 1.38; }
+    body[data-noelcrew-view="settings"] .settings-panel { display: grid; gap: 12px; margin: 0 0 14px; padding: 20px; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 22px; background: rgba(255,255,255,0.76); box-shadow: 0 18px 42px rgba(61, 99, 160, 0.11), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="settings"] .settings-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 2px; }
+    body[data-noelcrew-view="settings"] .settings-section-heading span { display: grid; gap: 4px; }
+    body[data-noelcrew-view="settings"] .settings-section-heading small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+    body[data-noelcrew-view="settings"] .settings-section-heading h2 { margin: 0; color: #102149; font-size: 19px; line-height: 1.2; }
+    body[data-noelcrew-view="settings"] .setting-row { min-height: 58px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 15px; border: 1px solid rgba(126, 161, 210, 0.32); border-radius: 16px; background: rgba(255,255,255,0.68); box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); color: #17284f; }
+    body[data-noelcrew-view="settings"] .setting-row strong { display: block; margin-bottom: 4px; color: #102149; font-size: 14px; }
+    body[data-noelcrew-view="settings"] .setting-row small { color: #63708f; line-height: 1.35; }
+    body[data-noelcrew-view="settings"] .setting-row.disabled { opacity: 0.76; }
+    body[data-noelcrew-view="settings"] input[type="checkbox"] { width: 42px; height: 24px; flex: 0 0 auto; accent-color: #2478ff; cursor: pointer; }
+    body[data-noelcrew-view="settings"] .settings-select { min-height: 38px; min-width: 128px; box-sizing: border-box; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 12px; font: inherit; font-weight: 850; outline: none; }
+    body[data-noelcrew-view="settings"] .settings-actions-inline { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    body[data-noelcrew-view="settings"] input[type="checkbox"]:focus-visible, body[data-noelcrew-view="settings"] button:focus-visible, body[data-noelcrew-view="settings"] .settings-select:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.34); outline-offset: 3px; }
+    body[data-noelcrew-view="settings"] button { min-height: 36px; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; padding: 0 13px; background: rgba(255,255,255,0.76); color: #176df2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 950; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
+    body[data-noelcrew-view="settings"] button:hover:not(:disabled) { background: #eff6ff; border-color: rgba(37, 99, 235, 0.64); transform: translateY(-1px); }
+    body[data-noelcrew-view="settings"] button:disabled { cursor: default; opacity: 0.58; transform: none; }
+    body[data-noelcrew-view="settings"] .settings-status { min-height: 20px; margin: 12px 0 0; padding: 12px 14px; border-radius: 14px; background: rgba(239, 246, 255, 0.78); border: 1px solid rgba(37, 99, 235, 0.18); color: #36547d; line-height: 1.4; }
+    body[data-noelcrew-view="settings"] [data-error] { color: #b91c1c; }
+    @media (max-width: 620px) { body[data-noelcrew-view="settings"] .setting-row { align-items: flex-start; flex-direction: column; } }
 
-    body[data-openpets-view="agent-setup"] { overflow: hidden; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #101f3f; }
-    body[data-openpets-view="agent-setup"] .agent-shell { width: min(1160px, calc(100vw - 36px)); height: calc(100vh - 44px); padding: 22px 0 22px; overflow: hidden; }
-    body[data-openpets-view="agent-setup"] .integrations-view { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-    body[data-openpets-view="agent-setup"] .integrations-view[hidden], body[data-openpets-view="agent-setup"] .claude-detail-view[hidden] { display: none !important; }
-    body[data-openpets-view="agent-setup"] .integrations-header { flex: 0 0 auto; display: grid; justify-items: center; text-align: center; margin-bottom: 12px; }
-    body[data-openpets-view="agent-setup"] .integrations-header .agent-logo { margin-bottom: 0; }
-    body[data-openpets-view="agent-setup"] .integrations-header .eyebrow { margin: 0 0 5px; color: #2478ff; }
-    body[data-openpets-view="agent-setup"] .integrations-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 32px; line-height: 1; letter-spacing: -0.05em; color: #102149; }
-    body[data-openpets-view="agent-setup"] .integrations-header .lede { max-width: 560px; margin: 6px 0 0; color: #63708f; line-height: 1.3; }
-    body[data-openpets-view="agent-setup"] .integration-grid { min-height: 0; overflow: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 2px 4px 16px; }
-    body[data-openpets-view="agent-setup"] .integration-card { min-height: 248px; box-sizing: border-box; display: flex; flex-direction: column; gap: 9px; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 20px; background: rgba(255,255,255,0.76); box-shadow: 0 16px 38px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); padding: 16px; }
-    body[data-openpets-view="agent-setup"] .integration-card.featured { border-color: rgba(37, 99, 235, 0.36); background: linear-gradient(180deg, rgba(239, 247, 255, 0.92), rgba(255,255,255,0.78)); }
-    body[data-openpets-view="agent-setup"] .integration-card.disabled { opacity: 0.74; }
-    body[data-openpets-view="agent-setup"] .integration-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    body[data-openpets-view="agent-setup"] .integration-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 16px; background: rgba(255,255,255,0.76); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 20px rgba(61, 99, 160, 0.08); }
-    body[data-openpets-view="agent-setup"] .integration-icon img { width: 28px; height: 28px; object-fit: contain; }
-    body[data-openpets-view="agent-setup"] .integration-card h2 { margin: 0; font-size: 20px; color: #102149; }
-    body[data-openpets-view="agent-setup"] .integration-card p { flex: 1 1 auto; margin: 0; color: #526483; line-height: 1.35; font-size: 14px; }
-    body[data-openpets-view="agent-setup"] .integration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
-    body[data-openpets-view="agent-setup"] .integration-actions.stacked { grid-template-columns: 1fr; gap: 8px; }
-    body[data-openpets-view="agent-setup"] .integration-actions .agent-action:only-child { grid-column: 1 / -1; }
-    @keyframes openpets-agent-spin { to { transform: rotate(360deg); } }
-    body[data-openpets-view="agent-setup"] .agent-action[data-loading] { cursor: progress; opacity: 0.85; }
-    body[data-openpets-view="agent-setup"] .agent-action[data-loading] .pm-button-icon { animation: openpets-agent-spin 0.85s linear infinite; transform-origin: 50% 50%; }
-    body[data-openpets-view="agent-setup"] .integration-card > .agent-action { margin-top: auto; }
-    body[data-openpets-view="agent-setup"] .claude-detail-view { height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; overflow: hidden; }
-    body[data-openpets-view="agent-setup"] .claude-detail-toolbar { display: flex; justify-content: flex-start; padding: 4px 2px 0; }
-    body[data-openpets-view="agent-setup"] .compact-title { margin-bottom: 0; }
-    body[data-openpets-view="agent-setup"] .agent-setup-pane { width: min(760px, 100%); min-width: 0; min-height: 0; justify-self: center; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; overflow-x: hidden; padding: 2px 8px 16px; scrollbar-gutter: stable; }
-    body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar { width: 8px; }
-    body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb { background: rgba(126, 161, 210, 0.45); border-radius: 999px; }
-    body[data-openpets-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb:hover { background: rgba(99, 130, 178, 0.65); }
-    body[data-openpets-view="agent-setup"] .agent-logo { width: min(210px, 68%); display: block; margin: 0 auto -2px; filter: drop-shadow(0 10px 14px rgba(42, 80, 138, 0.12)); }
-    body[data-openpets-view="agent-setup"] .agent-title-block { display: grid; gap: 2px; margin-bottom: 2px; }
-    body[data-openpets-view="agent-setup"] .agent-title-block .eyebrow { margin: 0; color: #2478ff; }
-    body[data-openpets-view="agent-setup"] .agent-title-block h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 28px; line-height: 1.08; letter-spacing: -0.04em; color: #102149; text-wrap: balance; }
-    body[data-openpets-view="agent-setup"] .agent-title-block .lede { margin: 0; color: #63708f; line-height: 1.35; }
-    body[data-openpets-view="agent-setup"] .agent-status-card, body[data-openpets-view="agent-setup"] .agent-control-card, body[data-openpets-view="agent-setup"] .agent-risk-card, body[data-openpets-view="agent-setup"] .agent-preview-card, body[data-openpets-view="agent-setup"] .agent-memory-card, body[data-openpets-view="agent-setup"] .agent-hooks-card { box-sizing: border-box; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 20px; background: rgba(255,255,255,0.76); box-shadow: 0 16px 38px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="agent-setup"] .agent-status-card, body[data-openpets-view="agent-setup"] .agent-control-card, body[data-openpets-view="agent-setup"] .agent-risk-card { padding: 18px; }
-    body[data-openpets-view="agent-setup"] .agent-preview-card, body[data-openpets-view="agent-setup"] .agent-memory-card, body[data-openpets-view="agent-setup"] .agent-hooks-card { padding: 18px; }
-    body[data-openpets-view="agent-setup"] .agent-section-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
-    body[data-openpets-view="agent-setup"] .agent-section-header span:first-child { display: grid; gap: 4px; min-width: 0; }
-    body[data-openpets-view="agent-setup"] .agent-section-header small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-    body[data-openpets-view="agent-setup"] .agent-section-header strong { color: #102149; font-size: 18px; line-height: 1.2; }
-    body[data-openpets-view="agent-setup"] .agent-status-pill { height: 30px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 1px solid rgba(126, 161, 210, 0.36); border-radius: 10px; padding: 0 10px; background: rgba(255,255,255,0.68); color: #526483; font-size: 10px; font-weight: 900; white-space: nowrap; }
-    body[data-openpets-view="agent-setup"] .agent-status-pill.success { color: #047857; background: rgba(236, 253, 245, 0.86); border-color: rgba(16, 185, 129, 0.28); }
-    body[data-openpets-view="agent-setup"] .agent-status-pill.info { color: #176df2; background: rgba(239, 246, 255, 0.9); border-color: rgba(37, 99, 235, 0.28); }
-    body[data-openpets-view="agent-setup"] .agent-status-pill.error { color: #b91c1c; background: rgba(254, 242, 242, 0.9); border-color: rgba(248, 113, 113, 0.32); }
-    body[data-openpets-view="agent-setup"] .agent-status-pill.muted { color: #64748b; background: rgba(248, 250, 252, 0.82); }
-    body[data-openpets-view="agent-setup"] .agent-note { margin: 0; color: #4f6389; line-height: 1.48; text-wrap: pretty; }
-    body[data-openpets-view="agent-setup"] .connection-card { display: grid; gap: 16px; padding: 20px; }
-    body[data-openpets-view="agent-setup"] .agent-control-group { display: grid; gap: 8px; }
-    body[data-openpets-view="agent-setup"] .agent-field-label { display: block; margin: 0 0 8px; color: #102149; font-weight: 900; }
-    body[data-openpets-view="agent-setup"] .agent-select { width: 100%; box-sizing: border-box; min-height: 42px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 12px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 12px; font: inherit; outline: none; }
-    body[data-openpets-view="agent-setup"] .agent-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-    body[data-openpets-view="agent-setup"] .agent-command-paths { display: grid; gap: 10px; margin-top: 2px; padding: 14px; border: 1px solid rgba(126, 161, 210, 0.28); border-radius: 16px; background: rgba(239, 246, 255, 0.5); }
-    body[data-openpets-view="agent-setup"] .agent-command-paths-title { display: grid; gap: 4px; }
-    body[data-openpets-view="agent-setup"] .agent-command-paths-title small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-    body[data-openpets-view="agent-setup"] .agent-command-paths-title strong { color: #102149; font-size: 15px; }
-    body[data-openpets-view="agent-setup"] .agent-path-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
-    body[data-openpets-view="agent-setup"] .agent-subfield { display: grid; gap: 7px; margin-top: 10px; }
-    body[data-openpets-view="agent-setup"] .agent-subfield span { color: #102149; font-size: 12px; font-weight: 900; }
-    body[data-openpets-view="agent-setup"] .agent-text-input { width: 100%; box-sizing: border-box; min-height: 38px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 11px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 11px; font: 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; outline: none; }
-    body[data-openpets-view="agent-setup"] .agent-text-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-    body[data-openpets-view="agent-setup"] .agent-mode-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 0; color: #17284f; }
-    body[data-openpets-view="agent-setup"] .agent-mode-row span { display: grid; gap: 4px; }
-    body[data-openpets-view="agent-setup"] .agent-mode-row small { color: #63708f; line-height: 1.35; }
-    body[data-openpets-view="agent-setup"] .agent-risk-card { border-color: rgba(245, 158, 11, 0.28); background: rgba(255, 251, 235, 0.78); }
-    body[data-openpets-view="agent-setup"] .agent-risk-card strong { display: block; margin-bottom: 5px; color: #92400e; }
-    body[data-openpets-view="agent-setup"] .agent-risk-card .warning, body[data-openpets-view="agent-setup"] .agent-hook-warning { margin: 0; color: #92400e; line-height: 1.45; }
-    body[data-openpets-view="agent-setup"] .agent-inline-note { margin: 0; color: #64748b; font-size: 13px; line-height: 1.4; }
-    body[data-openpets-view="agent-setup"] .agent-inline-note code { color: #176df2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 800; }
-    body[data-openpets-view="agent-setup"] .agent-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    body[data-openpets-view="agent-setup"] .agent-main-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    body[data-openpets-view="agent-setup"] .agent-action[hidden] { display: none !important; }
-    body[data-openpets-view="agent-setup"] .agent-action { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; padding: 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 950; background: rgba(255,255,255,0.76); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
-    body[data-openpets-view="agent-setup"] .agent-action.primary { background: linear-gradient(180deg, #3b96ff, #176df2); color: #fff; box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.38); }
-    body[data-openpets-view="agent-setup"] .agent-action.danger { color: #dc2626; border-color: rgba(239, 68, 68, 0.42); }
-    body[data-openpets-view="agent-setup"] .agent-action:hover:not(:disabled) { transform: translateY(-1px); }
-    body[data-openpets-view="agent-setup"] .agent-action.primary:hover:not(:disabled) { background: linear-gradient(180deg, #55a6ff, #176df2); }
-    body[data-openpets-view="agent-setup"] .agent-action.danger:hover:not(:disabled) { background: #fef2f2; border-color: rgba(239, 68, 68, 0.62); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="agent-setup"] .agent-action:active:not(:disabled) { transform: scale(0.96); }
-    body[data-openpets-view="agent-setup"] .agent-action:disabled { cursor: default; opacity: 0.54; transform: none; }
-    body[data-openpets-view="agent-setup"] .agent-action.compact { min-height: 34px; padding: 0 11px; font-size: 12px; }
-    body[data-openpets-view="agent-setup"] .pm-button-icon { width: 16px; height: 16px; flex: 0 0 auto; stroke: currentColor; }
-    body[data-openpets-view="agent-setup"] .agent-result { min-height: 42px; margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(239, 246, 255, 0.78); border: 1px solid rgba(37, 99, 235, 0.18); color: #36547d; line-height: 1.4; }
-    body[data-openpets-view="agent-setup"] .agent-preview-card { flex: 0 0 auto; display: flex; flex-direction: column; }
-    body[data-openpets-view="agent-setup"] .agent-hooks-card { flex: 0 0 auto; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details { margin-top: 12px; border-top: 1px solid rgba(126, 161, 210, 0.28); padding-top: 2px; overflow: hidden; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0 0; cursor: pointer; list-style: none; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary::-webkit-details-marker { display: none; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary::after { content: "▸"; color: #526483; font-size: 17px; transition: transform 140ms ease; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details[open] summary::after { transform: rotate(90deg); }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary span { display: grid; gap: 4px; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details summary strong { color: #102149; font-size: 15px; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details > :not(summary) { margin-top: 10px; }
-    body[data-openpets-view="agent-setup"] .agent-preview-card h2 { margin: 14px 0 8px; font-size: 15px; color: #102149; }
-    body[data-openpets-view="agent-setup"] .agent-inline-details h2 { margin: 14px 0 8px; font-size: 15px; color: #102149; }
-    body[data-openpets-view="agent-setup"] .agent-preview-code { box-sizing: border-box; width: 100%; margin: 10px 0 0; overflow: auto; white-space: pre; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 14px; background: rgba(15, 23, 42, 0.92); color: #dbeafe; padding: 13px; font-size: 12px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
-    body[data-openpets-view="agent-setup"] .command-preview { min-height: 74px; max-height: 110px; }
-    body[data-openpets-view="agent-setup"] .json-preview { min-height: 160px; max-height: 260px; }
-    body[data-openpets-view="agent-setup"] .hooks-preview { max-height: 140px; }
-    body[data-openpets-view="agent-setup"] .hook-actions { margin-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    body[data-openpets-view="agent-setup"] .memory-actions { margin-top: 12px; }
-    body[data-openpets-view="agent-setup"] .advanced-actions { margin-top: 12px; }
-    body[data-openpets-view="agent-setup"] [data-error] { position: fixed; left: 18px; right: 18px; bottom: 8px; max-height: 3.4em; overflow: hidden; margin: 0; color: #b91c1c; pointer-events: none; line-height: 1.35; text-overflow: ellipsis; }
-    body[data-openpets-view="agent-setup"] .connection-card.needs-command-path { border-color: rgba(239, 68, 68, 0.42); box-shadow: 0 16px 38px rgba(185, 28, 28, 0.12), 0 0 0 3px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="agent-setup"] .agent-command-paths.needs-command-path { border-color: rgba(239, 68, 68, 0.44); background: rgba(254, 242, 242, 0.58); }
-    body[data-openpets-view="agent-setup"] .agent-command-paths.needs-command-path .agent-command-paths-title strong { color: #b91c1c; }
-    @media (prefers-reduced-motion: reduce) { body[data-openpets-view="agent-setup"] .agent-action:hover:not(:disabled), body[data-openpets-view="agent-setup"] .agent-action:active:not(:disabled) { transform: none; } }
-    @media (max-width: 980px) { body[data-openpets-view="agent-setup"] .integration-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 860px) { body[data-openpets-view="agent-setup"] { overflow: auto; } body[data-openpets-view="agent-setup"] .agent-shell { height: auto; min-height: calc(100vh - 36px); overflow: visible; } body[data-openpets-view="agent-setup"] .integrations-view, body[data-openpets-view="agent-setup"] .claude-detail-view { height: auto; overflow: visible; } body[data-openpets-view="agent-setup"] .integration-grid { overflow: visible; } }
-    @media (max-width: 620px) { body[data-openpets-view="agent-setup"] .integration-grid, body[data-openpets-view="agent-setup"] .agent-main-actions, body[data-openpets-view="agent-setup"] .hook-actions { grid-template-columns: 1fr; } }
+    body[data-noelcrew-view="agent-setup"] { overflow: hidden; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #101f3f; }
+    body[data-noelcrew-view="agent-setup"] .agent-shell { width: min(1160px, calc(100vw - 36px)); height: calc(100vh - 44px); padding: 22px 0 22px; overflow: hidden; }
+    body[data-noelcrew-view="agent-setup"] .integrations-view { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    body[data-noelcrew-view="agent-setup"] .integrations-view[hidden], body[data-noelcrew-view="agent-setup"] .claude-detail-view[hidden] { display: none !important; }
+    body[data-noelcrew-view="agent-setup"] .integrations-header { flex: 0 0 auto; display: grid; justify-items: center; text-align: center; margin-bottom: 12px; }
+    body[data-noelcrew-view="agent-setup"] .integrations-header .agent-logo { margin-bottom: 0; }
+    body[data-noelcrew-view="agent-setup"] .integrations-header .eyebrow { margin: 0 0 5px; color: #2478ff; }
+    body[data-noelcrew-view="agent-setup"] .integrations-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 32px; line-height: 1; letter-spacing: -0.05em; color: #102149; }
+    body[data-noelcrew-view="agent-setup"] .integrations-header .lede { max-width: 560px; margin: 6px 0 0; color: #63708f; line-height: 1.3; }
+    body[data-noelcrew-view="agent-setup"] .integration-grid { min-height: 0; overflow: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 2px 4px 16px; }
+    body[data-noelcrew-view="agent-setup"] .integration-card { min-height: 248px; box-sizing: border-box; display: flex; flex-direction: column; gap: 9px; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 20px; background: rgba(255,255,255,0.76); box-shadow: 0 16px 38px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); padding: 16px; }
+    body[data-noelcrew-view="agent-setup"] .integration-card.featured { border-color: rgba(37, 99, 235, 0.36); background: linear-gradient(180deg, rgba(239, 247, 255, 0.92), rgba(255,255,255,0.78)); }
+    body[data-noelcrew-view="agent-setup"] .integration-card.disabled { opacity: 0.74; }
+    body[data-noelcrew-view="agent-setup"] .integration-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    body[data-noelcrew-view="agent-setup"] .integration-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 16px; background: rgba(255,255,255,0.76); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 20px rgba(61, 99, 160, 0.08); }
+    body[data-noelcrew-view="agent-setup"] .integration-icon img { width: 28px; height: 28px; object-fit: contain; }
+    body[data-noelcrew-view="agent-setup"] .integration-card h2 { margin: 0; font-size: 20px; color: #102149; }
+    body[data-noelcrew-view="agent-setup"] .integration-card p { flex: 1 1 auto; margin: 0; color: #526483; line-height: 1.35; font-size: 14px; }
+    body[data-noelcrew-view="agent-setup"] .integration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+    body[data-noelcrew-view="agent-setup"] .integration-actions.stacked { grid-template-columns: 1fr; gap: 8px; }
+    body[data-noelcrew-view="agent-setup"] .integration-actions .agent-action:only-child { grid-column: 1 / -1; }
+    @keyframes noelcrew-agent-spin { to { transform: rotate(360deg); } }
+    body[data-noelcrew-view="agent-setup"] .agent-action[data-loading] { cursor: progress; opacity: 0.85; }
+    body[data-noelcrew-view="agent-setup"] .agent-action[data-loading] .pm-button-icon { animation: noelcrew-agent-spin 0.85s linear infinite; transform-origin: 50% 50%; }
+    body[data-noelcrew-view="agent-setup"] .integration-card > .agent-action { margin-top: auto; }
+    body[data-noelcrew-view="agent-setup"] .claude-detail-view { height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; overflow: hidden; }
+    body[data-noelcrew-view="agent-setup"] .claude-detail-toolbar { display: flex; justify-content: flex-start; padding: 4px 2px 0; }
+    body[data-noelcrew-view="agent-setup"] .compact-title { margin-bottom: 0; }
+    body[data-noelcrew-view="agent-setup"] .agent-setup-pane { width: min(760px, 100%); min-width: 0; min-height: 0; justify-self: center; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; overflow-x: hidden; padding: 2px 8px 16px; scrollbar-gutter: stable; }
+    body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar { width: 8px; }
+    body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb { background: rgba(126, 161, 210, 0.45); border-radius: 999px; }
+    body[data-noelcrew-view="agent-setup"] .agent-setup-pane::-webkit-scrollbar-thumb:hover { background: rgba(99, 130, 178, 0.65); }
+    body[data-noelcrew-view="agent-setup"] .agent-logo { width: min(210px, 68%); display: block; margin: 0 auto -2px; filter: drop-shadow(0 10px 14px rgba(42, 80, 138, 0.12)); }
+    body[data-noelcrew-view="agent-setup"] .agent-title-block { display: grid; gap: 2px; margin-bottom: 2px; }
+    body[data-noelcrew-view="agent-setup"] .agent-title-block .eyebrow { margin: 0; color: #2478ff; }
+    body[data-noelcrew-view="agent-setup"] .agent-title-block h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 28px; line-height: 1.08; letter-spacing: -0.04em; color: #102149; text-wrap: balance; }
+    body[data-noelcrew-view="agent-setup"] .agent-title-block .lede { margin: 0; color: #63708f; line-height: 1.35; }
+    body[data-noelcrew-view="agent-setup"] .agent-status-card, body[data-noelcrew-view="agent-setup"] .agent-control-card, body[data-noelcrew-view="agent-setup"] .agent-risk-card, body[data-noelcrew-view="agent-setup"] .agent-preview-card, body[data-noelcrew-view="agent-setup"] .agent-memory-card, body[data-noelcrew-view="agent-setup"] .agent-hooks-card { box-sizing: border-box; border: 1px solid rgba(126, 161, 210, 0.44); border-radius: 20px; background: rgba(255,255,255,0.76); box-shadow: 0 16px 38px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="agent-setup"] .agent-status-card, body[data-noelcrew-view="agent-setup"] .agent-control-card, body[data-noelcrew-view="agent-setup"] .agent-risk-card { padding: 18px; }
+    body[data-noelcrew-view="agent-setup"] .agent-preview-card, body[data-noelcrew-view="agent-setup"] .agent-memory-card, body[data-noelcrew-view="agent-setup"] .agent-hooks-card { padding: 18px; }
+    body[data-noelcrew-view="agent-setup"] .agent-section-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+    body[data-noelcrew-view="agent-setup"] .agent-section-header span:first-child { display: grid; gap: 4px; min-width: 0; }
+    body[data-noelcrew-view="agent-setup"] .agent-section-header small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+    body[data-noelcrew-view="agent-setup"] .agent-section-header strong { color: #102149; font-size: 18px; line-height: 1.2; }
+    body[data-noelcrew-view="agent-setup"] .agent-status-pill { height: 30px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 1px solid rgba(126, 161, 210, 0.36); border-radius: 10px; padding: 0 10px; background: rgba(255,255,255,0.68); color: #526483; font-size: 10px; font-weight: 900; white-space: nowrap; }
+    body[data-noelcrew-view="agent-setup"] .agent-status-pill.success { color: #047857; background: rgba(236, 253, 245, 0.86); border-color: rgba(16, 185, 129, 0.28); }
+    body[data-noelcrew-view="agent-setup"] .agent-status-pill.info { color: #176df2; background: rgba(239, 246, 255, 0.9); border-color: rgba(37, 99, 235, 0.28); }
+    body[data-noelcrew-view="agent-setup"] .agent-status-pill.error { color: #b91c1c; background: rgba(254, 242, 242, 0.9); border-color: rgba(248, 113, 113, 0.32); }
+    body[data-noelcrew-view="agent-setup"] .agent-status-pill.muted { color: #64748b; background: rgba(248, 250, 252, 0.82); }
+    body[data-noelcrew-view="agent-setup"] .agent-note { margin: 0; color: #4f6389; line-height: 1.48; text-wrap: pretty; }
+    body[data-noelcrew-view="agent-setup"] .connection-card { display: grid; gap: 16px; padding: 20px; }
+    body[data-noelcrew-view="agent-setup"] .agent-control-group { display: grid; gap: 8px; }
+    body[data-noelcrew-view="agent-setup"] .agent-field-label { display: block; margin: 0 0 8px; color: #102149; font-weight: 900; }
+    body[data-noelcrew-view="agent-setup"] .agent-select { width: 100%; box-sizing: border-box; min-height: 42px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 12px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 12px; font: inherit; outline: none; }
+    body[data-noelcrew-view="agent-setup"] .agent-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths { display: grid; gap: 10px; margin-top: 2px; padding: 14px; border: 1px solid rgba(126, 161, 210, 0.28); border-radius: 16px; background: rgba(239, 246, 255, 0.5); }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths-title { display: grid; gap: 4px; }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths-title small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths-title strong { color: #102149; font-size: 15px; }
+    body[data-noelcrew-view="agent-setup"] .agent-path-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+    body[data-noelcrew-view="agent-setup"] .agent-subfield { display: grid; gap: 7px; margin-top: 10px; }
+    body[data-noelcrew-view="agent-setup"] .agent-subfield span { color: #102149; font-size: 12px; font-weight: 900; }
+    body[data-noelcrew-view="agent-setup"] .agent-text-input { width: 100%; box-sizing: border-box; min-height: 38px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 11px; background: rgba(255,255,255,0.82); color: #17284f; padding: 0 11px; font: 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; outline: none; }
+    body[data-noelcrew-view="agent-setup"] .agent-text-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+    body[data-noelcrew-view="agent-setup"] .agent-mode-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 0; color: #17284f; }
+    body[data-noelcrew-view="agent-setup"] .agent-mode-row span { display: grid; gap: 4px; }
+    body[data-noelcrew-view="agent-setup"] .agent-mode-row small { color: #63708f; line-height: 1.35; }
+    body[data-noelcrew-view="agent-setup"] .agent-risk-card { border-color: rgba(245, 158, 11, 0.28); background: rgba(255, 251, 235, 0.78); }
+    body[data-noelcrew-view="agent-setup"] .agent-risk-card strong { display: block; margin-bottom: 5px; color: #92400e; }
+    body[data-noelcrew-view="agent-setup"] .agent-risk-card .warning, body[data-noelcrew-view="agent-setup"] .agent-hook-warning { margin: 0; color: #92400e; line-height: 1.45; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-note { margin: 0; color: #64748b; font-size: 13px; line-height: 1.4; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-note code { color: #176df2; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 800; }
+    body[data-noelcrew-view="agent-setup"] .agent-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    body[data-noelcrew-view="agent-setup"] .agent-main-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    body[data-noelcrew-view="agent-setup"] .agent-action[hidden] { display: none !important; }
+    body[data-noelcrew-view="agent-setup"] .agent-action { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(37, 99, 235, 0.34); border-radius: 11px; padding: 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 950; background: rgba(255,255,255,0.76); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
+    body[data-noelcrew-view="agent-setup"] .agent-action.primary { background: linear-gradient(180deg, #3b96ff, #176df2); color: #fff; box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.38); }
+    body[data-noelcrew-view="agent-setup"] .agent-action.danger { color: #dc2626; border-color: rgba(239, 68, 68, 0.42); }
+    body[data-noelcrew-view="agent-setup"] .agent-action:hover:not(:disabled) { transform: translateY(-1px); }
+    body[data-noelcrew-view="agent-setup"] .agent-action.primary:hover:not(:disabled) { background: linear-gradient(180deg, #55a6ff, #176df2); }
+    body[data-noelcrew-view="agent-setup"] .agent-action.danger:hover:not(:disabled) { background: #fef2f2; border-color: rgba(239, 68, 68, 0.62); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="agent-setup"] .agent-action:active:not(:disabled) { transform: scale(0.96); }
+    body[data-noelcrew-view="agent-setup"] .agent-action:disabled { cursor: default; opacity: 0.54; transform: none; }
+    body[data-noelcrew-view="agent-setup"] .agent-action.compact { min-height: 34px; padding: 0 11px; font-size: 12px; }
+    body[data-noelcrew-view="agent-setup"] .pm-button-icon { width: 16px; height: 16px; flex: 0 0 auto; stroke: currentColor; }
+    body[data-noelcrew-view="agent-setup"] .agent-result { min-height: 42px; margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(239, 246, 255, 0.78); border: 1px solid rgba(37, 99, 235, 0.18); color: #36547d; line-height: 1.4; }
+    body[data-noelcrew-view="agent-setup"] .agent-preview-card { flex: 0 0 auto; display: flex; flex-direction: column; }
+    body[data-noelcrew-view="agent-setup"] .agent-hooks-card { flex: 0 0 auto; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details { margin-top: 12px; border-top: 1px solid rgba(126, 161, 210, 0.28); padding-top: 2px; overflow: hidden; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0 0; cursor: pointer; list-style: none; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary::-webkit-details-marker { display: none; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary::after { content: "▸"; color: #526483; font-size: 17px; transition: transform 140ms ease; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details[open] summary::after { transform: rotate(90deg); }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary span { display: grid; gap: 4px; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary small { color: #2478ff; font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details summary strong { color: #102149; font-size: 15px; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details > :not(summary) { margin-top: 10px; }
+    body[data-noelcrew-view="agent-setup"] .agent-preview-card h2 { margin: 14px 0 8px; font-size: 15px; color: #102149; }
+    body[data-noelcrew-view="agent-setup"] .agent-inline-details h2 { margin: 14px 0 8px; font-size: 15px; color: #102149; }
+    body[data-noelcrew-view="agent-setup"] .agent-preview-code { box-sizing: border-box; width: 100%; margin: 10px 0 0; overflow: auto; white-space: pre; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 14px; background: rgba(15, 23, 42, 0.92); color: #dbeafe; padding: 13px; font-size: 12px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+    body[data-noelcrew-view="agent-setup"] .command-preview { min-height: 74px; max-height: 110px; }
+    body[data-noelcrew-view="agent-setup"] .json-preview { min-height: 160px; max-height: 260px; }
+    body[data-noelcrew-view="agent-setup"] .hooks-preview { max-height: 140px; }
+    body[data-noelcrew-view="agent-setup"] .hook-actions { margin-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    body[data-noelcrew-view="agent-setup"] .memory-actions { margin-top: 12px; }
+    body[data-noelcrew-view="agent-setup"] .advanced-actions { margin-top: 12px; }
+    body[data-noelcrew-view="agent-setup"] [data-error] { position: fixed; left: 18px; right: 18px; bottom: 8px; max-height: 3.4em; overflow: hidden; margin: 0; color: #b91c1c; pointer-events: none; line-height: 1.35; text-overflow: ellipsis; }
+    body[data-noelcrew-view="agent-setup"] .connection-card.needs-command-path { border-color: rgba(239, 68, 68, 0.42); box-shadow: 0 16px 38px rgba(185, 28, 28, 0.12), 0 0 0 3px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths.needs-command-path { border-color: rgba(239, 68, 68, 0.44); background: rgba(254, 242, 242, 0.58); }
+    body[data-noelcrew-view="agent-setup"] .agent-command-paths.needs-command-path .agent-command-paths-title strong { color: #b91c1c; }
+    @media (prefers-reduced-motion: reduce) { body[data-noelcrew-view="agent-setup"] .agent-action:hover:not(:disabled), body[data-noelcrew-view="agent-setup"] .agent-action:active:not(:disabled) { transform: none; } }
+    @media (max-width: 980px) { body[data-noelcrew-view="agent-setup"] .integration-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 860px) { body[data-noelcrew-view="agent-setup"] { overflow: auto; } body[data-noelcrew-view="agent-setup"] .agent-shell { height: auto; min-height: calc(100vh - 36px); overflow: visible; } body[data-noelcrew-view="agent-setup"] .integrations-view, body[data-noelcrew-view="agent-setup"] .claude-detail-view { height: auto; overflow: visible; } body[data-noelcrew-view="agent-setup"] .integration-grid { overflow: visible; } }
+    @media (max-width: 620px) { body[data-noelcrew-view="agent-setup"] .integration-grid, body[data-noelcrew-view="agent-setup"] .agent-main-actions, body[data-noelcrew-view="agent-setup"] .hook-actions { grid-template-columns: 1fr; } }
     
-    body[data-openpets-view="pet-manager"] { overflow: hidden; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #101f3f; }
-    body[data-openpets-view="pet-manager"] .pm-shell { width: min(1160px, calc(100vw - 36px)); height: calc(100vh - 28px); display: grid; grid-template-columns: minmax(330px, 0.78fr) minmax(510px, 1.22fr); gap: 32px; align-items: stretch; padding: 10px 0 18px; overflow: hidden; }
-    body[data-openpets-view="pet-manager"] .pm-gallery-pane { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 28px; }
-    body[data-openpets-view="pet-manager"] .pm-logo { width: min(218px, 72%); flex: 0 0 auto; display: block; margin: -2px auto 0; filter: drop-shadow(0 10px 14px rgba(42, 80, 138, 0.12)); }
-    body[data-openpets-view="pet-manager"] .pm-header { flex: 0 0 auto; position: relative; display: grid; align-items: center; row-gap: 0; margin-bottom: 6px; padding-right: 108px; }
-    body[data-openpets-view="pet-manager"] .pm-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 24px; line-height: 1.08; letter-spacing: -0.03em; color: #102149; text-shadow: 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-header .lede { grid-column: 1 / -1; margin: 0; color: #63708f; line-height: 1.25; }
-    body[data-openpets-view="pet-manager"] .pm-status-pill { position: absolute; right: 0; top: 2px; height: 22px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(126, 161, 210, 0.28); border-radius: 8px; padding: 0 8px; color: #526483; background: rgba(255, 255, 255, 0.58); font-size: 9px; line-height: 1; font-weight: 850; font-variant-numeric: tabular-nums; white-space: nowrap; box-shadow: 0 8px 18px rgba(61, 99, 160, 0.05), inset 0 1px 0 rgba(255,255,255,0.85); }
-    body[data-openpets-view="pet-manager"] .pm-status-pill.success { color: #047857; background: rgba(236, 253, 245, 0.82); border-color: rgba(16, 185, 129, 0.26); }
-    body[data-openpets-view="pet-manager"] .pm-status-pill.error { color: #b91c1c; background: rgba(254, 242, 242, 0.86); border-color: rgba(248, 113, 113, 0.28); }
-    body[data-openpets-view="pet-manager"] .pm-search-wrap { height: 40px; flex: 0 0 auto; display: flex; align-items: center; gap: 11px; box-sizing: border-box; margin: 0 0 8px; padding: 0 13px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 12px; background: rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(61, 99, 160, 0.08); color: #526483; }
-    body[data-openpets-view="pet-manager"] .pm-search-wrap:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-search-icon { width: 17px; height: 17px; flex: 0 0 17px; box-sizing: border-box; border: 2px solid #5d6e8e; border-radius: 999px; position: relative; opacity: 0.9; }
-    body[data-openpets-view="pet-manager"] .pm-search-icon::after { content: ""; width: 7px; height: 2px; border-radius: 999px; background: #5d6e8e; position: absolute; right: -5px; bottom: -2px; transform: rotate(45deg); transform-origin: center; }
-    body[data-openpets-view="pet-manager"] #catalog-search { width: 100%; border: 0; outline: 0; background: transparent; color: #17284f; font: inherit; font-size: 15px; }
-    body[data-openpets-view="pet-manager"] #catalog-search::placeholder { color: #8290aa; }
-    body[data-openpets-view="pet-manager"] .pm-filters { flex: 0 0 auto; position: relative; display: grid; gap: 7px; margin-bottom: 9px; }
-    body[data-openpets-view="pet-manager"] .pm-filter-buttons { display: grid; align-items: center; justify-content: stretch; gap: 8px; min-width: 0; }
-    body[data-openpets-view="pet-manager"] .pm-filter-buttons.primary { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 315px; }
-    body[data-openpets-view="pet-manager"] .pm-filter-buttons.secondary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    body[data-openpets-view="pet-manager"] .pm-filter { min-width: 0; min-height: 30px; padding: 5px 12px; border: 1px solid rgba(126, 161, 210, 0.46); border-radius: 10px; background: rgba(255,255,255,0.76); color: #526483; font-weight: 850; box-shadow: 0 8px 20px rgba(61, 99, 160, 0.06); display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
-    body[data-openpets-view="pet-manager"] .pm-filter[data-pet-filter="original"] { border-color: rgba(217, 119, 6, 0.36); background: linear-gradient(180deg, rgba(255, 251, 235, 0.96), rgba(254, 243, 199, 0.82)); color: #9a5a08; box-shadow: 0 9px 20px rgba(217, 119, 6, 0.09), inset 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-filter.active { border-color: rgba(29, 113, 255, 0.5); background: linear-gradient(180deg, #53a3ff, #176df2); color: #fff; box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255,255,255,0.34); }
-    body[data-openpets-view="pet-manager"] .pm-filter[data-pet-filter="original"].active { border-color: rgba(180, 83, 9, 0.58); background: linear-gradient(180deg, #fbbf24, #d97706); color: #fff7ed; box-shadow: 0 12px 24px rgba(217, 119, 6, 0.24), inset 0 1px 0 rgba(255,255,255,0.34); }
-    body[data-openpets-view="pet-manager"] .pm-pet-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 8px 14px 2px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
-    body[data-openpets-view="pet-manager"] .pm-pet-card { min-height: 164px; display: grid; grid-template-rows: 58px 40px 31px; gap: 7px; justify-items: center; box-sizing: border-box; padding: 11px 10px 12px; border: 1px solid rgba(126, 161, 210, 0.45); border-radius: 14px; background: rgba(255,255,255,0.74); color: #14264d; box-shadow: 0 12px 28px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.92); transition: box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease; }
-    body[data-openpets-view="pet-manager"] .pm-pet-card:hover { border-color: rgba(37, 99, 235, 0.44); background: rgba(255,255,255,0.9); box-shadow: 0 13px 28px rgba(61, 99, 160, 0.13), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="pet-manager"] .pm-pet-card:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.42); outline-offset: 3px; border-color: rgba(37, 99, 235, 0.72); }
-    body[data-openpets-view="pet-manager"] .pm-pet-card:active { border-color: rgba(37, 99, 235, 0.64); }
-    body[data-openpets-view="pet-manager"] .pm-pet-card.active { border: 2px solid #2478ff; padding: 10px 9px 11px; background: linear-gradient(180deg, rgba(239, 247, 255, 0.95), rgba(255,255,255,0.78)); box-shadow: 0 16px 34px rgba(37, 99, 235, 0.18), inset 0 1px 0 rgba(255,255,255,0.96); }
-    body[data-openpets-view="pet-manager"] .pm-thumb, body[data-openpets-view="pet-manager"] .pm-preview-sprite { position: relative; overflow: hidden; display: grid; place-items: center; background: radial-gradient(circle at 50% 72%, rgba(125, 211, 252, 0.16), transparent 44%); }
-    body[data-openpets-view="pet-manager"] .pm-thumb { width: 54px; height: 58px; border-radius: 13px; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame { background-repeat: no-repeat; background-size: 800% 900%; background-position: 0 0; image-rendering: auto; filter: drop-shadow(0 9px 8px rgba(25, 44, 83, 0.16)); }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-thumbnail-frame { background-size: contain; background-position: center; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-empty-sprite { background: transparent; filter: none; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-animate-sprite { animation: pm-sprite-idle 1.65s steps(6) infinite; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-idle { background-position: 0 0; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-thinking { background-position: 0 100%; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-wave { background-position: 0 37.5%; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-happy { background-position: 0 50%; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-thinking.pm-animate-sprite { animation: pm-sprite-thinking 1.55s steps(6) infinite; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-wave.pm-animate-sprite { animation: pm-sprite-wave 1.25s steps(4) infinite; }
-    body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-happy.pm-animate-sprite { animation: pm-sprite-happy 1.35s steps(5) infinite; }
-    body[data-openpets-view="pet-manager"] .pm-pet-name { width: 100%; align-self: center; min-height: 36px; max-height: 36px; font-weight: 950; font-size: 14px; line-height: 18px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    body[data-openpets-view="pet-manager"] .pm-card-action { width: calc(100% - 10px); min-height: 28px; align-self: end; margin-top: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; font-weight: 900; border: 1px solid rgba(37, 99, 235, 0.46); background: rgba(255,255,255,0.72); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 5px 12px rgba(61, 99, 160, 0.05); }
-    body[data-openpets-view="pet-manager"] .pm-card-action.danger { border-color: rgba(239, 68, 68, 0.42); color: #dc2626; }
-    body[data-openpets-view="pet-manager"] .pm-card-action.danger:hover:not(:disabled) { background: #fef2f2; border-color: rgba(239, 68, 68, 0.62); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="pet-manager"] .pm-card-action:hover:not(:disabled) { background: #eff6ff; border-color: rgba(37, 99, 235, 0.72); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="pet-manager"] .pm-card-action:active:not(:disabled) { transform: scale(0.96); }
-    body[data-openpets-view="pet-manager"] .pm-card-action.status { border-color: rgba(37, 99, 235, 0.22); background: linear-gradient(180deg, #ecf5ff, #dbeafe); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-card-action:disabled { cursor: default; opacity: 1; }
-    body[data-openpets-view="pet-manager"] .pm-load-more-wrap { grid-column: 1 / -1; display: flex; justify-content: center; padding: 10px 0 2px; }
-    body[data-openpets-view="pet-manager"] .pm-load-more { min-height: 32px; padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(37, 99, 235, 0.34); background: rgba(255,255,255,0.82); color: #176df2; font-weight: 900; box-shadow: 0 8px 20px rgba(61,99,160,0.07), inset 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-detail-pane { min-height: 0; height: 100%; overflow: hidden; box-sizing: border-box; padding: 30px 34px; border: 1px solid rgba(126, 161, 210, 0.48); border-radius: 24px; background: rgba(255,255,255,0.76); box-shadow: 0 24px 60px rgba(61, 99, 160, 0.15), inset 0 1px 0 rgba(255,255,255,0.96); color: #14264d; }
-    body[data-openpets-view="pet-manager"] .pm-detail-title { margin: 0 0 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; color: #102149; }
-    body[data-openpets-view="pet-manager"] .pm-detail-description { height: 74px; margin: 0 0 16px; color: #253b67; font-size: 16px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty; }
-    body[data-openpets-view="pet-manager"] .pm-hero-stage { height: 235px; display: grid; place-items: center; margin: 0 0 20px; border-radius: 22px; background: radial-gradient(circle at 82% 24%, rgba(191, 219, 254, 0.62), transparent 13%), radial-gradient(circle at 18% 35%, rgba(219, 234, 254, 0.72), transparent 12%), linear-gradient(180deg, rgba(255,255,255,0.54), rgba(239, 247, 255, 0.26)); position: relative; overflow: hidden; }
-    body[data-openpets-view="pet-manager"] .pm-preview-sprite { width: 144px; height: 156px; z-index: 1; animation: pm-idle-bob 2.6s ease-in-out infinite; filter: drop-shadow(0 18px 18px rgba(25, 44, 83, 0.22)); }
-    body[data-openpets-view="pet-manager"] .pm-status-line { min-height: 25px; margin: 0 0 16px; color: #526483; font-size: 13px; font-weight: 850; }
-    body[data-openpets-view="pet-manager"] .pm-preview-title { margin: 0 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 18px; }
-    body[data-openpets-view="pet-manager"] .pm-mini-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
-    body[data-openpets-view="pet-manager"] .pm-mini { display: grid; gap: 7px; justify-items: center; padding: 12px 10px; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 13px; background: rgba(255,255,255,0.68); box-shadow: 0 10px 22px rgba(61, 99, 160, 0.08); }
-    body[data-openpets-view="pet-manager"] .pm-mini-sprite { width: 56px; height: 61px; overflow: hidden; border-radius: 14px; }
-    body[data-openpets-view="pet-manager"] .pm-mini span { color: #22385f; font-size: 13px; font-weight: 800; }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.88fr); gap: 16px; }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button { min-height: 50px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 16px; font-weight: 950; border: 1px solid rgba(37, 99, 235, 0.32); background: linear-gradient(180deg, #3b96ff, #176df2); color: #fff; box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.38); }
-    body[data-openpets-view="pet-manager"] .pm-button-icon { flex: 0 0 auto; width: 16px; height: 16px; stroke: currentColor; }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions .pm-button-icon { width: 18px; height: 18px; }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button:hover:not(:disabled) { background: linear-gradient(180deg, #55a6ff, #176df2); transform: translateY(-1px); }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button:active:not(:disabled) { transform: scale(0.96); }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button.secondary { background: rgba(255,255,255,0.76); color: #176df2; border-color: rgba(37, 99, 235, 0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button.secondary:hover:not(:disabled) { background: #fef2f2; color: #dc2626; border-color: rgba(239, 68, 68, 0.58); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button:disabled { opacity: 1; cursor: default; background: linear-gradient(180deg, #ecf5ff, #dbeafe); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
-    body[data-openpets-view="pet-manager"] .pm-detail-actions button:only-child { grid-column: 1 / -1; }
-    body[data-openpets-view="pet-manager"] .pm-empty-state { grid-column: 1 / -1; padding: 28px; text-align: center; color: #667694; border: 1px dashed rgba(126, 161, 210, 0.48); border-radius: 18px; background: rgba(255,255,255,0.5); }
-    body[data-openpets-view="pet-manager"] [data-error] { position: fixed; left: 18px; right: 18px; bottom: 8px; margin: 0; color: #b91c1c; pointer-events: none; }
+    body[data-noelcrew-view="pet-manager"] { overflow: hidden; background: radial-gradient(circle at 12% 8%, rgba(219, 234, 254, 0.9), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eff7ff 54%, #e9f3ff 100%); color: #101f3f; }
+    body[data-noelcrew-view="pet-manager"] .pm-shell { width: min(1160px, calc(100vw - 36px)); height: calc(100vh - 28px); display: grid; grid-template-columns: minmax(330px, 0.78fr) minmax(510px, 1.22fr); gap: 32px; align-items: stretch; padding: 10px 0 18px; overflow: hidden; }
+    body[data-noelcrew-view="pet-manager"] .pm-gallery-pane { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 28px; }
+    body[data-noelcrew-view="pet-manager"] .pm-logo { width: min(218px, 72%); flex: 0 0 auto; display: block; margin: -2px auto 0; filter: drop-shadow(0 10px 14px rgba(42, 80, 138, 0.12)); }
+    body[data-noelcrew-view="pet-manager"] .pm-header { flex: 0 0 auto; position: relative; display: grid; align-items: center; row-gap: 0; margin-bottom: 6px; padding-right: 108px; }
+    body[data-noelcrew-view="pet-manager"] .pm-header h1 { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 24px; line-height: 1.08; letter-spacing: -0.03em; color: #102149; text-shadow: 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-header .lede { grid-column: 1 / -1; margin: 0; color: #63708f; line-height: 1.25; }
+    body[data-noelcrew-view="pet-manager"] .pm-status-pill { position: absolute; right: 0; top: 2px; height: 22px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(126, 161, 210, 0.28); border-radius: 8px; padding: 0 8px; color: #526483; background: rgba(255, 255, 255, 0.58); font-size: 9px; line-height: 1; font-weight: 850; font-variant-numeric: tabular-nums; white-space: nowrap; box-shadow: 0 8px 18px rgba(61, 99, 160, 0.05), inset 0 1px 0 rgba(255,255,255,0.85); }
+    body[data-noelcrew-view="pet-manager"] .pm-status-pill.success { color: #047857; background: rgba(236, 253, 245, 0.82); border-color: rgba(16, 185, 129, 0.26); }
+    body[data-noelcrew-view="pet-manager"] .pm-status-pill.error { color: #b91c1c; background: rgba(254, 242, 242, 0.86); border-color: rgba(248, 113, 113, 0.28); }
+    body[data-noelcrew-view="pet-manager"] .pm-search-wrap { height: 40px; flex: 0 0 auto; display: flex; align-items: center; gap: 11px; box-sizing: border-box; margin: 0 0 8px; padding: 0 13px; border: 1px solid rgba(126, 161, 210, 0.54); border-radius: 12px; background: rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 24px rgba(61, 99, 160, 0.08); color: #526483; }
+    body[data-noelcrew-view="pet-manager"] .pm-search-wrap:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-search-icon { width: 17px; height: 17px; flex: 0 0 17px; box-sizing: border-box; border: 2px solid #5d6e8e; border-radius: 999px; position: relative; opacity: 0.9; }
+    body[data-noelcrew-view="pet-manager"] .pm-search-icon::after { content: ""; width: 7px; height: 2px; border-radius: 999px; background: #5d6e8e; position: absolute; right: -5px; bottom: -2px; transform: rotate(45deg); transform-origin: center; }
+    body[data-noelcrew-view="pet-manager"] #catalog-search { width: 100%; border: 0; outline: 0; background: transparent; color: #17284f; font: inherit; font-size: 15px; }
+    body[data-noelcrew-view="pet-manager"] #catalog-search::placeholder { color: #8290aa; }
+    body[data-noelcrew-view="pet-manager"] .pm-filters { flex: 0 0 auto; position: relative; display: grid; gap: 7px; margin-bottom: 9px; }
+    body[data-noelcrew-view="pet-manager"] .pm-filter-buttons { display: grid; align-items: center; justify-content: stretch; gap: 8px; min-width: 0; }
+    body[data-noelcrew-view="pet-manager"] .pm-filter-buttons.primary { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 315px; }
+    body[data-noelcrew-view="pet-manager"] .pm-filter-buttons.secondary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    body[data-noelcrew-view="pet-manager"] .pm-filter { min-width: 0; min-height: 30px; padding: 5px 12px; border: 1px solid rgba(126, 161, 210, 0.46); border-radius: 10px; background: rgba(255,255,255,0.76); color: #526483; font-weight: 850; box-shadow: 0 8px 20px rgba(61, 99, 160, 0.06); display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+    body[data-noelcrew-view="pet-manager"] .pm-filter[data-pet-filter="original"] { border-color: rgba(217, 119, 6, 0.36); background: linear-gradient(180deg, rgba(255, 251, 235, 0.96), rgba(254, 243, 199, 0.82)); color: #9a5a08; box-shadow: 0 9px 20px rgba(217, 119, 6, 0.09), inset 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-filter.active { border-color: rgba(29, 113, 255, 0.5); background: linear-gradient(180deg, #53a3ff, #176df2); color: #fff; box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255,255,255,0.34); }
+    body[data-noelcrew-view="pet-manager"] .pm-filter[data-pet-filter="original"].active { border-color: rgba(180, 83, 9, 0.58); background: linear-gradient(180deg, #fbbf24, #d97706); color: #fff7ed; box-shadow: 0 12px 24px rgba(217, 119, 6, 0.24), inset 0 1px 0 rgba(255,255,255,0.34); }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 8px 14px 2px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; scrollbar-color: rgba(96, 165, 250, 0.42) transparent; }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-card { min-height: 164px; display: grid; grid-template-rows: 58px 40px 31px; gap: 7px; justify-items: center; box-sizing: border-box; padding: 11px 10px 12px; border: 1px solid rgba(126, 161, 210, 0.45); border-radius: 14px; background: rgba(255,255,255,0.74); color: #14264d; box-shadow: 0 12px 28px rgba(61, 99, 160, 0.1), inset 0 1px 0 rgba(255,255,255,0.92); transition: box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease; }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-card:hover { border-color: rgba(37, 99, 235, 0.44); background: rgba(255,255,255,0.9); box-shadow: 0 13px 28px rgba(61, 99, 160, 0.13), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-card:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.42); outline-offset: 3px; border-color: rgba(37, 99, 235, 0.72); }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-card:active { border-color: rgba(37, 99, 235, 0.64); }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-card.active { border: 2px solid #2478ff; padding: 10px 9px 11px; background: linear-gradient(180deg, rgba(239, 247, 255, 0.95), rgba(255,255,255,0.78)); box-shadow: 0 16px 34px rgba(37, 99, 235, 0.18), inset 0 1px 0 rgba(255,255,255,0.96); }
+    body[data-noelcrew-view="pet-manager"] .pm-thumb, body[data-noelcrew-view="pet-manager"] .pm-preview-sprite { position: relative; overflow: hidden; display: grid; place-items: center; background: radial-gradient(circle at 50% 72%, rgba(125, 211, 252, 0.16), transparent 44%); }
+    body[data-noelcrew-view="pet-manager"] .pm-thumb { width: 54px; height: 58px; border-radius: 13px; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame { background-repeat: no-repeat; background-size: 800% 900%; background-position: 0 0; image-rendering: auto; filter: drop-shadow(0 9px 8px rgba(25, 44, 83, 0.16)); }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-thumbnail-frame { background-size: contain; background-position: center; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-empty-sprite { background: transparent; filter: none; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-animate-sprite { animation: pm-sprite-idle 1.65s steps(6) infinite; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-idle { background-position: 0 0; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-thinking { background-position: 0 100%; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-wave { background-position: 0 37.5%; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-happy { background-position: 0 50%; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-thinking.pm-animate-sprite { animation: pm-sprite-thinking 1.55s steps(6) infinite; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-wave.pm-animate-sprite { animation: pm-sprite-wave 1.25s steps(4) infinite; }
+    body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-sprite-state-happy.pm-animate-sprite { animation: pm-sprite-happy 1.35s steps(5) infinite; }
+    body[data-noelcrew-view="pet-manager"] .pm-pet-name { width: 100%; align-self: center; min-height: 36px; max-height: 36px; font-weight: 950; font-size: 14px; line-height: 18px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action { width: calc(100% - 10px); min-height: 28px; align-self: end; margin-top: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; font-weight: 900; border: 1px solid rgba(37, 99, 235, 0.46); background: rgba(255,255,255,0.72); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 5px 12px rgba(61, 99, 160, 0.05); }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action.danger { border-color: rgba(239, 68, 68, 0.42); color: #dc2626; }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action.danger:hover:not(:disabled) { background: #fef2f2; border-color: rgba(239, 68, 68, 0.62); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action:hover:not(:disabled) { background: #eff6ff; border-color: rgba(37, 99, 235, 0.72); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action:active:not(:disabled) { transform: scale(0.96); }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action.status { border-color: rgba(37, 99, 235, 0.22); background: linear-gradient(180deg, #ecf5ff, #dbeafe); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-card-action:disabled { cursor: default; opacity: 1; }
+    body[data-noelcrew-view="pet-manager"] .pm-load-more-wrap { grid-column: 1 / -1; display: flex; justify-content: center; padding: 10px 0 2px; }
+    body[data-noelcrew-view="pet-manager"] .pm-load-more { min-height: 32px; padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(37, 99, 235, 0.34); background: rgba(255,255,255,0.82); color: #176df2; font-weight: 900; box-shadow: 0 8px 20px rgba(61,99,160,0.07), inset 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-pane { min-height: 0; height: 100%; overflow: hidden; box-sizing: border-box; padding: 30px 34px; border: 1px solid rgba(126, 161, 210, 0.48); border-radius: 24px; background: rgba(255,255,255,0.76); box-shadow: 0 24px 60px rgba(61, 99, 160, 0.15), inset 0 1px 0 rgba(255,255,255,0.96); color: #14264d; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-title { margin: 0 0 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 34px; color: #102149; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-description { height: 74px; margin: 0 0 16px; color: #253b67; font-size: 16px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty; }
+    body[data-noelcrew-view="pet-manager"] .pm-hero-stage { height: 235px; display: grid; place-items: center; margin: 0 0 20px; border-radius: 22px; background: radial-gradient(circle at 82% 24%, rgba(191, 219, 254, 0.62), transparent 13%), radial-gradient(circle at 18% 35%, rgba(219, 234, 254, 0.72), transparent 12%), linear-gradient(180deg, rgba(255,255,255,0.54), rgba(239, 247, 255, 0.26)); position: relative; overflow: hidden; }
+    body[data-noelcrew-view="pet-manager"] .pm-preview-sprite { width: 144px; height: 156px; z-index: 1; animation: pm-idle-bob 2.6s ease-in-out infinite; filter: drop-shadow(0 18px 18px rgba(25, 44, 83, 0.22)); }
+    body[data-noelcrew-view="pet-manager"] .pm-status-line { min-height: 25px; margin: 0 0 16px; color: #526483; font-size: 13px; font-weight: 850; }
+    body[data-noelcrew-view="pet-manager"] .pm-preview-title { margin: 0 0 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 18px; }
+    body[data-noelcrew-view="pet-manager"] .pm-mini-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+    body[data-noelcrew-view="pet-manager"] .pm-mini { display: grid; gap: 7px; justify-items: center; padding: 12px 10px; border: 1px solid rgba(126, 161, 210, 0.34); border-radius: 13px; background: rgba(255,255,255,0.68); box-shadow: 0 10px 22px rgba(61, 99, 160, 0.08); }
+    body[data-noelcrew-view="pet-manager"] .pm-mini-sprite { width: 56px; height: 61px; overflow: hidden; border-radius: 14px; }
+    body[data-noelcrew-view="pet-manager"] .pm-mini span { color: #22385f; font-size: 13px; font-weight: 800; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.88fr); gap: 16px; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button { min-height: 50px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 16px; font-weight: 950; border: 1px solid rgba(37, 99, 235, 0.32); background: linear-gradient(180deg, #3b96ff, #176df2); color: #fff; box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.38); }
+    body[data-noelcrew-view="pet-manager"] .pm-button-icon { flex: 0 0 auto; width: 16px; height: 16px; stroke: currentColor; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions .pm-button-icon { width: 18px; height: 18px; }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button:hover:not(:disabled) { background: linear-gradient(180deg, #55a6ff, #176df2); transform: translateY(-1px); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button:active:not(:disabled) { transform: scale(0.96); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button.secondary { background: rgba(255,255,255,0.76); color: #176df2; border-color: rgba(37, 99, 235, 0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 18px rgba(61, 99, 160, 0.08); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button.secondary:hover:not(:disabled) { background: #fef2f2; color: #dc2626; border-color: rgba(239, 68, 68, 0.58); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1), inset 0 1px 0 rgba(255,255,255,0.94); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button:disabled { opacity: 1; cursor: default; background: linear-gradient(180deg, #ecf5ff, #dbeafe); color: #176df2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+    body[data-noelcrew-view="pet-manager"] .pm-detail-actions button:only-child { grid-column: 1 / -1; }
+    body[data-noelcrew-view="pet-manager"] .pm-empty-state { grid-column: 1 / -1; padding: 28px; text-align: center; color: #667694; border: 1px dashed rgba(126, 161, 210, 0.48); border-radius: 18px; background: rgba(255,255,255,0.5); }
+    body[data-noelcrew-view="pet-manager"] [data-error] { position: fixed; left: 18px; right: 18px; bottom: 8px; margin: 0; color: #b91c1c; pointer-events: none; }
     @keyframes pm-idle-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes pm-sprite-idle { from { background-position: 0 0; } to { background-position: 85.714% 0; } }
     @keyframes pm-sprite-thinking { from { background-position: 0 100%; } to { background-position: 85.714% 100%; } }
     @keyframes pm-sprite-wave { from { background-position: 0 37.5%; } to { background-position: 57.142% 37.5%; } }
     @keyframes pm-sprite-happy { from { background-position: 0 50%; } to { background-position: 71.428% 50%; } }
-    @media (prefers-reduced-motion: reduce) { body[data-openpets-view="pet-manager"] .pm-detail-pane, body[data-openpets-view="pet-manager"] .pm-preview-sprite, body[data-openpets-view="pet-manager"] .pm-sprite-frame.pm-animate-sprite { animation: none; } body[data-openpets-view="pet-manager"] .pm-pet-card, body[data-openpets-view="pet-manager"] .pm-pet-card:hover, body[data-openpets-view="pet-manager"] .pm-pet-card:active { transform: none; transition: none; } }
-    @media (max-width: 860px) { body[data-openpets-view="pet-manager"] { overflow: auto; } body[data-openpets-view="pet-manager"] .pm-shell { height: auto; min-height: calc(100vh - 36px); grid-template-columns: 1fr; overflow: visible; } body[data-openpets-view="pet-manager"] .pm-gallery-pane, body[data-openpets-view="pet-manager"] .pm-pet-grid { overflow: visible; } body[data-openpets-view="pet-manager"] .pm-detail-pane { height: auto; overflow: visible; } }
-    @media (max-width: 620px) { body[data-openpets-view="pet-manager"] .pm-pet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } body[data-openpets-view="pet-manager"] .pm-detail-actions, body[data-openpets-view="pet-manager"] .pm-mini-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { body[data-noelcrew-view="pet-manager"] .pm-detail-pane, body[data-noelcrew-view="pet-manager"] .pm-preview-sprite, body[data-noelcrew-view="pet-manager"] .pm-sprite-frame.pm-animate-sprite { animation: none; } body[data-noelcrew-view="pet-manager"] .pm-pet-card, body[data-noelcrew-view="pet-manager"] .pm-pet-card:hover, body[data-noelcrew-view="pet-manager"] .pm-pet-card:active { transform: none; transition: none; } }
+    @media (max-width: 860px) { body[data-noelcrew-view="pet-manager"] { overflow: auto; } body[data-noelcrew-view="pet-manager"] .pm-shell { height: auto; min-height: calc(100vh - 36px); grid-template-columns: 1fr; overflow: visible; } body[data-noelcrew-view="pet-manager"] .pm-gallery-pane, body[data-noelcrew-view="pet-manager"] .pm-pet-grid { overflow: visible; } body[data-noelcrew-view="pet-manager"] .pm-detail-pane { height: auto; overflow: visible; } }
+    @media (max-width: 620px) { body[data-noelcrew-view="pet-manager"] .pm-pet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } body[data-noelcrew-view="pet-manager"] .pm-detail-actions, body[data-noelcrew-view="pet-manager"] .pm-mini-grid { grid-template-columns: 1fr; } }
     
-    body[data-openpets-view="onboarding"] { overflow: auto; background: radial-gradient(circle at 85% 10%, rgba(191, 219, 254, 0.72), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eef7ff 58%, #e8f2ff 100%); color: #10244a; }
-    body[data-openpets-view="onboarding"] main { padding: 24px 0 28px; }
-    body[data-openpets-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .onboarding-header,
-    body[data-openpets-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) #onboarding-note { display: none; }
-    body[data-openpets-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .steps { justify-content: flex-start; margin: 0 0 18px; }
-    body[data-openpets-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .step { width: 12px; height: 12px; overflow: hidden; color: transparent; padding: 0; border-radius: 999px; border: 0; background: #cbd8ea; }
-    body[data-openpets-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .step.active { width: 34px; background: #2f7df4; box-shadow: 0 8px 18px rgba(47, 125, 244, 0.28); }
+    body[data-noelcrew-view="onboarding"] { overflow: auto; background: radial-gradient(circle at 85% 10%, rgba(191, 219, 254, 0.72), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eef7ff 58%, #e8f2ff 100%); color: #10244a; }
+    body[data-noelcrew-view="onboarding"] main { padding: 24px 0 28px; }
+    body[data-noelcrew-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .onboarding-header,
+    body[data-noelcrew-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) #onboarding-note { display: none; }
+    body[data-noelcrew-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .steps { justify-content: flex-start; margin: 0 0 18px; }
+    body[data-noelcrew-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .step { width: 12px; height: 12px; overflow: hidden; color: transparent; padding: 0; border-radius: 999px; border: 0; background: #cbd8ea; }
+    body[data-noelcrew-view="onboarding"] .onboarding-main:has([data-step-panel="0"]:not([hidden])) .step.active { width: 34px; background: #2f7df4; box-shadow: 0 8px 18px rgba(47, 125, 244, 0.28); }
     
-    body[data-openpets-view="onboarding"] .welcome-hero { display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(260px, 1.08fr); gap: 22px; align-items: center; min-height: 360px; padding: 28px 30px 30px; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(147, 197, 253, 0.45); border-radius: 28px; box-shadow: 0 28px 70px rgba(40, 91, 160, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.88); position: relative; overflow: hidden; }
-    body[data-openpets-view="onboarding"] .welcome-hero::before, body[data-openpets-view="onboarding"] .welcome-hero::after { content: ""; position: absolute; width: 120px; height: 38px; border-radius: 999px; background: linear-gradient(180deg, rgba(219, 234, 254, 0.72), rgba(191, 219, 254, 0.16)); filter: blur(0.2px); }
-    body[data-openpets-view="onboarding"] .welcome-hero::before { left: 34px; top: 34px; }
-    body[data-openpets-view="onboarding"] .welcome-hero::after { right: -18px; top: 58px; width: 160px; }
-    body[data-openpets-view="onboarding"] .welcome-content, body[data-openpets-view="onboarding"] .welcome-visual { position: relative; z-index: 1; }
-    body[data-openpets-view="onboarding"] .welcome-logo { width: min(330px, 100%); height: auto; display: block; margin: 0 0 24px -8px; filter: drop-shadow(0 16px 20px rgba(19, 42, 85, 0.16)); }
-    body[data-openpets-view="onboarding"] .welcome-title { max-width: 340px; margin: 0 0 16px; font-size: 34px; line-height: 1.12; font-weight: 900; letter-spacing: -0.04em; color: #132a55; text-wrap: balance; }
-    body[data-openpets-view="onboarding"] .welcome-body { max-width: 354px; margin: 0 0 10px; color: #233d67; font-size: 16px; line-height: 1.62; text-wrap: pretty; }
-    body[data-openpets-view="onboarding"] .welcome-default { margin: 0 0 28px; color: #5b7193; font-size: 13px; font-weight: 750; }
-    body[data-openpets-view="onboarding"] .welcome-primary-btn { font-size: 16px; min-width: 148px; padding: 13px 28px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
-    body[data-openpets-view="onboarding"] .welcome-primary-btn:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
-    body[data-openpets-view="onboarding"] .welcome-primary-btn:active:not(:disabled) { transform: scale(0.96); }
-    body[data-openpets-view="onboarding"] .welcome-visual { min-height: 268px; display: grid; place-items: center; }
-    body[data-openpets-view="onboarding"] .welcome-pets { width: min(390px, 112%); max-height: 310px; object-fit: contain; filter: drop-shadow(0 24px 34px rgba(19, 42, 85, 0.24)); transform: translateX(8px); }
-    body[data-openpets-view="onboarding"] .welcome-sparkle { position: absolute; color: #f59e0b; font-weight: 900; font-size: 25px; text-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); }
-    body[data-openpets-view="onboarding"] .welcome-sparkle.s1 { left: 6px; top: 80px; }
-    body[data-openpets-view="onboarding"] .welcome-sparkle.s2 { right: 28px; top: 44px; color: #8b5cf6; }
-    body[data-openpets-view="onboarding"] .welcome-sparkle.s3 { right: 0; bottom: 62px; color: #93c5fd; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card { max-width: 760px; min-height: 360px; margin: 0 auto; box-sizing: border-box; padding: 34px 36px; border: 1px solid rgba(147, 197, 253, 0.45); border-radius: 28px; background: rgba(255,255,255,0.72); color: #132a55; box-shadow: 0 28px 70px rgba(40, 91, 160, 0.16), inset 0 1px 0 rgba(255,255,255,0.88); position: relative; overflow: hidden; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card::before, body[data-openpets-view="onboarding"] .onboarding-flow-card::after { content: ""; position: absolute; width: 120px; height: 38px; border-radius: 999px; background: linear-gradient(180deg, rgba(219, 234, 254, 0.72), rgba(191, 219, 254, 0.16)); filter: blur(0.2px); }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card::before { left: 34px; top: 34px; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card::after { right: -18px; top: 58px; width: 160px; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card > * { position: relative; z-index: 1; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card h2 { max-width: 460px; margin: 14px 0 14px; font-size: 34px; line-height: 1.12; font-weight: 900; letter-spacing: -0.04em; color: #132a55; text-wrap: balance; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card p { margin: 0 0 14px; color: #253f68; font-size: 15px; line-height: 1.62; text-wrap: pretty; }
-    body[data-openpets-view="onboarding"] .onboarding-step-badge { display: inline-flex; min-height: 28px; align-items: center; border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 999px; padding: 0 11px; background: rgba(239, 246, 255, 0.86); color: #176df2; font-size: 11px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
-    body[data-openpets-view="onboarding"] .onboarding-status-line { display: flex; align-items: center; gap: 9px; margin: 18px 0 12px; padding: 12px 14px; border: 1px solid rgba(37, 99, 235, 0.18); border-radius: 14px; background: rgba(239, 246, 255, 0.78); color: #315886; font-size: 14px; font-weight: 800; }
-    body[data-openpets-view="onboarding"] .onboarding-status-line::before { content: ""; width: 9px; height: 9px; flex: 0 0 auto; border-radius: 999px; background: #60a5fa; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.14); }
-    body[data-openpets-view="onboarding"] .onboarding-status-line.success::before { background: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14); }
-    body[data-openpets-view="onboarding"] .onboarding-status-line.error::before { background: #ef4444; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12); }
-    body[data-openpets-view="onboarding"] .onboarding-flow-card .onboarding-helper { color: #64748b; font-size: 13px; font-weight: 650; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-actions { display: grid; justify-items: center; gap: 12px; margin-top: 28px; }
-    body[data-openpets-view="onboarding"] .onboarding-flow-actions button:first-child { min-width: 188px; min-height: 48px; padding: 13px 28px; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; font-size: 16px; font-weight: 950; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
-    body[data-openpets-view="onboarding"] .onboarding-flow-actions button:first-child:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
-    body[data-openpets-view="onboarding"] .onboarding-flow-actions button[hidden] { display: none !important; }
-    body[data-openpets-view="onboarding"] .onboarding-continue-link { min-height: 28px; border: 0; background: transparent; color: #5b7193; padding: 3px 8px; font-size: 12px; font-weight: 850; box-shadow: none; text-decoration: none; }
-    body[data-openpets-view="onboarding"] .onboarding-continue-link:hover:not(:disabled) { color: #176df2; background: transparent; transform: none; text-decoration: underline; }
-    body[data-openpets-view="onboarding"] .onboarding-promoted-continue { min-width: 188px; min-height: 48px; padding: 13px 28px; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; font-size: 16px; font-weight: 950; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
-    body[data-openpets-view="onboarding"] .onboarding-promoted-continue:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
-    body[data-openpets-view="onboarding"] .ready-actions { grid-template-columns: 1fr 1fr; justify-content: center; max-width: 430px; margin-left: auto; margin-right: auto; }
-    body[data-openpets-view="onboarding"] .ready-actions button:first-child { grid-column: 1 / -1; justify-self: center; }
-    @media (prefers-reduced-motion: reduce) { body { transition: none; } body[data-openpets-view="onboarding"] .welcome-primary-btn:hover:not(:disabled), body[data-openpets-view="onboarding"] .welcome-primary-btn:active:not(:disabled), button:active:not(:disabled) { transform: none; } }
-    @media (max-width: 680px) { body[data-openpets-view="onboarding"] .welcome-hero { grid-template-columns: 1fr; padding: 24px; } body[data-openpets-view="onboarding"] .welcome-logo { width: min(280px, 100%); } body[data-openpets-view="onboarding"] .welcome-visual { display: none; } body[data-openpets-view="onboarding"] .onboarding-flow-card { padding: 24px; } body[data-openpets-view="onboarding"] .ready-actions { grid-template-columns: 1fr; } }
+    body[data-noelcrew-view="onboarding"] .welcome-hero { display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(260px, 1.08fr); gap: 22px; align-items: center; min-height: 360px; padding: 28px 30px 30px; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(147, 197, 253, 0.45); border-radius: 28px; box-shadow: 0 28px 70px rgba(40, 91, 160, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.88); position: relative; overflow: hidden; }
+    body[data-noelcrew-view="onboarding"] .welcome-hero::before, body[data-noelcrew-view="onboarding"] .welcome-hero::after { content: ""; position: absolute; width: 120px; height: 38px; border-radius: 999px; background: linear-gradient(180deg, rgba(219, 234, 254, 0.72), rgba(191, 219, 254, 0.16)); filter: blur(0.2px); }
+    body[data-noelcrew-view="onboarding"] .welcome-hero::before { left: 34px; top: 34px; }
+    body[data-noelcrew-view="onboarding"] .welcome-hero::after { right: -18px; top: 58px; width: 160px; }
+    body[data-noelcrew-view="onboarding"] .welcome-content, body[data-noelcrew-view="onboarding"] .welcome-visual { position: relative; z-index: 1; }
+    body[data-noelcrew-view="onboarding"] .welcome-logo { width: min(330px, 100%); height: auto; display: block; margin: 0 0 24px -8px; filter: drop-shadow(0 16px 20px rgba(19, 42, 85, 0.16)); }
+    body[data-noelcrew-view="onboarding"] .welcome-title { max-width: 340px; margin: 0 0 16px; font-size: 34px; line-height: 1.12; font-weight: 900; letter-spacing: -0.04em; color: #132a55; text-wrap: balance; }
+    body[data-noelcrew-view="onboarding"] .welcome-body { max-width: 354px; margin: 0 0 10px; color: #233d67; font-size: 16px; line-height: 1.62; text-wrap: pretty; }
+    body[data-noelcrew-view="onboarding"] .welcome-default { margin: 0 0 28px; color: #5b7193; font-size: 13px; font-weight: 750; }
+    body[data-noelcrew-view="onboarding"] .welcome-primary-btn { font-size: 16px; min-width: 148px; padding: 13px 28px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
+    body[data-noelcrew-view="onboarding"] .welcome-primary-btn:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
+    body[data-noelcrew-view="onboarding"] .welcome-primary-btn:active:not(:disabled) { transform: scale(0.96); }
+    body[data-noelcrew-view="onboarding"] .welcome-visual { min-height: 268px; display: grid; place-items: center; }
+    body[data-noelcrew-view="onboarding"] .welcome-pets { width: min(390px, 112%); max-height: 310px; object-fit: contain; filter: drop-shadow(0 24px 34px rgba(19, 42, 85, 0.24)); transform: translateX(8px); }
+    body[data-noelcrew-view="onboarding"] .welcome-sparkle { position: absolute; color: #f59e0b; font-weight: 900; font-size: 25px; text-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); }
+    body[data-noelcrew-view="onboarding"] .welcome-sparkle.s1 { left: 6px; top: 80px; }
+    body[data-noelcrew-view="onboarding"] .welcome-sparkle.s2 { right: 28px; top: 44px; color: #8b5cf6; }
+    body[data-noelcrew-view="onboarding"] .welcome-sparkle.s3 { right: 0; bottom: 62px; color: #93c5fd; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card { max-width: 760px; min-height: 360px; margin: 0 auto; box-sizing: border-box; padding: 34px 36px; border: 1px solid rgba(147, 197, 253, 0.45); border-radius: 28px; background: rgba(255,255,255,0.72); color: #132a55; box-shadow: 0 28px 70px rgba(40, 91, 160, 0.16), inset 0 1px 0 rgba(255,255,255,0.88); position: relative; overflow: hidden; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card::before, body[data-noelcrew-view="onboarding"] .onboarding-flow-card::after { content: ""; position: absolute; width: 120px; height: 38px; border-radius: 999px; background: linear-gradient(180deg, rgba(219, 234, 254, 0.72), rgba(191, 219, 254, 0.16)); filter: blur(0.2px); }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card::before { left: 34px; top: 34px; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card::after { right: -18px; top: 58px; width: 160px; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card > * { position: relative; z-index: 1; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card h2 { max-width: 460px; margin: 14px 0 14px; font-size: 34px; line-height: 1.12; font-weight: 900; letter-spacing: -0.04em; color: #132a55; text-wrap: balance; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card p { margin: 0 0 14px; color: #253f68; font-size: 15px; line-height: 1.62; text-wrap: pretty; }
+    body[data-noelcrew-view="onboarding"] .onboarding-step-badge { display: inline-flex; min-height: 28px; align-items: center; border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 999px; padding: 0 11px; background: rgba(239, 246, 255, 0.86); color: #176df2; font-size: 11px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    body[data-noelcrew-view="onboarding"] .onboarding-status-line { display: flex; align-items: center; gap: 9px; margin: 18px 0 12px; padding: 12px 14px; border: 1px solid rgba(37, 99, 235, 0.18); border-radius: 14px; background: rgba(239, 246, 255, 0.78); color: #315886; font-size: 14px; font-weight: 800; }
+    body[data-noelcrew-view="onboarding"] .onboarding-status-line::before { content: ""; width: 9px; height: 9px; flex: 0 0 auto; border-radius: 999px; background: #60a5fa; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.14); }
+    body[data-noelcrew-view="onboarding"] .onboarding-status-line.success::before { background: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14); }
+    body[data-noelcrew-view="onboarding"] .onboarding-status-line.error::before { background: #ef4444; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12); }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-card .onboarding-helper { color: #64748b; font-size: 13px; font-weight: 650; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-actions { display: grid; justify-items: center; gap: 12px; margin-top: 28px; }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-actions button:first-child { min-width: 188px; min-height: 48px; padding: 13px 28px; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; font-size: 16px; font-weight: 950; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-actions button:first-child:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
+    body[data-noelcrew-view="onboarding"] .onboarding-flow-actions button[hidden] { display: none !important; }
+    body[data-noelcrew-view="onboarding"] .onboarding-continue-link { min-height: 28px; border: 0; background: transparent; color: #5b7193; padding: 3px 8px; font-size: 12px; font-weight: 850; box-shadow: none; text-decoration: none; }
+    body[data-noelcrew-view="onboarding"] .onboarding-continue-link:hover:not(:disabled) { color: #176df2; background: transparent; transform: none; text-decoration: underline; }
+    body[data-noelcrew-view="onboarding"] .onboarding-promoted-continue { min-width: 188px; min-height: 48px; padding: 13px 28px; border: 1px solid rgba(5, 40, 115, 0.22); border-radius: 14px; background: linear-gradient(180deg, #3294ff, #176cf0); color: white; font-size: 16px; font-weight: 950; box-shadow: 0 14px 28px rgba(47, 125, 244, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.42); }
+    body[data-noelcrew-view="onboarding"] .onboarding-promoted-continue:hover:not(:disabled) { background: linear-gradient(180deg, #4aa1ff, #176cf0); transform: translateY(-1px); box-shadow: 0 18px 34px rgba(47, 125, 244, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.48); }
+    body[data-noelcrew-view="onboarding"] .ready-actions { grid-template-columns: 1fr 1fr; justify-content: center; max-width: 430px; margin-left: auto; margin-right: auto; }
+    body[data-noelcrew-view="onboarding"] .ready-actions button:first-child { grid-column: 1 / -1; justify-self: center; }
+    @media (prefers-reduced-motion: reduce) { body { transition: none; } body[data-noelcrew-view="onboarding"] .welcome-primary-btn:hover:not(:disabled), body[data-noelcrew-view="onboarding"] .welcome-primary-btn:active:not(:disabled), button:active:not(:disabled) { transform: none; } }
+    @media (max-width: 680px) { body[data-noelcrew-view="onboarding"] .welcome-hero { grid-template-columns: 1fr; padding: 24px; } body[data-noelcrew-view="onboarding"] .welcome-logo { width: min(280px, 100%); } body[data-noelcrew-view="onboarding"] .welcome-visual { display: none; } body[data-noelcrew-view="onboarding"] .onboarding-flow-card { padding: 24px; } body[data-noelcrew-view="onboarding"] .ready-actions { grid-template-columns: 1fr; } }
   </style>`;
 }
 
@@ -1195,7 +1195,7 @@ function assertAllowedSender(event: IpcMainInvokeEvent, allowedKinds: readonly T
   const actualKind = getTaskWindowKindForWebContents(event.sender.id);
 
   if (!actualKind || !allowedKinds.includes(actualKind)) {
-    throw new Error("OpenPets internal UI request came from an unexpected window.");
+    throw new Error("NoelCrew internal UI request came from an unexpected window.");
   }
 }
 

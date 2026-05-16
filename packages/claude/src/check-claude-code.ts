@@ -1,31 +1,31 @@
 import assert from "node:assert/strict";
 
-import { buildClaudeMcpGetCommand, buildClaudeMcpPreview, classifyClaudeMcpStatus, formatCommandForDisplay, getBundledMcpEntryPath, getLocalMcpEntryPath, mapAsarPathToUnpacked, parseClaudeMcpGetOutput, parseClaudeMcpListOutput, validateOpenPetsPetArg } from "./claude-code.js";
+import { buildClaudeMcpGetCommand, buildClaudeMcpPreview, classifyClaudeMcpStatus, formatCommandForDisplay, getBundledMcpEntryPath, getLocalMcpEntryPath, mapAsarPathToUnpacked, parseClaudeMcpGetOutput, parseClaudeMcpListOutput, validateNoelCrewPetArg } from "./claude-code.js";
 
 const defaultPreview = buildClaudeMcpPreview();
-assert.deepEqual(defaultPreview.add.args, ["mcp", "add", "--scope", "user", "openpets", "--", "npx", "-y", "@open-pets/mcp"]);
-assert.deepEqual(defaultPreview.remove.args, ["mcp", "remove", "--scope", "user", "openpets"]);
-assert.deepEqual(defaultPreview.mcpJson.mcpServers.openpets.args, ["-y", "@open-pets/mcp"]);
-assert.equal(formatCommandForDisplay(defaultPreview.add), "claude mcp add --scope user openpets -- npx -y @open-pets/mcp");
+assert.deepEqual(defaultPreview.add.args, ["mcp", "add", "--scope", "user", "noelcrew", "--", "npx", "-y", "@noelclaw/mcp"]);
+assert.deepEqual(defaultPreview.remove.args, ["mcp", "remove", "--scope", "user", "noelcrew"]);
+assert.deepEqual(defaultPreview.mcpJson.mcpServers.noelcrew.args, ["-y", "@noelclaw/mcp"]);
+assert.equal(formatCommandForDisplay(defaultPreview.add), "claude mcp add --scope user noelcrew -- npx -y @noelclaw/mcp");
 
 const petPreview = buildClaudeMcpPreview("snoopy");
-assert.deepEqual(petPreview.add.args, ["mcp", "add", "--scope", "user", "openpets", "--", "npx", "-y", "@open-pets/mcp", "--pet", "snoopy"]);
-assert.deepEqual(petPreview.mcpJson.mcpServers.openpets.args, ["-y", "@open-pets/mcp", "--pet", "snoopy"]);
-assert.deepEqual(buildClaudeMcpGetCommand().args, ["mcp", "get", "openpets"]);
+assert.deepEqual(petPreview.add.args, ["mcp", "add", "--scope", "user", "noelcrew", "--", "npx", "-y", "@noelclaw/mcp", "--pet", "snoopy"]);
+assert.deepEqual(petPreview.mcpJson.mcpServers.noelcrew.args, ["-y", "@noelclaw/mcp", "--pet", "snoopy"]);
+assert.deepEqual(buildClaudeMcpGetCommand().args, ["mcp", "get", "noelcrew"]);
 
 const localPreview = buildClaudeMcpPreview("snoopy", "local");
-assert.deepEqual(localPreview.add.args, ["mcp", "add", "--scope", "user", "openpets", "--", "node", getLocalMcpEntryPath(), "--pet", "snoopy"]);
-assert.equal(localPreview.mcpJson.mcpServers.openpets.command, "node");
-assert.deepEqual(localPreview.mcpJson.mcpServers.openpets.args, [getLocalMcpEntryPath(), "--pet", "snoopy"]);
+assert.deepEqual(localPreview.add.args, ["mcp", "add", "--scope", "user", "noelcrew", "--", "node", getLocalMcpEntryPath(), "--pet", "snoopy"]);
+assert.equal(localPreview.mcpJson.mcpServers.noelcrew.command, "node");
+assert.deepEqual(localPreview.mcpJson.mcpServers.noelcrew.args, [getLocalMcpEntryPath(), "--pet", "snoopy"]);
 
-assert.throws(() => validateOpenPetsPetArg("Bad Pet"));
-assert.throws(() => validateOpenPetsPetArg("bad/pet"));
-assert.equal(validateOpenPetsPetArg("snoopy"), "snoopy");
+assert.throws(() => validateNoelCrewPetArg("Bad Pet"));
+assert.throws(() => validateNoelCrewPetArg("bad/pet"));
+assert.equal(validateNoelCrewPetArg("snoopy"), "snoopy");
 
-assert.equal(parseClaudeMcpListOutput("openpets: npx -y @open-pets/mcp").present, true);
+assert.equal(parseClaudeMcpListOutput("noelcrew: npx -y @noelclaw/mcp").present, true);
 assert.equal(parseClaudeMcpListOutput("No MCP servers configured").present, false);
 
-const jsonGet = parseClaudeMcpGetOutput(JSON.stringify({ command: "npx", args: ["-y", "@open-pets/mcp", "--pet", "snoopy"] }), "snoopy");
+const jsonGet = parseClaudeMcpGetOutput(JSON.stringify({ command: "npx", args: ["-y", "@noelclaw/mcp", "--pet", "snoopy"] }), "snoopy");
 assert.equal(jsonGet.present, true);
 assert.equal(jsonGet.verified, true);
 assert.equal(jsonGet.matchesExpected, true);
@@ -34,27 +34,27 @@ const localGet = parseClaudeMcpGetOutput(JSON.stringify({ command: "node", args:
 assert.equal(localGet.matchesExpected, true);
 
 const bundledPreview = buildClaudeMcpPreview("snoopy", "bundled");
-assert.deepEqual(bundledPreview.add.args, ["mcp", "add", "--scope", "user", "openpets", "--", "node", getBundledMcpEntryPath(), "--pet", "snoopy"]);
-assert.equal(bundledPreview.mcpJson.mcpServers.openpets.command, "node");
-assert.deepEqual(bundledPreview.mcpJson.mcpServers.openpets.args, [getBundledMcpEntryPath(), "--pet", "snoopy"]);
+assert.deepEqual(bundledPreview.add.args, ["mcp", "add", "--scope", "user", "noelcrew", "--", "node", getBundledMcpEntryPath(), "--pet", "snoopy"]);
+assert.equal(bundledPreview.mcpJson.mcpServers.noelcrew.command, "node");
+assert.deepEqual(bundledPreview.mcpJson.mcpServers.noelcrew.args, [getBundledMcpEntryPath(), "--pet", "snoopy"]);
 const bundledGet = parseClaudeMcpGetOutput(JSON.stringify({ command: "node", args: [getBundledMcpEntryPath(), "--pet", "snoopy"] }), "snoopy", "bundled");
 assert.equal(bundledGet.matchesExpected, true);
 const customNode = "/Users/test/Library/Application Support/Herd/config/nvm/versions/node/v22.22.2/bin/node";
 const customNodePreview = buildClaudeMcpPreview("snoopy", "bundled", customNode);
-assert.equal(customNodePreview.mcpJson.mcpServers.openpets.command, customNode);
+assert.equal(customNodePreview.mcpJson.mcpServers.noelcrew.command, customNode);
 assert.equal(parseClaudeMcpGetOutput(JSON.stringify({ command: customNode, args: [getBundledMcpEntryPath(), "--pet", "snoopy"] }), "snoopy", "bundled", customNode).matchesExpected, true);
 
-const spacedPath = "/Applications/OpenPets Test.app/Contents/Resources/app/node_modules/@open-pets/mcp/dist/index.js";
-assert.equal(formatCommandForDisplay({ command: "node", args: [spacedPath, "--pet", "snoopy"] }), 'node "/Applications/OpenPets Test.app/Contents/Resources/app/node_modules/@open-pets/mcp/dist/index.js" --pet snoopy');
-const spacedTextGet = parseClaudeMcpGetOutput(`openpets\nCommand: node\nArgs: "${getBundledMcpEntryPath()}" --pet snoopy`, "snoopy", "bundled");
+const spacedPath = "/Applications/NoelCrew Test.app/Contents/Resources/app/node_modules/@noelclaw/mcp/dist/index.js";
+assert.equal(formatCommandForDisplay({ command: "node", args: [spacedPath, "--pet", "snoopy"] }), 'node "/Applications/NoelCrew Test.app/Contents/Resources/app/node_modules/@noelclaw/mcp/dist/index.js" --pet snoopy');
+const spacedTextGet = parseClaudeMcpGetOutput(`noelcrew\nCommand: node\nArgs: "${getBundledMcpEntryPath()}" --pet snoopy`, "snoopy", "bundled");
 assert.equal(spacedTextGet.matchesExpected, true);
-assert.equal(formatCommandForDisplay({ command: "node", args: ["C:\\Program Files\\OpenPets\\resources\\app\\node_modules\\@open-pets\\mcp\\dist\\index.js"] }), 'node "C:\\\\Program Files\\\\OpenPets\\\\resources\\\\app\\\\node_modules\\\\@open-pets\\\\mcp\\\\dist\\\\index.js"');
-assert.equal(mapAsarPathToUnpacked("/Applications/OpenPets.app/Contents/Resources/app.asar/node_modules/@open-pets/mcp/dist/index.js"), "/Applications/OpenPets.app/Contents/Resources/app.asar.unpacked/node_modules/@open-pets/mcp/dist/index.js");
-assert.equal(mapAsarPathToUnpacked("C:\\Program Files\\OpenPets\\resources\\app.asar\\node_modules\\@open-pets\\mcp\\dist\\index.js"), "C:\\Program Files\\OpenPets\\resources\\app.asar.unpacked\\node_modules\\@open-pets\\mcp\\dist\\index.js");
-assert.equal(mapAsarPathToUnpacked("/Applications/app.asarish/OpenPets.app/Contents/Resources/app.asar/node_modules/@open-pets/mcp/dist/index.js"), "/Applications/app.asarish/OpenPets.app/Contents/Resources/app.asar.unpacked/node_modules/@open-pets/mcp/dist/index.js");
-assert.equal(mapAsarPathToUnpacked("/tmp/app.asar.unpacked/node_modules/@open-pets/mcp/dist/index.js"), "/tmp/app.asar.unpacked/node_modules/@open-pets/mcp/dist/index.js");
+assert.equal(formatCommandForDisplay({ command: "node", args: ["C:\\Program Files\\NoelCrew\\resources\\app\\node_modules\\@noel-crew\\mcp\\dist\\index.js"] }), 'node "C:\\\\Program Files\\\\NoelCrew\\\\resources\\\\app\\\\node_modules\\\\@noel-crew\\\\mcp\\\\dist\\\\index.js"');
+assert.equal(mapAsarPathToUnpacked("/Applications/NoelCrew.app/Contents/Resources/app.asar/node_modules/@noelclaw/mcp/dist/index.js"), "/Applications/NoelCrew.app/Contents/Resources/app.asar.unpacked/node_modules/@noelclaw/mcp/dist/index.js");
+assert.equal(mapAsarPathToUnpacked("C:\\Program Files\\NoelCrew\\resources\\app.asar\\node_modules\\@noel-crew\\mcp\\dist\\index.js"), "C:\\Program Files\\NoelCrew\\resources\\app.asar.unpacked\\node_modules\\@noel-crew\\mcp\\dist\\index.js");
+assert.equal(mapAsarPathToUnpacked("/Applications/app.asarish/NoelCrew.app/Contents/Resources/app.asar/node_modules/@noelclaw/mcp/dist/index.js"), "/Applications/app.asarish/NoelCrew.app/Contents/Resources/app.asar.unpacked/node_modules/@noelclaw/mcp/dist/index.js");
+assert.equal(mapAsarPathToUnpacked("/tmp/app.asar.unpacked/node_modules/@noelclaw/mcp/dist/index.js"), "/tmp/app.asar.unpacked/node_modules/@noelclaw/mcp/dist/index.js");
 
-const textGet = parseClaudeMcpGetOutput("openpets\nCommand: npx\nArgs: -y @open-pets/mcp --pet snoopy", "snoopy");
+const textGet = parseClaudeMcpGetOutput("noelcrew\nCommand: npx\nArgs: -y @noelclaw/mcp --pet snoopy", "snoopy");
 assert.equal(textGet.present, true);
 assert.equal(textGet.verified, true);
 assert.equal(textGet.matchesExpected, true);
@@ -64,7 +64,7 @@ assert.equal(different.present, true);
 assert.equal(different.verified, true);
 assert.equal(different.matchesExpected, false);
 
-const unverifiable = classifyClaudeMcpStatus("openpets", "Name: openpets\nTransport: stdio", "snoopy");
+const unverifiable = classifyClaudeMcpStatus("noelcrew", "Name: noelcrew\nTransport: stdio", "snoopy");
 assert.equal(unverifiable.present, true);
 assert.equal(unverifiable.verified, false);
 assert.equal(unverifiable.matchesExpected, false);

@@ -2,9 +2,9 @@
 
 ## Goal
 
-Make Claude Code feel polished by adding safe global Claude hooks that send automatic OpenPets reactions and short local speech through `@open-pets/claude` and `@open-pets/client`.
+Make Claude Code feel polished by adding safe global Claude hooks that send automatic NoelCrew reactions and short local speech through `@noelclaw/claude` and `@noelclaw/client`.
 
-This phase builds on Phase 07's Claude Code detection/MCP configuration UI. Phase 08 should let the user install, doctor, and uninstall OpenPets-managed Claude hooks with explicit confirmation and backups.
+This phase builds on Phase 07's Claude Code detection/MCP configuration UI. Phase 08 should let the user install, doctor, and uninstall NoelCrew-managed Claude hooks with explicit confirmation and backups.
 
 ## Non-goals
 
@@ -12,7 +12,7 @@ This phase builds on Phase 07's Claude Code detection/MCP configuration UI. Phas
 - No Cursor, VS Code, Windsurf, OpenCode, or Antigravity hooks.
 - No model-generated speech.
 - No displaying user prompt text, code, logs, file paths, command text, transcript contents, or tool input in pet speech.
-- No blocking/denying Claude actions. OpenPets hooks are decorative/status-only and should fail open.
+- No blocking/denying Claude actions. NoelCrew hooks are decorative/status-only and should fail open.
 - No shell scripts, Unix-only sockets, `nc`, `/tmp` socket paths, or Bun runtime dependency.
 - No durable persistence of Claude session payloads or transcripts.
 
@@ -21,10 +21,10 @@ This phase builds on Phase 07's Claude Code detection/MCP configuration UI. Phas
 From **Configure Agents...**, the Claude Code card gains enhanced hook controls:
 
 - Hook status: not installed / installed / needs update / error.
-- Preview of the exact hook entries OpenPets will add to Claude user settings.
+- Preview of the exact hook entries NoelCrew will add to Claude user settings.
 - Install hooks with explicit confirmation and backup.
 - Doctor/check hooks.
-- Uninstall OpenPets-managed hooks only.
+- Uninstall NoelCrew-managed hooks only.
 
 In a real Claude Code session, the pet reacts automatically:
 
@@ -37,12 +37,12 @@ In a real Claude Code session, the pet reacts automatically:
 
 ## Acceptance criteria
 
-- `@open-pets/claude` exposes a Node/npm/npx-friendly hook entry point, for example:
-  - `open-pets-claude hook`
-  - final published/dev preview command may be displayed as `npx -y @open-pets/claude hook` until packaging decides global/local binary details.
+- `@noelclaw/claude` exposes a Node/npm/npx-friendly hook entry point, for example:
+  - `noel-crew-claude hook`
+  - final published/dev preview command may be displayed as `npx -y @noelclaw/claude hook` until packaging decides global/local binary details.
 - Hook command reads Claude hook JSON from stdin with a strict byte limit and timeout-friendly behavior.
 - Hook command never blocks Claude intentionally:
-  - returns exit code 0 for handled, ignored, and degraded OpenPets-unavailable cases.
+  - returns exit code 0 for handled, ignored, and degraded NoelCrew-unavailable cases.
   - only uses non-zero exit for unrecoverable CLI/runtime invocation errors before hook handling begins.
 - Hook command stdout is always empty, including `UserPromptSubmit`, because Claude may ingest stdout as context.
 - Installed hook entries must not synchronously block Claude for decorative status updates:
@@ -50,7 +50,7 @@ In a real Claude Code session, the pet reacts automatically:
   - keep timeout short, initially 3 seconds.
   - if async hooks are not supported by the installed Claude version, doctor/install must warn and fail closed rather than installing cold-start `npx` hooks on high-frequency events.
   - future packaging may replace `npx` with a faster local/bundled binary, but Phase 08 should not rely on synchronous `npx` for `PreToolUse`.
-- Hook command sends OpenPets events through `@open-pets/client` only; no direct socket/manual JSON writes.
+- Hook command sends NoelCrew events through `@noelclaw/client` only; no direct socket/manual JSON writes.
 - Hook mapping handles the selected Claude hook events and ignores all others safely:
   - `UserPromptSubmit` → `thinking` + selective speech.
   - `PreToolUse` → `editing`, `testing`, `running`, or `working` based on `tool_name` and safe classification of `tool_input`.
@@ -73,7 +73,7 @@ In a real Claude Code session, the pet reacts automatically:
   - permission speech always allowed subject to a short cooldown to avoid duplicates.
   - lifecycle speech has a cooldown, initially at least 20 seconds per category.
   - throttle state is ephemeral and stored outside Claude settings, with bounded size and no payload content.
-- Hooks route through the default OpenPets desktop route in Phase 08:
+- Hooks route through the default NoelCrew desktop route in Phase 08:
   - Because Claude hooks do not reliably know the active MCP lease id, they call `react`/`say` without `leaseId` and therefore affect the desktop default pet.
   - Future lease-aware Claude routing is explicitly deferred until a reliable session↔lease correlation is available.
 - Global hook installation targets Claude Code user settings:
@@ -85,24 +85,24 @@ In a real Claude Code session, the pet reacts automatically:
   - create parent directory with restrictive permissions where practical.
   - write temp file with restrictive permissions where practical before atomic rename.
   - preserves unrelated settings and unrelated hooks.
-  - installs only clearly OpenPets-managed command hooks.
-  - uninstall/update matching requires the `--openpets-managed` marker; package-name-only matching is not enough.
+  - installs only clearly NoelCrew-managed command hooks.
+  - uninstall/update matching requires the `--noelcrew-managed` marker; package-name-only matching is not enough.
   - idempotent reinstall/update.
   - atomic write where practical.
-- Uninstall removes only OpenPets-managed hook commands and leaves unrelated user/project hooks intact.
-- Agent Setup UI shows hook status, preview, install/update, doctor, and uninstall controls with explicit warning that hooks execute commands from Claude Code, are global user-scope across Claude projects, and route to the OpenPets default pet in Phase 08.
+- Uninstall removes only NoelCrew-managed hook commands and leaves unrelated user/project hooks intact.
+- Agent Setup UI shows hook status, preview, install/update, doctor, and uninstall controls with explicit warning that hooks execute commands from Claude Code, are global user-scope across Claude projects, and route to the NoelCrew default pet in Phase 08.
 - Agent Setup provides a local dev command toggle so manual testing can install Claude MCP/hooks against this checkout's built `dist` files instead of published `npx` packages:
-  - production MCP: `npx -y @open-pets/mcp ...`
+  - production MCP: `npx -y @noelclaw/mcp ...`
   - local MCP: `node <repo>/packages/mcp/dist/index.js ...`
-  - production hooks: `npx -y @open-pets/claude hook --openpets-managed`
-  - local hooks: `node <repo>/packages/claude/dist/cli.js hook --openpets-managed`
+  - production hooks: `npx -y @noelclaw/claude hook --noelcrew-managed`
+  - local hooks: `node <repo>/packages/claude/dist/cli.js hook --noelcrew-managed`
 - Automated checks cover hook payload parsing, event mapping, speech safety, throttling decisions, settings merge/uninstall behavior, and command preview.
 - `pnpm check` passes.
 
 ## Proposed files/directories
 
 - `packages/claude/package.json`
-  - Add `bin` for `open-pets-claude`.
+  - Add `bin` for `noel-crew-claude`.
   - Ensure check builds and validates hooks.
 - `packages/claude/src/cli.ts`
   - CLI dispatcher for `hook`, `doctor-hooks`, maybe install/uninstall helpers used by desktop/tests.
@@ -121,23 +121,23 @@ In a real Claude Code session, the pet reacts automatically:
 - `apps/desktop/src/windows.ts`
   - Add hook section to Claude Code card.
 - `apps/desktop/preload.cjs`
-  - Add narrow hook actions through `openpetsAgentSetup`.
+  - Add narrow hook actions through `noelcrewAgentSetup`.
 - `docs/phases/phase-08-claude-enhanced-hooks.md`
 
 ## Technical approach
 
 ### Hook command behavior
 
-Claude Code command hooks receive JSON on stdin. The OpenPets hook command should:
+Claude Code command hooks receive JSON on stdin. The NoelCrew hook command should:
 
 1. Read stdin up to a strict limit, initially 64 KiB.
 2. Parse JSON defensively.
 3. Determine `hook_event_name` and safe metadata such as `tool_name`.
-4. Map to an OpenPets reaction and optional static speech.
-5. Send via `createOpenPetsClient({ connectTimeoutMs: 500, responseTimeoutMs: 500 })`.
-6. Swallow OpenPets-unavailable errors and exit 0.
+4. Map to an NoelCrew reaction and optional static speech.
+5. Send via `createNoelCrewClient({ connectTimeoutMs: 500, responseTimeoutMs: 500 })`.
+6. Swallow NoelCrew-unavailable errors and exit 0.
 
-The command should write debug output only to stderr when `OPENPETS_DEBUG=1`; stdout must stay empty so Claude does not receive unintended context.
+The command should write debug output only to stderr when `NOELCREW_DEBUG=1`; stdout must stay empty so Claude does not receive unintended context.
 
 ### Event mapping
 
@@ -175,14 +175,14 @@ Selection should be deterministic enough for tests but varied at runtime, for ex
 
 ### Throttling
 
-Throttle state should not include hook payload content. Store only timestamps/counters by category in an OpenPets-owned file, for example:
+Throttle state should not include hook payload content. Store only timestamps/counters by category in an NoelCrew-owned file, for example:
 
 Use a pure Node cross-platform path because the hook runs outside Electron:
 
 ```text
-macOS/Linux: ${XDG_STATE_HOME:-~/.local/state}/openpets/claude-hook-throttle.json
-Windows: %LOCALAPPDATA%\OpenPets\claude-hook-throttle.json
-fallback: os.tmpdir()/openpets-<uid>/claude-hook-throttle.json
+macOS/Linux: ${XDG_STATE_HOME:-~/.local/state}/noelcrew/claude-hook-throttle.json
+Windows: %LOCALAPPDATA%\NoelCrew\claude-hook-throttle.json
+fallback: os.tmpdir()/noelcrew-<uid>/claude-hook-throttle.json
 ```
 
 Requirements:
@@ -210,7 +210,7 @@ Hook config shape should follow current Claude docs:
         "hooks": [
           {
             "type": "command",
-            "command": "npx -y @open-pets/claude hook --openpets-managed",
+            "command": "npx -y @noelclaw/claude hook --noelcrew-managed",
             "timeout": 3,
             "async": true,
             "asyncRewake": false
@@ -222,7 +222,7 @@ Hook config shape should follow current Claude docs:
 }
 ```
 
-Use one OpenPets-managed command per event with the stable `--openpets-managed` marker in the command so uninstall can safely identify owned hooks.
+Use one NoelCrew-managed command per event with the stable `--noelcrew-managed` marker in the command so uninstall can safely identify owned hooks.
 
 Install algorithm:
 
@@ -232,17 +232,17 @@ Install algorithm:
 4. Validate top-level JSON object.
 5. Validate `hooks` is absent or object; if malformed, abort and ask user to fix manually.
 6. Verify Claude hook async support from current docs/known behavior and local checks where practical. If no reliable local check exists, install may proceed based on documented support but doctor must warn when support is uncertain.
-7. Create backup before write: `settings.json.openpets-backup-YYYYMMDD-HHMMSS.json`.
-8. Remove previous OpenPets-managed hook commands.
-9. Add current OpenPets-managed async hook entries.
+7. Create backup before write: `settings.json.noelcrew-backup-YYYYMMDD-HHMMSS.json`.
+8. Remove previous NoelCrew-managed hook commands.
+9. Add current NoelCrew-managed async hook entries.
 10. Atomic write temp file + rename.
 
 Uninstall algorithm:
 
 1. Resolve/read/validate settings.
 2. Backup before write.
-3. Remove only hook commands containing the `--openpets-managed` marker.
-4. Prune empty arrays/objects created by OpenPets where safe.
+3. Remove only hook commands containing the `--noelcrew-managed` marker.
+4. Prune empty arrays/objects created by NoelCrew where safe.
 5. Atomic write.
 
 Doctor should report:
@@ -252,7 +252,7 @@ Doctor should report:
 - whether hooks object is valid.
 - installed/up-to-date/needs update/not installed.
 - backup path from last install/uninstall if applicable.
-- whether OpenPets desktop IPC is reachable.
+- whether NoelCrew desktop IPC is reachable.
 - reminder that Claude hooks require trusted workspaces and Claude restart/reload if settings were changed.
 
 ### Agent Setup UI
@@ -262,15 +262,15 @@ Add an **Enhanced Claude hooks** section to the existing Claude Code card:
 - Status badge.
 - Preview JSON snippet.
 - Buttons: Doctor hooks, Install/Update hooks, Uninstall hooks.
-- Warning copy: Claude hooks execute command hooks automatically; OpenPets-managed hooks are status-only, fail open, and do not inspect/store code content.
+- Warning copy: Claude hooks execute command hooks automatically; NoelCrew-managed hooks are status-only, fail open, and do not inspect/store code content.
 - Local dev command toggle shared with the MCP setup preview/actions.
 
 ## Risks and tradeoffs
 
 - Claude hook schemas/events can change. Mitigation: parse defensively, ignore unknowns, document event contract, keep doctor actionable.
-- Hooks are command execution. Mitigation: explicit confirmation, preview, OpenPets marker, uninstall, backups, no silent edits.
+- Hooks are command execution. Mitigation: explicit confirmation, preview, NoelCrew marker, uninstall, backups, no silent edits.
 - Direct settings edits can corrupt user config if careless. Mitigation: validate JSON object, backup, atomic writes, preserve unrelated keys, abort on malformed hooks.
-- `npx -y @open-pets/claude hook` may be slow for frequent hooks. Mitigation: no speech on high-frequency tool events; hook timeout 3 seconds; future packaging can switch command to bundled/local binary.
+- `npx -y @noelclaw/claude hook` may be slow for frequent hooks. Mitigation: no speech on high-frequency tool events; hook timeout 3 seconds; future packaging can switch command to bundled/local binary.
 - Hooks may be skipped in untrusted Claude workspaces. Mitigation: doctor/manual guide documents trust requirement.
 - Session-to-MCP-lease routing is ambiguous. Mitigation: Phase 08 explicitly routes hook events to default pet; MCP per-project pet routing remains available through tools/leases.
 
@@ -280,9 +280,9 @@ Add an **Enhanced Claude hooks** section to the existing Claude Code card:
 - Do not read transcript files.
 - Do not store hook payloads, prompts, tool inputs, assistant messages, cwd, transcript paths, or session ids in durable logs.
 - Debug logs, if enabled, must be minimal and sanitized.
-- Hook stdout must stay empty; use stderr for debug only when `OPENPETS_DEBUG=1`.
+- Hook stdout must stay empty; use stderr for debug only when `NOELCREW_DEBUG=1`.
 - Hook commands must fail open and avoid blocking user work.
-- Settings installer must preserve unrelated hooks and avoid removing anything not OpenPets-managed.
+- Settings installer must preserve unrelated hooks and avoid removing anything not NoelCrew-managed.
 - Hook settings must be async/background; do not install synchronous cold-start `npx` hooks for high-frequency events.
 - Speech safety filters should reuse or match MCP speech safety rules.
 
@@ -295,10 +295,10 @@ Add an **Enhanced Claude hooks** section to the existing Claude Code card:
   - throttling allows/blocks expected categories without storing payload content.
   - settings install preview/merge preserves unrelated settings and hooks.
   - settings reinstall is idempotent.
-  - settings uninstall removes only OpenPets-managed hooks.
+  - settings uninstall removes only NoelCrew-managed hooks.
   - malformed settings/hook object aborts safely.
   - symlink/special-file settings path aborts safely.
-  - generated hook config includes `--openpets-managed`, `timeout: 3`, and `async: true`.
+  - generated hook config includes `--noelcrew-managed`, `timeout: 3`, and `async: true`.
   - published/local command previews for MCP and hooks.
 - Desktop checks:
   - Agent Setup hook action validation/sender restrictions where practical.
@@ -310,7 +310,7 @@ Add an **Enhanced Claude hooks** section to the existing Claude Code card:
 After implementation:
 
 1. Run `pnpm check`.
-2. Start desktop: `pnpm --filter @open-pets/desktop dev`.
+2. Start desktop: `pnpm --filter @noelclaw/desktop dev`.
 3. Open tray → **Configure Agents...**.
 4. In Claude Code, confirm MCP is configured from Phase 07 or configure it now.
 5. Inspect Enhanced Claude hooks preview.
@@ -323,16 +323,16 @@ After implementation:
 10. Confirm unrelated hook entries remain after install/update.
 11. Confirm reinstall is idempotent.
 12. Start/restart Claude Code in a trusted workspace.
-13. Invoke a hook command with a stdin fixture directly, for example a `UserPromptSubmit` fixture, and confirm it exits 0 with empty stdout even if OpenPets desktop is unavailable.
-    Example after build: `printf '{"hook_event_name":"UserPromptSubmit","prompt":"hello"}' | node packages/claude/dist/cli.js hook --openpets-managed`.
+13. Invoke a hook command with a stdin fixture directly, for example a `UserPromptSubmit` fixture, and confirm it exits 0 with empty stdout even if NoelCrew desktop is unavailable.
+    Example after build: `printf '{"hook_event_name":"UserPromptSubmit","prompt":"hello"}' | node packages/claude/dist/cli.js hook --noelcrew-managed`.
 14. Submit a real prompt and confirm the pet reacts thinking with occasional safe speech.
 15. Run/edit/test from Claude and confirm reactions change without noisy speech.
 16. Trigger a permission request and confirm waiting + approval message.
 17. Finish a response and confirm success speech/reaction.
 18. If possible, trigger a failing turn and confirm error reaction/speech.
-19. Quit OpenPets desktop and confirm Claude hooks do not break Claude Code.
+19. Quit NoelCrew desktop and confirm Claude hooks do not break Claude Code.
 20. Return to Agent Setup and click Uninstall hooks.
-21. Confirm OpenPets-managed hook entries are removed, uninstall is idempotent, and unrelated Claude settings remain.
+21. Confirm NoelCrew-managed hook entries are removed, uninstall is idempotent, and unrelated Claude settings remain.
 
 Expected results:
 
@@ -340,7 +340,7 @@ Expected results:
 - Backups may contain user-sensitive Claude settings; keep them local/private.
 - Pet reactions feel automatic and non-spammy.
 - Speech is short, local, safe, and never includes private prompt/tool content.
-- Broken/missing OpenPets desktop app does not break Claude Code.
+- Broken/missing NoelCrew desktop app does not break Claude Code.
 
 ## Oracle plan review
 
@@ -355,7 +355,7 @@ Oracle also requested: marker in examples, no `CLAUDE_CONFIG_DIR` until verified
 Fixed:
 
 - Required `async: true` hook entries with short timeout and fail-closed install if async support is unavailable/uncertain.
-- Added `--openpets-managed` marker to preview/config examples.
+- Added `--noelcrew-managed` marker to preview/config examples.
 - Removed `CLAUDE_CONFIG_DIR` support from Phase 08 scope.
 - Added UI warning requirement for global user-scope hooks and Phase 08 default-pet routing.
 - Defined pure Node cross-platform throttle-state path.
@@ -367,5 +367,5 @@ Fixed after re-review:
 
 - Required empty hook stdout for all events.
 - Clarified async support verification may rely on documented support with doctor warning if no reliable local check exists.
-- Tightened uninstall/update matching to require `--openpets-managed` marker.
+- Tightened uninstall/update matching to require `--noelcrew-managed` marker.
 - Added `asyncRewake: false` to generated config, stdin fixture command example, and backup privacy note.

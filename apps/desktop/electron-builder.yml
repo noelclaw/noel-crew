@@ -1,11 +1,11 @@
-appId: dev.openpets.app
-productName: OpenPets
-copyright: Copyright © 2026 OpenPets
+appId: fun.noelclaw.app
+productName: Noel Crew
+copyright: Copyright © 2026 noelclaw
 
 directories:
   output: dist-electron
 
-artifactName: OpenPets-${version}-${os}-${arch}.${ext}
+artifactName: NoelCrew-${version}-${os}-${arch}.${ext}
 
 files:
   - dist/**
@@ -38,13 +38,13 @@ win:
   verifyUpdateCodeSignature: false
 
 nsis:
-  artifactName: OpenPets-${version}-win-${arch}-setup.${ext}
+  artifactName: NoelCrew-${version}-win-${arch}-setup.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
 
 portable:
-  artifactName: OpenPets-${version}-win-${arch}-portable.${ext}
+  artifactName: NoelCrew-${version}-win-${arch}-portable.${ext}
 
 linux:
   icon: assets/app-icon.png
@@ -53,4 +53,4 @@ linux:
     - deb
     - tar.gz
   category: Utility
-  maintainer: OpenPets
+  maintainer: noelclaw

@@ -1,11 +1,11 @@
 {
-  "name": "@open-pets/pet-format",
+  "name": "@noelclaw/pet-format",
   "version": "2.0.6",
   "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openpetstech/openpets.git",
+    "url": "git+https://github.com/noelclaw/noel-crew.git",
     "directory": "packages/pet-format"
   },
   "type": "module",

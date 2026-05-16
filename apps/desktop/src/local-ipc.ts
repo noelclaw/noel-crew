@@ -6,12 +6,12 @@ import { getAppStateSnapshot } from "./app-state.js";
 import { builtInPet } from "./built-in-pet.js";
 import { applyExternalPetReaction, applyExternalPetSay, getDefaultPetPaused, isDefaultPetVisible } from "./default-pet-controller.js";
 import { createStaleLeaseStatus, LeaseManager } from "./lease-manager.js";
-import { cleanupUnixSocket, createIpcEndpoint, parseIpcEndpoint, protectUnixSocket, removeDiscoveryFile, writeDiscoveryFile, type IpcEndpoint, type OpenPetsDiscoveryFile } from "./local-ipc-paths.js";
-import { errorResponse, IpcProtocolError, isRecord, maxIpcMessageBytes, okResponse, parseIpcRequest, validateInstallPetId, validateOptionalLeaseId, validateReaction, validateRequestedPetId, validateSayMessage, type OpenPetsIpcRequest } from "./local-ipc-protocol.js";
+import { cleanupUnixSocket, createIpcEndpoint, parseIpcEndpoint, protectUnixSocket, removeDiscoveryFile, writeDiscoveryFile, type IpcEndpoint, type NoelCrewDiscoveryFile } from "./local-ipc-paths.js";
+import { errorResponse, IpcProtocolError, isRecord, maxIpcMessageBytes, okResponse, parseIpcRequest, validateInstallPetId, validateOptionalLeaseId, validateReaction, validateRequestedPetId, validateSayMessage, type NoelCrewIpcRequest } from "./local-ipc-protocol.js";
 import { installPet } from "./pet-installation.js";
 
 let ipcServer: net.Server | null = null;
-let ipcDiscovery: OpenPetsDiscoveryFile | null = null;
+let ipcDiscovery: NoelCrewDiscoveryFile | null = null;
 let leaseCleanupTimer: NodeJS.Timeout | null = null;
 const leaseManager = new LeaseManager({
   resolveTarget: resolveLeaseTarget,
@@ -33,7 +33,7 @@ export async function startLocalIpcServer(): Promise<void> {
 
   const server = net.createServer((socket) => handleSocket(socket, token, parsedEndpoint));
   server.on("error", (error) => {
-    console.error("OpenPets local IPC server error.", error);
+    console.error("NoelCrew local IPC server error.", error);
   });
 
   await new Promise<void>((resolve, reject) => {
@@ -50,7 +50,7 @@ export async function startLocalIpcServer(): Promise<void> {
   ipcDiscovery = writeDiscoveryFile(listeningEndpoint, token);
   leaseCleanupTimer = setInterval(() => leaseManager.cleanupExpired(), 5_000);
   leaseCleanupTimer.unref?.();
-  console.log(`OpenPets local IPC listening at ${listeningEndpoint}.`);
+  console.log(`NoelCrew local IPC listening at ${listeningEndpoint}.`);
 }
 
 export function stopLocalIpcServer(): void {
@@ -103,7 +103,7 @@ function handleSocket(socket: net.Socket, token: string, endpoint: IpcEndpoint):
 
   socket.on("error", (error) => {
     if (isBenignSocketCloseError(error)) return;
-    console.error("OpenPets local IPC client socket error.", error);
+    console.error("NoelCrew local IPC client socket error.", error);
   });
 }
 
@@ -138,11 +138,11 @@ async function handleRawRequest(raw: string, token: string) {
   }
 }
 
-async function handleRequest(request: OpenPetsIpcRequest): Promise<unknown> {
+async function handleRequest(request: NoelCrewIpcRequest): Promise<unknown> {
   if (request.method === "hello") {
     return {
       ok: true,
-      protocol: "openpets-ipc",
+      protocol: "noelcrew-ipc",
       protocolVersion: 1,
       appVersion: ipcDiscovery?.appVersion ?? "0.0.0",
     };

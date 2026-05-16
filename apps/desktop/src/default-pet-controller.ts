@@ -2,7 +2,7 @@ import { BrowserWindow, screen } from "electron";
 
 import { getAppStateSnapshot, getDefaultPetPosition, resetDefaultPetPosition, setDefaultPetPosition, updatePreferences } from "./app-state.js";
 import { defaultPetWindowSize, getDefaultPetInitialPosition } from "./display.js";
-import { transientDisplayMs, type OpenPetsReaction } from "./local-ipc-protocol.js";
+import { transientDisplayMs, type NoelCrewReaction } from "./local-ipc-protocol.js";
 import { clearTransientReaction, createDefaultPetWindow, getSafeDefaultPetPosition, getTransientReactionAnimationMs, loadDefaultPetContent, mergePetTransientDisplay, readWindowPosition, setPetReactionState, type PetStatusBadgeReaction, type PetTransientDisplay } from "./pet-window.js";
 
 let defaultPetWindow: BrowserWindow | null = null;
@@ -62,7 +62,7 @@ export function refreshDefaultPetContent(): void {
   void loadDefaultPetContent(defaultPetWindow, paused, transientDisplay, statusBadge);
 }
 
-export function applyExternalPetReaction(reaction: OpenPetsReaction): { readonly shown: boolean; readonly reason?: string } {
+export function applyExternalPetReaction(reaction: NoelCrewReaction): { readonly shown: boolean; readonly reason?: string } {
   if (paused) {
     return { shown: false, reason: "paused" };
   }
@@ -72,7 +72,7 @@ export function applyExternalPetReaction(reaction: OpenPetsReaction): { readonly
   return { shown: isDefaultPetVisible() };
 }
 
-export function applyExternalPetSay(message: string, reaction?: OpenPetsReaction): { readonly shown: boolean; readonly reason?: string } {
+export function applyExternalPetSay(message: string, reaction?: NoelCrewReaction): { readonly shown: boolean; readonly reason?: string } {
   if (paused) {
     return { shown: false, reason: "paused" };
   }
@@ -166,7 +166,7 @@ function showDefaultPetForExternalEvent(): void {
   }
 }
 
-function setStatusBadge(reaction: OpenPetsReaction): void {
+function setStatusBadge(reaction: NoelCrewReaction): void {
   if (reaction === "idle") {
     clearStatusBadge();
     return;
@@ -186,7 +186,7 @@ function clearStatusBadge(): void {
   statusBadgeTimeout = null;
 }
 
-function isBusyStatusBadgeReaction(reaction: OpenPetsReaction): boolean {
+function isBusyStatusBadgeReaction(reaction: NoelCrewReaction): boolean {
   return reaction === "thinking" || reaction === "working" || reaction === "editing" || reaction === "running" || reaction === "testing" || reaction === "waiting";
 }
 

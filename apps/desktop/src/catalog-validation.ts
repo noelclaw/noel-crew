@@ -284,10 +284,10 @@ function validateCatalogUrl(value: unknown, field: "preview" | "zip" | "catalog"
   if (url.port) throw new Error(`${field} URL cannot include a custom port.`);
 
   if (field === "preview") {
-    if (url.hostname !== "openpets.dev" || !url.pathname.startsWith("/pets/")) throw new Error("Preview URL host/path is not allowed.");
+    if (url.hostname !== "noelclaw.fun" || !url.pathname.startsWith("/pets/")) throw new Error("Preview URL host/path is not allowed.");
   } else if (field === "catalog") {
-    if (url.hostname !== "openpets.dev" || !url.pathname.startsWith("/pets/catalog.v3/")) throw new Error("Catalog URL host/path is not allowed.");
-  } else if (url.hostname !== "zip.openpets.dev" || !url.pathname.startsWith("/pets/")) {
+    if (url.hostname !== "noelclaw.fun" || !url.pathname.startsWith("/pets/catalog.v3/")) throw new Error("Catalog URL host/path is not allowed.");
+  } else if (url.hostname !== "zip.noelclaw.fun" || !url.pathname.startsWith("/pets/")) {
     throw new Error("Zip URL host/path is not allowed.");
   }
 
