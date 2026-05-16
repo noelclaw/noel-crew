@@ -1,40 +1,18 @@
-import { spawn } from "node:child_process";
+import { dialog } from "electron";
 
-import { app, dialog } from "electron";
-import { doctorClaudeHooks, installClaudeHooks } from "@noelclawai/claude";
-
-const DETECT_TIMEOUT_MS = 4_000;
-
-function runDetect(cmd: string, args: string[]): Promise<boolean> {
-  return new Promise((resolve) => {
-    let settled = false;
-    const settle = (v: boolean): void => { if (!settled) { settled = true; resolve(v); } };
-    try {
-      const child = spawn(cmd, args, { stdio: "ignore", shell: false });
-      const timer = setTimeout(() => { child.kill(); settle(false); }, DETECT_TIMEOUT_MS);
-      child.on("close", (code) => { clearTimeout(timer); settle(code === 0); });
-      child.on("error", () => { clearTimeout(timer); settle(false); });
-    } catch {
-      settle(false);
-    }
-  });
-}
+import { getAgentSetupSnapshot, runAgentSetupAction } from "./agent-setup.js";
 
 export async function promptAndInstallHooksOnFirstLaunch(): Promise<void> {
-  const commandMode = app.isPackaged ? "bundled" : "published";
-
-  // Skip silently if hooks are already installed
+  let snapshot;
   try {
-    const doctor = doctorClaudeHooks(undefined, commandMode);
-    if (doctor.status === "installed") return;
+    snapshot = await getAgentSetupSnapshot();
   } catch {
-    // May throw before packaging when asserting bundled paths — continue
+    return;
   }
 
-  // Detect Claude Code on PATH before prompting
-  const claudeCmd = process.platform === "win32" ? "claude.cmd" : "claude";
-  const claudeFound = await runDetect(claudeCmd, ["--version"]);
-  if (!claudeFound) return;
+  // Skip if hooks are already installed or Claude Code is not detected
+  if (snapshot.hookStatus.status === "installed") return;
+  if (snapshot.status.state === "not_detected") return;
 
   const { response } = await dialog.showMessageBox({
     type: "question",
@@ -49,20 +27,31 @@ export async function promptAndInstallHooksOnFirstLaunch(): Promise<void> {
   if (response !== 0) return;
 
   try {
-    installClaudeHooks(undefined, commandMode);
-    await dialog.showMessageBox({
-      type: "info",
-      title: "NoelCrew",
-      message: "Claude Code hooks configured!",
-      detail: "NoelCrew will now react to your Claude Code sessions. Manage hooks anytime in Integrations.",
-      buttons: ["OK"],
-    });
+    const result = await runAgentSetupAction("install-hooks");
+    const action = result.lastAction;
+    if (action?.ok) {
+      await dialog.showMessageBox({
+        type: "info",
+        title: "NoelCrew",
+        message: "Claude Code hooks configured!",
+        detail: "NoelCrew will now react to your Claude Code sessions. Manage hooks anytime in Integrations.",
+        buttons: ["OK"],
+      });
+    } else {
+      await dialog.showMessageBox({
+        type: "warning",
+        title: "NoelCrew",
+        message: "Hook configuration failed",
+        detail: `${action?.message ?? "Unknown error"}\n\nYou can try again from Integrations.`,
+        buttons: ["OK"],
+      });
+    }
   } catch (error) {
     await dialog.showMessageBox({
       type: "warning",
       title: "NoelCrew",
       message: "Hook configuration failed",
-      detail: `Could not configure Claude Code hooks: ${error instanceof Error ? error.message : String(error)}\n\nYou can try again from Integrations.`,
+      detail: `${error instanceof Error ? error.message : String(error)}\n\nYou can try again from Integrations.`,
       buttons: ["OK"],
     });
   }
