@@ -32,6 +32,8 @@ mac:
 
 win:
   icon: assets/app-icon.ico
+  forceCodeSigning: false
+  signAndEditExecutable: false
   target:
     - nsis
     - portable

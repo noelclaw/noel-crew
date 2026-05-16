@@ -19,36 +19,49 @@ jobs:
           - os: windows
             runs-on: windows-latest
             artifact-pattern: "dist-electron/*.exe"
+            eb-flag: "--win"
           - os: mac
             runs-on: macos-latest
             artifact-pattern: "dist-electron/*.dmg"
+            eb-flag: "--mac"
           - os: linux
             runs-on: ubuntu-latest
             artifact-pattern: "dist-electron/*.AppImage"
+            eb-flag: "--linux"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # pnpm must be set up before setup-node so the cache key is available.
+      # No version pin — reads packageManager field from package.json (pnpm@11.0.8).
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11
+      - name: Install Linux build dependencies
+        if: matrix.os == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools rpm fakeroot
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
+      - name: Build all packages
         run: pnpm build
 
       - name: Package desktop (${{ matrix.os }})
         working-directory: apps/desktop
-        run: pnpm package
+        env:
+          # Prevents GitHub API rate-limiting when electron-builder downloads Electron
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Disable code-signing auto-discovery on all platforms (unsigned builds)
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: node scripts/clean-package-output.cjs && pnpm exec electron-builder ${{ matrix.eb-flag }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
