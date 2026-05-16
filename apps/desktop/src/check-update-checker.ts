@@ -14,7 +14,7 @@ assert.equal(isVersionNewer("1.0.0", "1.0.0"), false);
 assert.equal(isVersionNewer("1.0.0", "1.0.1"), false);
 assert.equal(isVersionNewer("bad", "1.0.1"), false);
 
-const repo = "alvinunreal/noelcrew";
+const repo = "noelclaw/noel-crew";
 const releasesUrl = `https://github.com/${repo}/releases`;
 const available = createParsedUpdateStatus("1.0.0", { tag_name: "v1.0.1", html_url: "https://github.com/noelclaw/noel-crew/releases/tag/v1.0.1" }, 123, repo, releasesUrl);
 assert.equal(available.state, "available");

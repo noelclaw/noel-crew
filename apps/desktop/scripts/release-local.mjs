@@ -9,7 +9,7 @@ const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const desktopDir = resolve(scriptsDir, "..");
 const repoRoot = resolve(desktopDir, "../..");
 const outputDir = join(desktopDir, "dist-electron");
-const repository = "alvinunreal/noelcrew";
+const repository = "noelclaw/noel-crew";
 
 const allowedArgs = new Set([
   "--dry-run",

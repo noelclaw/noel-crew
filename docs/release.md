@@ -4,7 +4,7 @@ This guide is for an AI agent creating a new NoelCrew desktop release from a loc
 
 ## Repository and app
 
-- GitHub repo: `alvinunreal/noelcrew`
+- GitHub repo: `noelclaw/noel-crew`
 - Desktop app: `apps/desktop`
 - Release script: `apps/desktop/scripts/release-local.mjs`
 - Root command: `pnpm release:desktop`
@@ -17,7 +17,7 @@ This guide is for an AI agent creating a new NoelCrew desktop release from a loc
 1. Requires macOS.
 2. Requires `pnpm` and `gh`.
 3. Requires GitHub CLI auth for `github.com`.
-4. Requires `origin` to point to `alvinunreal/noelcrew`.
+4. Requires `origin` to point to `noelclaw/noel-crew`.
 5. Requires a clean git working tree.
 6. Requires the current branch to have an upstream.
 7. Requires local `HEAD` to match the upstream branch.
@@ -258,7 +258,7 @@ If the script creates the draft release but upload fails:
 2. Upload missing artifacts manually with:
 
 ```bash
-gh release upload v<version> --repo alvinunreal/noelcrew <artifact-path>
+gh release upload v<version> --repo noelclaw/noel-crew <artifact-path>
 ```
 
 3. Or delete the draft release/tag and rerun after fixing the issue.

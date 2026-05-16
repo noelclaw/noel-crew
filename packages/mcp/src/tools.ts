@@ -89,6 +89,21 @@ export async function handleReact(input: unknown, context: ToolContext): Promise
   }
 }
 
+export async function handleEventReact(reaction: NoelCrewReaction, context: ToolContext): Promise<CallToolResult> {
+  await context.leaseReady;
+  if (!context.lease?.lease) return toolError(`Noel Crew lease is unavailable. ${sanitizeUnavailableReason(context.lease?.degradedReason) ?? "Open Noel Crew and try again."}`);
+  try {
+    const client = context.client ?? createNoelCrewClient();
+    const result = await client.react(reaction, { leaseId: context.lease.lease.leaseId });
+    return {
+      content: [{ type: "text", text: `Noel Crew reaction sent: ${reaction}` }],
+      structuredContent: { ok: true, reaction, result },
+    };
+  } catch (error) {
+    return toolError(`Noel Crew desktop app is not running or local IPC is unavailable. ${sanitizeError(error)}`);
+  }
+}
+
 export async function handleSay(input: unknown, context: ToolContext): Promise<CallToolResult> {
   await context.leaseReady;
   const parsed = saySchema.safeParse(input);

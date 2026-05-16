@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 permissions:
   contents: write
@@ -66,10 +66,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get version
-        id: version
-        run: echo "version=$(node -p "require('./apps/desktop/package.json').version")" >> $GITHUB_OUTPUT
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -79,10 +75,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Noel Crew v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          name: Noel Crew ${{ github.ref_name }}
           body: |
-            ## Noel Crew v${{ steps.version.outputs.version }}
+            ## Noel Crew ${{ github.ref_name }}
 
             Tray-first desktop companion for AI coding agents.
 

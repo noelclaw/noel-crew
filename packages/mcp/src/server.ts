@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { handleReact, handleSay, handleStatus, reactSchema, saySchema, type ToolContext } from "./tools.js";
+import { handleEventReact, handleReact, handleSay, handleStatus, reactSchema, saySchema, type ToolContext } from "./tools.js";
 
 export function createNoelCrewMcpServer(context: ToolContext): McpServer {
   const server = new McpServer({ name: "noel-crew", version: "0.0.0" }, {
@@ -27,6 +27,49 @@ export function createNoelCrewMcpServer(context: ToolContext): McpServer {
     inputSchema: saySchema,
     annotations: { readOnlyHint: false, idempotentHint: false },
   }, async (input) => handleSay(input, context));
+
+
+  server.registerTool("noel_signal_fired", {
+    title: "Noel Signal Fired",
+    description: "Triggered when a Noel signal fires. Plays the excited (celebrating) animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("celebrating", context));
+
+  server.registerTool("noel_whale_alert", {
+    title: "Noel Whale Alert",
+    description: "Triggered on a whale alert. Plays the alert (waiting) animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("waiting", context));
+
+  server.registerTool("noel_research_start", {
+    title: "Noel Research Start",
+    description: "Triggered when research begins. Plays the working animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("working", context));
+
+  server.registerTool("noel_research_complete", {
+    title: "Noel Research Complete",
+    description: "Triggered when research completes. Plays the success animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("success", context));
+
+  server.registerTool("noel_swap_executing", {
+    title: "Noel Swap Executing",
+    description: "Triggered during a swap execution. Plays the running animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("running", context));
+
+  server.registerTool("noel_error", {
+    title: "Noel Error",
+    description: "Triggered on an error condition. Plays the error animation on the desktop pet.",
+    inputSchema: {},
+    annotations: { readOnlyHint: false, idempotentHint: false },
+  }, async () => handleEventReact("error", context));
 
   return server;
 }

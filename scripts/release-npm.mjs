@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptsDir, "..");
-const repository = "alvinunreal/noelcrew";
+const repository = "noelclaw/noel-crew";
 
 const publishOrder = [
   "packages/client",

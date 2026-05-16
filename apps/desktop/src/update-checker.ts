@@ -20,7 +20,7 @@ interface GitHubReleaseResponse {
   readonly html_url?: unknown;
 }
 
-const githubRepository = process.env.NOELCREW_GITHUB_REPOSITORY || "alvinunreal/noelcrew";
+const githubRepository = process.env.NOELCREW_GITHUB_REPOSITORY || "noelclaw/noel-crew";
 const latestReleaseApiUrl = `https://api.github.com/repos/${githubRepository}/releases/latest`;
 const releasesPageUrl = `https://github.com/${githubRepository}/releases`;
 const releaseCheckTimeoutMs = 6_000;
