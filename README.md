@@ -38,17 +38,17 @@ Anyone can install Noel Crew as an MCP skill:
 
 ### Claude Code
 ```bash
-claude mcp add noel-crew -- npx @noelclaw/crew
+claude mcp add noel-crew -- npx @noelclawai/crew
 ```
 
 ### Hermes
 ```bash
-hermes mcp add noel-crew -- npx @noelclaw/crew
+hermes mcp add noel-crew -- npx @noelclawai/crew
 ```
 
 ### OpenClaw
 ```bash
-openclaw mcp add noel-crew -- npx @noelclaw/crew
+openclaw mcp add noel-crew -- npx @noelclawai/crew
 ```
 
 ### Cursor / Windsurf / Any MCP client
@@ -59,7 +59,7 @@ Add to your MCP config:
     "noel-crew": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@noelclaw/crew"]
+      "args": ["-y", "@noelclawai/crew"]
     }
   }
 }
@@ -143,12 +143,12 @@ Replace `PATH_TO_NOELCREW`:
 
 ```
 apps/desktop        Electron desktop app
-packages/client     @noelclaw/client — local IPC client
-packages/mcp        @noelclaw/crew   — MCP stdio server
-packages/claude     @noelclaw/claude — Claude hook helpers
-packages/opencode   @noelclaw/opencode — OpenCode plugin
-packages/cli        @noelclaw/cli — CLI entrypoints
-packages/pi         @noelclaw/pi — Pi extension
+packages/client     @noelclawai/client — local IPC client
+packages/mcp        @noelclawai/crew   — MCP stdio server
+packages/claude     @noelclawai/claude — Claude hook helpers
+packages/opencode   @noelclawai/opencode — OpenCode plugin
+packages/cli        @noelclawai/cli — CLI entrypoints
+packages/pi         @noelclawai/pi — Pi extension
 ```
 
 ---

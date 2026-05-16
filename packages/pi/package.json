@@ -1,5 +1,5 @@
 {
-  "name": "@noelclaw/pi",
+  "name": "@noelclawai/pi",
   "version": "2.0.7",
   "license": "MIT",
   "repository": {
@@ -49,8 +49,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@noelclaw/agent-events": "workspace:*",
-    "@noelclaw/client": "workspace:*"
+    "@noelclawai/agent-events": "workspace:*",
+    "@noelclawai/client": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

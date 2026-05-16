@@ -747,9 +747,9 @@ function createAgentSetupHtml(definition: TaskWindowDefinition): string {
                     </tbody>
                   </table>
                 </div>
-                <details class="agent-inline-details" open><summary><span><small>Commands</small><strong>Pi package setup</strong></span></summary><p class="agent-note">Copy these commands into your terminal. Restart or reload Pi after changing package settings.</p><div class="agent-actions advanced-actions"><button id="pi-copy-global-install" class="agent-action secondary compact">Copy global install</button><button id="pi-copy-project-install" class="agent-action secondary compact">Copy project install</button></div><pre id="pi-command-preview" class="agent-preview-code command-preview" aria-label="Pi setup command preview">pi install npm:@noelclaw/pi
-pi install -l npm:@noelclaw/pi
-pi remove npm:@noelclaw/pi</pre></details>
+                <details class="agent-inline-details" open><summary><span><small>Commands</small><strong>Pi package setup</strong></span></summary><p class="agent-note">Copy these commands into your terminal. Restart or reload Pi after changing package settings.</p><div class="agent-actions advanced-actions"><button id="pi-copy-global-install" class="agent-action secondary compact">Copy global install</button><button id="pi-copy-project-install" class="agent-action secondary compact">Copy project install</button></div><pre id="pi-command-preview" class="agent-preview-code command-preview" aria-label="Pi setup command preview">pi install npm:@noelclawai/pi
+pi install -l npm:@noelclawai/pi
+pi remove npm:@noelclawai/pi</pre></details>
               </article>
               <p id="pi-action-result" class="agent-result" aria-live="polite">Pi setup is manual until real Pi CLI install validation is complete.</p>
             </section>

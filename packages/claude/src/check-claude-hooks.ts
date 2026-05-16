@@ -119,7 +119,7 @@ assert.deepEqual(uninstalled, settings);
 assert.throws(() => addNoelCrewHooks({ hooks: { UserPromptSubmit: { bad: true } } }));
 
 const stale = addNoelCrewHooks({});
-((stale.hooks as Record<string, unknown>).Stop as unknown[]).push({ hooks: [{ type: "command", command: "npx -y @noelclaw/claude hook --noelcrew-managed --old" }] });
+((stale.hooks as Record<string, unknown>).Stop as unknown[]).push({ hooks: [{ type: "command", command: "npx -y @noelclawai/claude hook --noelcrew-managed --old" }] });
 const stalePath = join(dir, "stale-settings.json");
 writeFileSync(stalePath, JSON.stringify(stale), "utf8");
 assert.equal(doctorClaudeHooks(stalePath).status, "needs_update");

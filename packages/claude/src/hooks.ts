@@ -2,8 +2,8 @@ import { lstatSync, mkdirSync, readFileSync, realpathSync, renameSync, statSync,
 import { dirname, isAbsolute, join, relative } from "node:path";
 import { homedir, tmpdir, userInfo } from "node:os";
 
-import { createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction, NoelCrewClientError } from "@noelclaw/client";
-import { validateHookSpeech as validateSharedHookSpeech } from "@noelclaw/agent-events";
+import { createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction, NoelCrewClientError } from "@noelclawai/client";
+import { validateHookSpeech as validateSharedHookSpeech } from "@noelclawai/agent-events";
 
 import { pickHookSpeech, type HookSpeechCategory } from "./hook-messages.js";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@noelclaw/crew",
+  "name": "@noelclawai/crew",
   "version": "0.1.4",
   "description": "Noel Crew — tray-first desktop companion MCP for AI coding agents",
   "license": "MIT",
@@ -36,7 +36,7 @@
   },
   "scripts": {
     "test": "node dist/check-mcp-contract.js",
-    "check": "pnpm --filter @noelclaw/client build && pnpm typecheck && pnpm build && pnpm test",
+    "check": "pnpm --filter @noelclawai/client build && pnpm typecheck && pnpm build && pnpm test",
     "typecheck": "tsc --noEmit",
     "build": "tsc && node dist/ensure-executable.js"
   },
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@noelclaw/client": "workspace:*",
+    "@noelclawai/client": "workspace:*",
     "zod": "^4.4.3"
   }
 }

@@ -65,13 +65,13 @@ try {
   mkdirSync(project);
   writeFileSync(join(dir, "placeholder"), "x", "utf8");
   assert.throws(() => assertSafeProjectHookPath(join(dir, "missing")));
-  installProjectLocalHooks(project, "npx -y @noelclaw/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer");
+  installProjectLocalHooks(project, "npx -y @noelclawai/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer");
   const settingsPath = join(settingsDir, "settings.local.json");
   const settings = JSON.parse(readFileSync(settingsPath, "utf8")) as { readonly hooks?: Record<string, Array<{ readonly hooks: Array<{ readonly command: string }> }>> };
   assert.ok(settings.hooks?.UserPromptSubmit?.[0]?.hooks[0]?.command.includes("--project-local --pet fixer"));
 
-  writeFileSync(settingsPath, JSON.stringify({ hooks: { Stop: [{ hooks: [{ type: "command", command: "echo keep" }] }, { hooks: [{ type: "command", command: "npx -y @noelclaw/cli@old hook --noelcrew-managed" }] }] } }), "utf8");
-  installProjectLocalHooks(project, "npx -y @noelclaw/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer");
+  writeFileSync(settingsPath, JSON.stringify({ hooks: { Stop: [{ hooks: [{ type: "command", command: "echo keep" }] }, { hooks: [{ type: "command", command: "npx -y @noelclawai/cli@old hook --noelcrew-managed" }] }] } }), "utf8");
+  installProjectLocalHooks(project, "npx -y @noelclawai/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer");
   const updated = JSON.parse(readFileSync(settingsPath, "utf8")) as { readonly hooks?: Record<string, Array<{ readonly hooks: Array<{ readonly command: string; readonly timeout?: number }> }>> };
   const stopCommands = updated.hooks?.Stop?.flatMap((entry) => entry.hooks.map((hook) => hook.command)) ?? [];
   assert.ok(stopCommands.includes("echo keep"));
@@ -87,7 +87,7 @@ try {
   const malformedHooksProject = join(dir, "malformed-hooks-project");
   mkdirSync(join(malformedHooksProject, ".claude"), { recursive: true });
   writeFileSync(join(malformedHooksProject, ".claude", "settings.local.json"), JSON.stringify({ hooks: { Stop: { bad: true } } }), "utf8");
-  assert.throws(() => installProjectLocalHooks(malformedHooksProject, "npx -y @noelclaw/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer"));
+  assert.throws(() => installProjectLocalHooks(malformedHooksProject, "npx -y @noelclawai/cli@1.2.3 hook --noelcrew-managed --project-local --pet fixer"));
 
   const symlinkProject = join(dir, "symlink-project");
   const outside = join(dir, "outside-claude");
@@ -105,7 +105,7 @@ try {
   const oldPath = process.env.PATH;
   process.env.PATH = `${binDir}:${oldPath ?? ""}`;
   try {
-    runClaudeMcpAddJson(project, { type: "stdio", command: "npx", args: ["-y", "@noelclaw/cli@1.2.3", "mcp", "--pet", "fixer"], env: {} }, true);
+    runClaudeMcpAddJson(project, { type: "stdio", command: "npx", args: ["-y", "@noelclawai/cli@1.2.3", "mcp", "--pet", "fixer"], env: {} }, true);
   } finally {
     process.env.PATH = oldPath;
   }
@@ -115,7 +115,7 @@ try {
   assert.deepEqual(claudeLog.at(-1)?.argv.slice(0, 3), ["mcp", "add-json", "noelcrew"]);
   const loggedMcpJson = JSON.parse(claudeLog.at(-1)?.argv[3] ?? "{}") as { readonly command?: string; readonly args?: readonly string[]; readonly env?: Record<string, unknown> };
   assert.equal(loggedMcpJson.command, "npx");
-  assert.deepEqual(loggedMcpJson.args, ["-y", "@noelclaw/cli@1.2.3", "mcp", "--pet", "fixer"]);
+  assert.deepEqual(loggedMcpJson.args, ["-y", "@noelclawai/cli@1.2.3", "mcp", "--pet", "fixer"]);
   assert.deepEqual(loggedMcpJson.env, {});
   assert.equal(claudeLog.at(-1)?.argv.at(-2), "--scope");
   assert.equal(claudeLog.at(-1)?.argv.at(-1), "local");
@@ -132,9 +132,9 @@ try {
   const opencodeConfigPath = join(opencodeProject, ".opencode", "opencode.jsonc");
   const opencodeInstructionPath = join(opencodeProject, ".opencode", "noelcrew.md");
   const opencodeConfig = JSON.parse(readFileSync(opencodeConfigPath, "utf8")) as { readonly mcp?: Record<string, { readonly command?: readonly string[] }>; readonly instructions?: readonly string[]; readonly plugin?: readonly unknown[] };
-  assert.deepEqual(opencodeConfig.mcp?.noelcrew?.command, ["npx", "-y", `@noelclaw/cli@${packageVersion}`, "mcp", "--pet", "fixer"]);
+  assert.deepEqual(opencodeConfig.mcp?.noelcrew?.command, ["npx", "-y", `@noelclawai/cli@${packageVersion}`, "mcp", "--pet", "fixer"]);
   assert.deepEqual(opencodeConfig.instructions, [".opencode/noelcrew.md"]);
-  assert.deepEqual(opencodeConfig.plugin, [[`@noelclaw/opencode@${packageVersion}`, { pet: "fixer" }]]);
+  assert.deepEqual(opencodeConfig.plugin, [[`@noelclawai/opencode@${packageVersion}`, { pet: "fixer" }]]);
   assert.match(readFileSync(opencodeInstructionPath, "utf8"), /NOELCREW:START/);
   await configureProject({ agent: "opencode", petId: "fixer", cwd: opencodeProject, yes: true, force: false, localDev: false });
   const opencodeConfigAgain = readFileSync(opencodeConfigPath, "utf8");
@@ -155,18 +155,18 @@ try {
   const lowerOwnerProject = join(dir, "opencode-lower-owner");
   mkdirSync(join(lowerOwnerProject, ".opencode"), { recursive: true });
   writeFileSync(join(lowerOwnerProject, "opencode.json"), JSON.stringify({ theme: "top" }, null, 2), "utf8");
-  writeFileSync(join(lowerOwnerProject, ".opencode", "opencode.jsonc"), JSON.stringify({ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.1", "mcp", "--pet", "helper"], enabled: true } } }, null, 2), "utf8");
+  writeFileSync(join(lowerOwnerProject, ".opencode", "opencode.jsonc"), JSON.stringify({ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.1", "mcp", "--pet", "helper"], enabled: true } } }, null, 2), "utf8");
   await configureProject({ agent: "opencode", petId: "fixer", cwd: lowerOwnerProject, yes: true, force: false, localDev: false });
   const lowerTop = readFileSync(join(lowerOwnerProject, "opencode.json"), "utf8");
   const lowerOwned = JSON.parse(readFileSync(join(lowerOwnerProject, ".opencode", "opencode.jsonc"), "utf8")) as { readonly mcp?: Record<string, { readonly command?: readonly string[] }> };
-  assert.equal(lowerTop.includes("@noelclaw/cli"), false);
-  assert.deepEqual(lowerOwned.mcp?.noelcrew?.command, ["npx", "-y", `@noelclaw/cli@${packageVersion}`, "mcp", "--pet", "fixer"]);
+  assert.equal(lowerTop.includes("@noelclawai/cli"), false);
+  assert.deepEqual(lowerOwned.mcp?.noelcrew?.command, ["npx", "-y", `@noelclawai/cli@${packageVersion}`, "mcp", "--pet", "fixer"]);
 
   const customProject = join(dir, "opencode-custom");
   mkdirSync(customProject);
   writeFileSync(join(customProject, "opencode.json"), JSON.stringify({ mcp: { noelcrew: { type: "local", command: ["my-noelcrew-wrapper"] } } }), "utf8");
   await assert.rejects(() => configureProject({ agent: "opencode", petId: "fixer", cwd: customProject, yes: true, force: false, localDev: false }));
-  assert.equal(readFileSync(join(customProject, "opencode.json"), "utf8").includes("@noelclaw/cli"), false);
+  assert.equal(readFileSync(join(customProject, "opencode.json"), "utf8").includes("@noelclawai/cli"), false);
 
   const instructionProject = join(dir, "opencode-instruction");
   mkdirSync(join(instructionProject, ".opencode"), { recursive: true });

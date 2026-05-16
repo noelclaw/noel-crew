@@ -4,8 +4,8 @@ import { dirname, isAbsolute, join } from "node:path";
 import { createRequire } from "node:module";
 
 import { app } from "electron";
-import { buildClaudeMcpGetCommand, buildClaudeMcpPreview, classifyClaudeMcpStatus, createNoelCrewHookSettingsPreview, doctorClaudeHooks, installClaudeHooks, mapAsarPathToUnpacked, uninstallClaudeHooks, type ClaudeCommandSpec, type ClaudeHookDoctorResult, type ClaudeMcpPreview, type NoelCrewCommandMode, type ParsedClaudeMcpEntry } from "@noelclaw/claude";
-import { doctorOpenCodeGlobalSetup, getGlobalOpenCodeConfigDir, parseOpenCodeConfig, prepareOpenCodeGlobalRemove, prepareOpenCodeGlobalSetup, writePreparedOpenCodeGlobalRemove, writePreparedOpenCodeGlobalSetup } from "@noelclaw/opencode";
+import { buildClaudeMcpGetCommand, buildClaudeMcpPreview, classifyClaudeMcpStatus, createNoelCrewHookSettingsPreview, doctorClaudeHooks, installClaudeHooks, mapAsarPathToUnpacked, uninstallClaudeHooks, type ClaudeCommandSpec, type ClaudeHookDoctorResult, type ClaudeMcpPreview, type NoelCrewCommandMode, type ParsedClaudeMcpEntry } from "@noelclawai/claude";
+import { doctorOpenCodeGlobalSetup, getGlobalOpenCodeConfigDir, parseOpenCodeConfig, prepareOpenCodeGlobalRemove, prepareOpenCodeGlobalSetup, writePreparedOpenCodeGlobalRemove, writePreparedOpenCodeGlobalSetup } from "@noelclawai/opencode";
 
 import { getAppStateSnapshot, updatePreferences, type InstalledPetState, type NoelCrewStateV1 } from "./app-state.js";
 import { doctorClaudeNoelCrewMemory, installClaudeNoelCrewMemory, uninstallClaudeNoelCrewMemory, type ClaudeNoelCrewMemoryStatus } from "./claude-memory.js";
@@ -331,7 +331,7 @@ async function getOpenCodeSetup(commandMode: NoelCrewCommandMode, selectedPetId:
       configPath: prepared.ok ? (formatUserPath(prepared.configPath) ?? prepared.configPath) : "",
       cleanupConfigPaths: prepared.ok ? prepared.cleanupConfigPaths.map((path) => formatUserPath(path) ?? path) : [],
       mcpCommand: prepared.ok ? prepared.command : [],
-      plugin: prepared.ok ? prepared.plugin : (petId ? [`@noelclaw/opencode@${pluginVersion}`, { pet: petId }] : `@noelclaw/opencode@${pluginVersion}`),
+      plugin: prepared.ok ? prepared.plugin : (petId ? [`@noelclawai/opencode@${pluginVersion}`, { pet: petId }] : `@noelclawai/opencode@${pluginVersion}`),
       instructionPath: prepared.ok ? (formatUserPath(prepared.instructionPath) ?? prepared.instructionPath) : "",
       configPreview: prepared.ok ? prepared.configPreview : {},
     },
@@ -421,16 +421,16 @@ async function removeOpenCodeGlobal(): Promise<AgentSetupActionResult> {
 }
 
 function getDesktopCliEntryPath(commandMode: NoelCrewCommandMode): string {
-  const path = require.resolve("@noelclaw/cli");
+  const path = require.resolve("@noelclawai/cli");
   return commandMode === "bundled" ? mapAsarPathToUnpacked(path) : path;
 }
 
 function getCliPackageVersion(): string {
-  return getWorkspacePackageVersion("@noelclaw/cli");
+  return getWorkspacePackageVersion("@noelclawai/cli");
 }
 
 function getOpenCodePackageVersion(): string {
-  return getWorkspacePackageVersion("@noelclaw/opencode");
+  return getWorkspacePackageVersion("@noelclawai/opencode");
 }
 
 function getWorkspacePackageVersion(packageName: string): string {

@@ -2,8 +2,8 @@ import { homedir, tmpdir, userInfo } from "node:os";
 import { dirname, join } from "node:path";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 
-import { createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction } from "@noelclaw/client";
-import { pickHookSpeech, type HookSpeechCategory, validateHookSpeech } from "@noelclaw/agent-events";
+import { createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction } from "@noelclawai/client";
+import { pickHookSpeech, type HookSpeechCategory, validateHookSpeech } from "@noelclawai/agent-events";
 
 import { validateNoelCrewPetArg } from "./opencode-previews.js";
 

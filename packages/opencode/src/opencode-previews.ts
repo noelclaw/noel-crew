@@ -1,7 +1,7 @@
 import { isAbsolute, join } from "node:path";
 
 export const openCodeMcpServerName = "noelcrew";
-export const noelCrewCliPackageName = "@noelclaw/cli";
+export const noelCrewCliPackageName = "@noelclawai/cli";
 export type OpenCodeCommandMode = "published" | "local" | "bundled";
 
 export interface OpenCodeMcpEntry {
@@ -43,7 +43,7 @@ export function buildOpenCodeInstructionPath(scope: "project" | "global", config
 export type OpenCodePluginSpec = string | readonly [string, { readonly pet?: string }];
 
 export function buildOpenCodePluginPreview(petId?: string, packageVersion?: string): OpenCodePluginSpec {
-  const spec = packageVersion ? `@noelclaw/opencode@${packageVersion}` : "@noelclaw/opencode";
+  const spec = packageVersion ? `@noelclawai/opencode@${packageVersion}` : "@noelclawai/opencode";
   return petId === undefined ? spec : [spec, { pet: validateNoelCrewPetArg(petId) }];
 }
 

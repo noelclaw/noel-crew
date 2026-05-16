@@ -1,5 +1,5 @@
-import { pickHookSpeech, validateHookSpeech } from "@noelclaw/agent-events";
-import { allowedReactions, createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction } from "@noelclaw/client";
+import { pickHookSpeech, validateHookSpeech } from "@noelclawai/agent-events";
+import { allowedReactions, createNoelCrewClient, type NoelCrewClient, type NoelCrewReaction } from "@noelclawai/client";
 
 export interface NoelCrewPiOptions {
   readonly clientFactory?: () => NoelCrewClient;

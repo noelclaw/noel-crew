@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { hookSpeechPools, validateHookSpeech } from "@noelclaw/agent-events";
+import { hookSpeechPools, validateHookSpeech } from "@noelclawai/agent-events";
 
 import { createOpenCodeExecutableDetection, executePlannedWrite, getGlobalOpenCodeConfigDir, getGlobalOpenCodeConfigPaths, getProjectOpenCodeConfigPaths, parseOpenCodeConfig, planOpenCodeConfigWrite, selectProjectOpenCodeConfigPath, updateOpenCodeConfigText } from "./opencode-config.js";
 import { buildOpenCodeInstructionPath, buildOpenCodeMcpEntry, buildOpenCodePluginPreview, formatOpenCodeMcpConfig } from "./opencode-previews.js";
@@ -30,15 +30,15 @@ try {
   assert.deepEqual(createOpenCodeExecutableDetection({ platform: "win32" }).command, "opencode.cmd");
   assert.deepEqual(createOpenCodeExecutableDetection({ platform: "darwin" }).command, "opencode");
 
-  assert.deepEqual(formatOpenCodeMcpConfig({ cliVersion: "0.0.0", petId: "fixer" }), { mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true } } });
-  assert.deepEqual(buildOpenCodeMcpEntry({ cliVersion: "0.0.0" }), { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp"], enabled: true });
+  assert.deepEqual(formatOpenCodeMcpConfig({ cliVersion: "0.0.0", petId: "fixer" }), { mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true } } });
+  assert.deepEqual(buildOpenCodeMcpEntry({ cliVersion: "0.0.0" }), { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp"], enabled: true });
   assert.deepEqual(buildOpenCodeMcpEntry({ cliVersion: "0.0.0", commandMode: "local", cliEntryPath: join(root, "cli.js"), petId: "fixer" }), { type: "local", command: ["node", join(root, "cli.js"), "mcp", "--pet", "fixer"], enabled: true });
   assert.throws(() => buildOpenCodeMcpEntry({ cliVersion: "0.0.0", commandMode: "local", cliEntryPath: "relative.js" }));
   assert.throws(() => buildOpenCodeMcpEntry({ cliVersion: "0.0.0", petId: "bad/pet" }));
   assert.equal(buildOpenCodeInstructionPath("project"), ".opencode/noelcrew.md");
   assert.equal(buildOpenCodeInstructionPath("global", join(root, "global")), join(root, "global", "noelcrew.md"));
-  assert.deepEqual(buildOpenCodePluginPreview("fixer"), ["@noelclaw/opencode", { pet: "fixer" }]);
-  assert.deepEqual(buildOpenCodePluginPreview("fixer", "0.0.0"), ["@noelclaw/opencode@0.0.0", { pet: "fixer" }]);
+  assert.deepEqual(buildOpenCodePluginPreview("fixer"), ["@noelclawai/opencode", { pet: "fixer" }]);
+  assert.deepEqual(buildOpenCodePluginPreview("fixer", "0.0.0"), ["@noelclawai/opencode@0.0.0", { pet: "fixer" }]);
 
   const jsonc = `{
     // keep this comment
@@ -63,30 +63,30 @@ try {
   const expected = { cliVersion: "0.0.0", petId: "fixer" };
   assert.equal(classifyOpenCodeMcpStatus([], expected).status, "not_installed");
   assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: buildOpenCodeMcpEntry(expected) } }], expected).status, "installed");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, type: "local" } } }], expected).status, "installed");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, type: "local" } } }], expected).status, "installed");
   assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: buildOpenCodeMcpEntry({ cliVersion: "0.0.0", petId: "helper" }) } }], expected).status, "needs_update");
   assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: buildOpenCodeMcpEntry({ cliVersion: "0.0.0", commandMode: "local", cliEntryPath: join(root, "cli.js"), petId: "helper" }) } }], { cliVersion: "0.0.0", commandMode: "local", cliEntryPath: join(root, "cli.js"), petId: "fixer" }).status, "needs_update");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: false } } }], expected).status, "custom");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "remote", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@file:../cli", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@workspace:*", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
-  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, timeout: 10 } } }], expected).status, "custom");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: false } } }], expected).status, "custom");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "remote", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@file:../cli", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@workspace:*", "mcp", "--pet", "fixer"], enabled: true } } }], expected).status, "custom");
+  assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, timeout: 10 } } }], expected).status, "custom");
   assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: { type: "local", command: ["my-noelcrew-wrapper"] } } }], expected).status, "custom");
   assert.equal(classifyOpenCodeMcpStatus([{ mcp: { noelcrew: buildOpenCodeMcpEntry(expected) } }, { mcp: { noelcrew: buildOpenCodeMcpEntry({ cliVersion: "0.0.0", petId: "helper" }) } }], expected).status, "conflict");
   assert.equal(classifyOpenCodeInstructionsStatus([{ instructions: [".opencode/noelcrew.md"] }], "project", undefined, { ".opencode/noelcrew.md": "<!-- NOELCREW:START -->\nHi\n<!-- NOELCREW:END -->\n" }).status, "installed");
   assert.equal(classifyOpenCodeInstructionsStatus([{ instructions: [".opencode/noelcrew.md"] }], "project").status, "needs_update");
   assert.equal(classifyOpenCodeInstructionsStatus([{ instructions: [".opencode/noelcrew.md"] }, { instructions: ["old-noelcrew.md"] }], "project", undefined, { ".opencode/noelcrew.md": "<!-- NOELCREW:START -->\nHi\n<!-- NOELCREW:END -->\n" }).status, "conflict");
   assert.equal(classifyOpenCodeInstructionsStatus([{ instructions: ["old-noelcrew.md"] }], "project").status, "custom");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode", { pet: "fixer" }]] }], "fixer").status, "installed");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@0.0.0", { pet: "fixer" }]] }], "fixer", "0.0.0").status, "installed");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: ["@noelclaw/opencode"] }], "fixer").status, "needs_update");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@old", { pet: "helper" }], "./noelcrew-custom-plugin.js"] }], "fixer", "0.0.0").status, "conflict");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@0.0.0"]] }], "fixer", "0.0.0").status, "custom");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@0.0.0", {}]] }], "fixer", "0.0.0").status, "custom");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@0.0.0", { pet: "fixer" }, "extra"]] }], "fixer", "0.0.0").status, "custom");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode@0.0.0", { pet: "fixer", extra: true }]] }], "fixer", "0.0.0").status, "custom");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode", { pet: "fixer" }]] }], "fixer").status, "installed");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@0.0.0", { pet: "fixer" }]] }], "fixer", "0.0.0").status, "installed");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: ["@noelclawai/opencode"] }], "fixer").status, "needs_update");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@old", { pet: "helper" }], "./noelcrew-custom-plugin.js"] }], "fixer", "0.0.0").status, "conflict");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@0.0.0"]] }], "fixer", "0.0.0").status, "custom");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@0.0.0", {}]] }], "fixer", "0.0.0").status, "custom");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@0.0.0", { pet: "fixer" }, "extra"]] }], "fixer", "0.0.0").status, "custom");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode@0.0.0", { pet: "fixer", extra: true }]] }], "fixer", "0.0.0").status, "custom");
   assert.equal(classifyOpenCodePluginStatus([{ plugin: ["./noelcrew-custom-plugin.js"] }], "fixer").status, "custom");
-  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclaw/opencode", { pet: "fixer" }], "./noelcrew-custom-plugin.js"] }], "fixer").status, "conflict");
+  assert.equal(classifyOpenCodePluginStatus([{ plugin: [["@noelclawai/opencode", { pet: "fixer" }], "./noelcrew-custom-plugin.js"] }], "fixer").status, "conflict");
 
   const writeTarget = join(root, "write", "opencode.jsonc");
   const writePlan = planOpenCodeConfigWrite(root, writeTarget, "{\"mcp\":{}}\n");
@@ -133,9 +133,9 @@ try {
   const globalLower = join(root, "global-lower");
   mkdirSync(globalLower);
   writeFileSync(join(globalLower, "config.json"), JSON.stringify({ theme: "keep" }), "utf8");
-  writeFileSync(join(globalLower, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclaw/opencode@old", { pet: "helper" }]] }), "utf8");
+  writeFileSync(join(globalLower, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclawai/opencode@old", { pet: "helper" }]] }), "utf8");
   writePreparedOpenCodeGlobalSetup(prepareOpenCodeGlobalSetup({ configDir: globalLower, petId: "fixer", cliVersion: "0.0.0" }));
-  assert.equal(readFileSync(join(globalLower, "config.json"), "utf8").includes("@noelclaw/opencode"), false);
+  assert.equal(readFileSync(join(globalLower, "config.json"), "utf8").includes("@noelclawai/opencode"), false);
   assert.match(readFileSync(join(globalLower, "opencode.jsonc"), "utf8"), /@noel-crew\/opencode@0\.0\.0/);
 
   const globalExistingJson = join(root, "global-existing-json");
@@ -195,7 +195,7 @@ try {
   const globalStaleOverlay = join(root, "global-stale-overlay");
   mkdirSync(globalStaleOverlay);
   writeFileSync(join(globalStaleOverlay, "opencode.json"), JSON.stringify({ plugin: ["user-plugin"], instructions: ["USER.md"] }, null, 2), "utf8");
-  writeFileSync(join(globalStaleOverlay, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclaw/opencode@0.0.0", { pet: "helper" }]], instructions: [buildOpenCodeInstructionPath("global", globalStaleOverlay)] }, null, 2), "utf8");
+  writeFileSync(join(globalStaleOverlay, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclawai/opencode@0.0.0", { pet: "helper" }]], instructions: [buildOpenCodeInstructionPath("global", globalStaleOverlay)] }, null, 2), "utf8");
   const stalePrepared = prepareOpenCodeGlobalSetup({ configDir: globalStaleOverlay, petId: "fixer", cliVersion: "0.0.1" });
   assert.equal(stalePrepared.configPath, join(globalStaleOverlay, "opencode.json"));
   assert.equal(stalePrepared.cleanupConfigWrites.length, 1);
@@ -210,7 +210,7 @@ try {
   const globalStaleRemove = join(root, "global-stale-remove");
   mkdirSync(globalStaleRemove);
   writeFileSync(join(globalStaleRemove, "opencode.json"), JSON.stringify({ plugin: ["user-plugin"] }, null, 2), "utf8");
-  writeFileSync(join(globalStaleRemove, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclaw/opencode@0.0.0", { pet: "fixer" }]] }, null, 2), "utf8");
+  writeFileSync(join(globalStaleRemove, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclawai/opencode@0.0.0", { pet: "fixer" }]] }, null, 2), "utf8");
   writePreparedOpenCodeGlobalRemove(prepareOpenCodeGlobalRemove(globalStaleRemove));
   assert.doesNotMatch(readFileSync(join(globalStaleRemove, "opencode.jsonc"), "utf8"), /plugin/);
   assert.match(readFileSync(join(globalStaleRemove, "opencode.json"), "utf8"), /user-plugin/);
@@ -234,7 +234,7 @@ try {
 
   const globalCustomPluginOptions = join(root, "global-custom-plugin-options");
   mkdirSync(globalCustomPluginOptions);
-  writeFileSync(join(globalCustomPluginOptions, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclaw/opencode@0.0.0", { pet: "fixer", extra: true }]] }), "utf8");
+  writeFileSync(join(globalCustomPluginOptions, "opencode.jsonc"), JSON.stringify({ plugin: [["@noelclawai/opencode@0.0.0", { pet: "fixer", extra: true }]] }), "utf8");
   assert.throws(() => prepareOpenCodeGlobalSetup({ configDir: globalCustomPluginOptions, petId: "fixer", cliVersion: "0.0.0" }));
 
   const globalCustom = join(root, "global-custom");
@@ -245,7 +245,7 @@ try {
 
   const globalCustomMcpFields = join(root, "global-custom-mcp-fields");
   mkdirSync(globalCustomMcpFields);
-  writeFileSync(join(globalCustomMcpFields, "opencode.jsonc"), JSON.stringify({ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclaw/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, environment: { NOELCREW_DEBUG: "1" } } } }), "utf8");
+  writeFileSync(join(globalCustomMcpFields, "opencode.jsonc"), JSON.stringify({ mcp: { noelcrew: { type: "local", command: ["npx", "-y", "@noelclawai/cli@0.0.0", "mcp", "--pet", "fixer"], enabled: true, environment: { NOELCREW_DEBUG: "1" } } } }), "utf8");
   assert.throws(() => prepareOpenCodeGlobalSetup({ configDir: globalCustomMcpFields, petId: "fixer", cliVersion: "0.0.0" }));
 
   const globalSymlink = join(root, "global-symlink");

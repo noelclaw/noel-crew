@@ -7,11 +7,11 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
 
-import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewPetListItem, type NoelCrewReaction } from "@noelclaw/client";
-import { claudeHookEvents, noelCrewHookMarker, removeNoelCrewHooks, runClaudeHookFromStdin, validateNoelCrewPetArg } from "@noelclaw/claude";
-import { prepareOpenCodeProjectSetup, writePreparedOpenCodeProjectSetup } from "@noelclaw/opencode";
+import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewPetListItem, type NoelCrewReaction } from "@noelclawai/client";
+import { claudeHookEvents, noelCrewHookMarker, removeNoelCrewHooks, runClaudeHookFromStdin, validateNoelCrewPetArg } from "@noelclawai/claude";
+import { prepareOpenCodeProjectSetup, writePreparedOpenCodeProjectSetup } from "@noelclawai/opencode";
 
-export const cliPackageName = "@noelclaw/cli";
+export const cliPackageName = "@noelclawai/cli";
 
 interface ConfigureOptions {
   readonly agent: "claude" | "opencode";
@@ -318,7 +318,7 @@ function runClaudeMcpRemove(projectDir: string): void {
 }
 
 async function runMcp(args: readonly string[]): Promise<void> {
-  const entry = require.resolve("@noelclaw/crew");
+  const entry = require.resolve("@noelclawai/crew");
   await new Promise<void>((resolvePromise, rejectPromise) => {
     const child = spawn(process.execPath, [entry, ...args], { stdio: "inherit" });
     const forwardSigint = (): void => { child.kill("SIGINT"); };

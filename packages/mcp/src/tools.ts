@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewClient, type NoelCrewLeaseResult, type NoelCrewReaction, type NoelCrewStatusResult } from "@noelclaw/client";
+import { allowedReactions, createNoelCrewClient, NoelCrewClientError, type NoelCrewClient, type NoelCrewLeaseResult, type NoelCrewReaction, type NoelCrewStatusResult } from "@noelclawai/client";
 import { z } from "zod";
 
 export const reactionSchema = z.enum(allowedReactions);

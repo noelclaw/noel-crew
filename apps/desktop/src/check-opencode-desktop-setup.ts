@@ -3,8 +3,8 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { mapAsarPathToUnpacked } from "@noelclaw/claude";
-import { doctorOpenCodeGlobalSetup, parseOpenCodeConfig, prepareOpenCodeGlobalRemove, prepareOpenCodeGlobalSetup, writePreparedOpenCodeGlobalRemove, writePreparedOpenCodeGlobalSetup } from "@noelclaw/opencode";
+import { mapAsarPathToUnpacked } from "@noelclawai/claude";
+import { doctorOpenCodeGlobalSetup, parseOpenCodeConfig, prepareOpenCodeGlobalRemove, prepareOpenCodeGlobalSetup, writePreparedOpenCodeGlobalRemove, writePreparedOpenCodeGlobalSetup } from "@noelclawai/opencode";
 
 const root = mkdtempSync(join(tmpdir(), "noelcrew-desktop-opencode-"));
 
@@ -33,7 +33,7 @@ try {
   assert.equal(preview.ok, true, "desktop OpenCode preview must parse as JSONC without JSON.parse.");
   const previewConfig = preview.value as { readonly mcp?: { readonly noelcrew?: { readonly command?: readonly string[] } }; readonly plugin?: readonly unknown[] };
   assert.deepEqual(previewConfig.mcp?.noelcrew?.command, ["node", bundledCli, "mcp", "--pet", "fixer"]);
-  assert.deepEqual(previewConfig.plugin, [["@noelclaw/opencode@4.5.6", { pet: "fixer" }]]);
+  assert.deepEqual(previewConfig.plugin, [["@noelclawai/opencode@4.5.6", { pet: "fixer" }]]);
 
   writePreparedOpenCodeGlobalSetup(install);
   assert.equal(doctorOpenCodeGlobalSetup(globalDir).status, "installed");

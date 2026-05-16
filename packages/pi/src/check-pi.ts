@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { allowedReactions } from "@noelclaw/client";
+import { allowedReactions } from "@noelclawai/client";
 
 import extension from "./extension.js";
 import { classifyPiEvent, classifyPiToolExecutionStart, createNoelCrewPiExtension, createNoelCrewPiRuntime, getPiNoelCrewHelp, normalizePiEvent, parseNoelCrewCommand, shouldIgnoreNoelCrewTool, validateManualSpeech, type NoelCrewPiExtensionApi } from "./runtime.js";

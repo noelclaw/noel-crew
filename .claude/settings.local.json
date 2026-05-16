@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python *)"
+      "Bash(python *)",
+      "mcp__noelclaw__ask_noel",
+      "Bash(claude mcp *)"
     ]
   }
 }

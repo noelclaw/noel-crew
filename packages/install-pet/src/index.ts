@@ -7,7 +7,7 @@ import { pipeline } from "node:stream/promises";
 import { Transform } from "node:stream";
 import { fileURLToPath } from "node:url";
 
-import { createNoelCrewClient, NoelCrewClientError } from "@noelclaw/client";
+import { createNoelCrewClient, NoelCrewClientError } from "@noelclawai/client";
 import yauzl from "yauzl";
 import type { Entry, ZipFile } from "yauzl";
 

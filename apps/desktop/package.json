@@ -1,5 +1,5 @@
 {
-  "name": "@noelclaw/desktop",
+  "name": "@noelclawai/desktop",
   "version": "2.0.7",
   "private": true,
   "description": "NoelCrew tray-first desktop companion app.",
@@ -29,11 +29,11 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@noelclaw/agent-events": "workspace:*",
-    "@noelclaw/claude": "workspace:*",
-    "@noelclaw/cli": "workspace:*",
-    "@noelclaw/crew": "workspace:*",
-    "@noelclaw/opencode": "workspace:*",
+    "@noelclawai/agent-events": "workspace:*",
+    "@noelclawai/claude": "workspace:*",
+    "@noelclawai/cli": "workspace:*",
+    "@noelclawai/crew": "workspace:*",
+    "@noelclawai/opencode": "workspace:*",
     "sharp": "^0.34.5",
     "yauzl": "3.3.0"
   }

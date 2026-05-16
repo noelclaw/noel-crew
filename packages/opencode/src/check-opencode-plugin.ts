@@ -3,14 +3,14 @@ import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import type { NoelCrewClient, NoelCrewReaction } from "@noelclaw/client";
+import type { NoelCrewClient, NoelCrewReaction } from "@noelclawai/client";
 
 import plugin, { noelCrewOpenCodePluginId } from "./plugin.js";
 import { classifyOpenCodeBusEvent, classifyOpenCodeToolReaction, createNoelCrewOpenCodeHooks, getDefaultOpenCodeThrottlePath, shouldIgnoreNoelCrewTool } from "./opencode-plugin-runtime.js";
 
 assert.equal(plugin.id, noelCrewOpenCodePluginId);
 assert.equal(typeof plugin.server, "function");
-const packagePlugin = await import("@noelclaw/opencode/server");
+const packagePlugin = await import("@noelclawai/opencode/server");
 assert.equal(packagePlugin.default.id, noelCrewOpenCodePluginId);
 assert.equal(typeof packagePlugin.default.server, "function");
 

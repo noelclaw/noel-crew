@@ -1,5 +1,5 @@
 {
-  "name": "@noelclaw/cli",
+  "name": "@noelclawai/cli",
   "version": "2.0.7",
   "license": "MIT",
   "repository": {
@@ -36,9 +36,9 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@noelclaw/client": "workspace:*",
-    "@noelclaw/claude": "workspace:*",
-    "@noelclaw/crew": "workspace:*",
-    "@noelclaw/opencode": "workspace:*"
+    "@noelclawai/client": "workspace:*",
+    "@noelclawai/claude": "workspace:*",
+    "@noelclawai/crew": "workspace:*",
+    "@noelclawai/opencode": "workspace:*"
   }
 }

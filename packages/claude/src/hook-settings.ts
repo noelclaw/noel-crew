@@ -36,7 +36,7 @@ export function createNoelCrewHookCommand(commandMode: NoelCrewCommandMode = "pu
     commandMode === "bundled" ? assertBundledClaudeCliPath() : assertLocalClaudeCliPath();
     return `${shellQuote(nodeCommand)} ${shellQuote(cliPath)} hook ${noelCrewHookMarker}${petArgs}`;
   }
-  return `npx -y @noelclaw/claude hook ${noelCrewHookMarker}${petArgs}`;
+  return `npx -y @noelclawai/claude hook ${noelCrewHookMarker}${petArgs}`;
 }
 
 export function getLocalClaudeCliPath(): string {

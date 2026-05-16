@@ -32,7 +32,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@noelclaw/client": "workspace:*",
+    "@noelclawai/client": "workspace:*",
     "yauzl": "3.3.0"
   },
   "devDependencies": {

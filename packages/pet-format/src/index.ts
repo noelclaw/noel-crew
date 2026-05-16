@@ -1,5 +1,5 @@
 export interface PetFormatPackageMarker {
-  readonly packageName: "@noelclaw/pet-format";
+  readonly packageName: "@noelclawai/pet-format";
 }
 
-export const petFormatPackageName = "@noelclaw/pet-format";
+export const petFormatPackageName = "@noelclawai/pet-format";

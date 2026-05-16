@@ -1,5 +1,5 @@
 {
-  "name": "@noelclaw/crew",
+  "name": "@noelclawai/crew",
   "version": "2.0.7",
   "private": true,
   "description": "Noel Crew — tray-first desktop companion for AI coding agents",
@@ -13,9 +13,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev:desktop": "pnpm --filter @noelclaw/desktop dev",
-    "package:desktop:dir": "pnpm build && pnpm --filter @noelclaw/desktop package:dir",
-    "package:desktop": "pnpm build && pnpm --filter @noelclaw/desktop package",
+    "dev:desktop": "pnpm --filter @noelclawai/desktop dev",
+    "package:desktop:dir": "pnpm build && pnpm --filter @noelclawai/desktop package:dir",
+    "package:desktop": "pnpm build && pnpm --filter @noelclawai/desktop package",
     "release:desktop": "node apps/desktop/scripts/release-local.mjs",
     "release:npm": "node scripts/release-npm.mjs",
     "test": "pnpm build && pnpm -r --if-present test",
