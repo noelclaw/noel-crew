@@ -3,7 +3,7 @@ import { lstat, mkdir, mkdtemp, open, readdir, realpath, rename, rm, writeFile }
 import { homedir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
 
-import sharp from "sharp";
+import { nativeImage } from "electron";
 
 import { getAppStateSnapshot, installPetState, type NoelCrewStateV1 } from "./app-state.js";
 import { maxCodexPetJsonBytes, maxCodexPets, maxCodexSpritesheetBytes, maxCodexThumbnailSourceBytes, validateCodexPetMetadata, type CodexPetMetadata } from "./codex-pets-core.js";
@@ -150,19 +150,17 @@ async function createCodexThumbnailDataUrl(path: string): Promise<string> {
   const cached = codexThumbnailCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
-  const image = sharp(path, { limitInputPixels: 50_000_000 });
-  const metadata = await image.metadata();
-  if (!metadata.width || !metadata.height) return "";
-  const width = Math.min(192, metadata.width);
-  const height = Math.min(208, metadata.height);
-  const thumbnail = await sharp(path, { limitInputPixels: 50_000_000 })
-    .extract({ left: 0, top: 0, width, height })
-    .resize(54, 58, { fit: "fill" })
-    .png()
-    .toBuffer();
+  const image = nativeImage.createFromPath(path);
+  if (image.isEmpty()) return "";
+  const { width: imgW, height: imgH } = image.getSize();
+  if (!imgW || !imgH) return "";
+  const cropW = Math.min(192, imgW);
+  const cropH = Math.min(208, imgH);
+  const cropped = image.crop({ x: 0, y: 0, width: cropW, height: cropH });
+  const resized = cropped.resize({ width: 54, height: 58 });
   const afterStats = await lstat(path);
   if (afterStats.isSymbolicLink() || !afterStats.isFile() || afterStats.size !== stats.size || afterStats.mtimeMs !== stats.mtimeMs) return "";
-  const dataUrl = `data:image/png;base64,${thumbnail.toString("base64")}`;
+  const dataUrl = resized.toDataURL();
   codexThumbnailCache.set(cacheKey, dataUrl);
   return dataUrl;
 }

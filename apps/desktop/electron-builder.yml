@@ -14,6 +14,29 @@ files:
   - assets/**
   - package.json
 
+extraResources:
+  - from: node_modules
+    to: node_modules
+    filter:
+      - "**"
+      - "!.pnpm"
+      - "!.pnpm/**"
+      - "!.bin"
+      - "!.bin/**"
+      - "!.modules.yaml"
+      - "!electron"
+      - "!electron/**"
+      - "!electron-builder"
+      - "!electron-builder/**"
+      - "!typescript"
+      - "!typescript/**"
+      - "!@types"
+      - "!@types/**"
+      - "!sharp"
+      - "!sharp/**"
+
+beforePack: scripts/prepare-deps.cjs
+
 asar: true
 asarUnpack:
   - node_modules/**

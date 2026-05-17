@@ -39,9 +39,6 @@ importers:
       pend:
         specifier: 1.2.0
         version: 1.2.0
-      sharp:
-        specifier: ^0.34.5
-        version: 0.34.5
       yauzl:
         specifier: 3.3.0
         version: 3.3.0
