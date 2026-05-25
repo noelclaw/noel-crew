@@ -1,20 +1,19 @@
 name = "noelclaw-api-proxy"
 main = "worker.js"
 compatibility_date = "2025-01-01"
+account_id = "406971b8eb0cb06ceb72b338ec00d280"
+workers_dev = false
 
-# Route: api.noelclaw.xyz/* → this worker
-# Cloudflare matches more specific routes first, so this takes priority
-# over the *.noelclaw.xyz wildcard in noelclaw-app-router
 [[routes]]
-pattern = "api.noelclaw.xyz/*"
-zone_name = "noelclaw.xyz"
+pattern = "api.noelclaw.com/*"
+zone_id = "6f9ca61af1e759cd6a371803799c7463"
 
-# KV namespace for rate limiting (100 req/min per IP)
-# Create it first: wrangler kv:namespace create RATE_LIMIT_KV
-# Then replace the id below with the output id
-[[kv_namespaces]]
-binding = "RATE_LIMIT_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+# KV rate limiting is optional — remove this section to skip it
+# To enable: wrangler kv namespace create RATE_LIMIT_KV
+#             then replace id below
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "REPLACE_WITH_KV_NAMESPACE_ID"
 
 # CONVEX_URL is a secret — never stored here
 # Set it once: wrangler secret put CONVEX_URL
